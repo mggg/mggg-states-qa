@@ -9,11 +9,11 @@ precincts.
 
 [Sources](#sources)
 
-  - [Geographic Data](#geographic-data-/census/shp/)
+  - [Geographic Data](#geographic-data-geodata/census/shp/)
 
-  - [Demographics Data](#demographics-data-/census/tab/)
+  - [Demographics Data](#demographics-data-geodata/census/tab/)
   
-  - [Election Data](#election-data-/election/)
+  - [Election Data](#election-data-geodata/election/)
 
 
 [Data Processing](#data-processing)
