@@ -37,15 +37,19 @@ precincts.
 ├── README.md
 ├── analyses
 ├── counties
-│   └── alameda
-│       ├── processed
-│       │   ├── georeferenced
-│       │   ├── shp
-│       │   └── tab
-│       ├── raw
-│       │   ├── jpg
-│       │   └── shp
-│       └── results
+│   ├── alameda
+│   |   ├── processed
+│   |   │   ├── georeferenced
+│   |   │   ├── shp
+│   |   │   └── tab
+│   |   ├── raw
+│   |   │   ├── jpg
+│   |   │   └── shp
+│   |   └── results
+|   ├── alpine
+|   |   ├── processed
+|   |   |   ├── georeferenced
+|   ... ... ...
 └── geodata
     ├── acs
     │   ├── shp
