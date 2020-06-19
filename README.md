@@ -89,11 +89,11 @@ Coming soon...
 ### 2010 Decennial Census `/2010/`
 __`blocks.zip`:__ Tabular demographics and VAP data of 2010 California census blocks
 
-  - Retrieved June 2020 from the [National Historical Geographic Information System (NHGIS) database](https://data2.nhgis.org/)
+  - Retrieved June 2020 from the [NHGIS database](https://data2.nhgis.org/)
 
 __`bgs.zip`:__ Tabular CVAP data of 2010 California census block groups
 
-  - Retrieved June 2020 from the [National Historical Geographic Information System (NHGIS) database](https://data2.nhgis.org/)
+  - Retrieved June 2020 from the [NHGIS database](https://data2.nhgis.org/)
 
 
 ## Election Data `geodata/election/`
