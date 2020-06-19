@@ -9,17 +9,12 @@ precincts.
 
 [Sources](#sources)
 
-- [Statewide Data](#statewide-data-geodata/)
-
   - [Geographic Data](#geographic-data-/census/shp/)
 
   - [Demographics Data](#demographics-data-/census/tab/)
   
   - [Election Data](#election-data-/election/)
 
-- [County-Specific Data](#county-specific-data-counties/)
-
-  - [Alameda County](#alameda-county-/alameda/raw/)
 
 [Data Processing](#data-processing)
 
@@ -68,9 +63,8 @@ precincts.
 
 
 # Sources
-## Statewide Data `geodata/`
-### Geographic Data `/census/shp/`
-#### _Decennial Census 2010 `/2010/`_ 
+## Geographic Data `geodata/census/shp/`
+### 2010 Decennial Census `/2010/` 
 __`blocks.zip`:__ Shapefile of 2010 California census blocks
 
   - Retrieved June 2020 from the [National Historical Geographic Information System (NHGIS) database](https://data2.nhgis.org/)
@@ -87,12 +81,12 @@ __`state.zip`:__ Shapefile of 2010 California state.
 
   - Retrieved June 2020 from the [NHGIS database](https://data2.nhgis.org/)
 
-#### _Decennial Census 2000 `/2000/`_
+### 2000 Decennial Census `/2000/`
 Coming soon...
 
 
-### Demographics Data `/census/tab/`
-#### _Decennial Census 2010 `/2010/`_
+## Demographics Data `geodata/census/tab/`
+### 2010 Decennial Census `/2010/`
 __`blocks.zip`:__ Tabular demographics and VAP data of 2010 California census blocks
 
   - Retrieved June 2020 from the [National Historical Geographic Information System (NHGIS) database](https://data2.nhgis.org/)
@@ -102,8 +96,8 @@ __`bgs.zip`:__ Tabular CVAP data of 2010 California census block groups
   - Retrieved June 2020 from the [National Historical Geographic Information System (NHGIS) database](https://data2.nhgis.org/)
 
 
-### Election Data `/election/`
-#### _2016 United States Elections `/2016/`_
+## Election Data `geodata/election/`
+### 2016 United States Elections `/2016/`
 __`/federal/president.zip`:__ Tabular California precinct-level data for the 2016 United States Presidential election
 
   - Retrieved June 20 from the [MIT Election Data and Science Lab (MEDSL) database](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/LYWX3D)
@@ -129,24 +123,7 @@ __`/state/state.zip`:__ Tabular California precinct-level data for 2016 state el
   - California-specific data extracted with `‘state_postal = ND’` query
 
 
-## County-Specific Data `counties/`
-### Alameda County `/alameda/raw/`
-#### _Vector_
-Coming soon...
 
-#### _Raster_
-Coming soon...
-
-#### _County Auditor Contact Info_
-- Name:
-
-- Phone: 
-
-- Fax: 
-
-- Email: 
-
-- Address: 
 
 
 
@@ -158,9 +135,6 @@ Number of precincts and precinct names were retrieved June 2020 from...
 Raster maps from the county's website were georeferenced in QGIS and then
 used to outline precinct boundaries around which census blocks were geographically merged. All maps were projected in `EPSG:...` (NAD83/UTM zone __)
 
-### Precinct Matching
-Precinct name matching was done by...
-
 ### Data Joining
 Shapefile and tabular data joins were done using python. The documented script can be found in the Jupyter Notebook `...`
 
@@ -171,11 +145,9 @@ Census-block-level demographics geodata were aggregated into precinct-level elec
 
 # Results
 ### Alameda County (`counties/alameda/results/`)
-#### `alameda_precincts.zip`
-Coming soon...
+- `alameda_precincts.zip`
 
-#### `alameda_blocks.zip`
-Coming soon...
+- `alameda_blocks.zip`
 
 
 
