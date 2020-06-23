@@ -96,7 +96,28 @@ class ExtractTable:
 
     Instance Methods
     ----------------
-
+    infile()
+        Returns a string representing the input file's path
+    infile(filename)
+        Given a string representing the input file's path, sets the `infile` 
+        attribute of the instance
+    outfile()
+        Returns a string representing the output file's path
+    outfile(filename=None)
+        Given a string representing the output file's path, sets the `outfile`
+        attribute of the instance
+    colname()
+        Returns a string representing the name of the column to use as the 
+        extracted table's index
+    colname(colname)
+        Given a string representing the name of the column to use as the 
+        extracted table's index, sets the `colname` attribute of the instance
+    filterval()
+        Returns a string representing the value to use for filtering the 
+        extracted table data
+    filterval(filterval)
+        Given a string representing the value to use for filtering the 
+        extracted table data, sets the `filterval` attribute of the instance
     '''
     # TODO: sanitation
     #--------------------------------
