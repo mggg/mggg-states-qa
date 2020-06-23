@@ -3,8 +3,9 @@ ExtractTable
 ============
 
 Provides
-    1. A python class used to extract tabular data by column and value
-    2. Pivots table (if `VALUE` is not specified)
+    1. A python class used to extract tabular data by column and value. 
+       Can manage filetypes: csv, xlsx, geojson, shp
+    2. Table pivoting (if `VALUE` is not specified)
     3. A command-line script to run the class' extract function
 
 Metadata
@@ -137,11 +138,12 @@ class ExtractTable:
 
     @infile.setter
     def infile(self, filename):
-        filename_clean = filename
-
-        # TODO
-
-        self.__infile = filename_clean
+        if filename:
+            try:
+                self.__table = gpd.read_file(filename)
+                self.__infile = filename
+            except Exception as e:
+                print("File opening error:", e)
 
 
     @property
@@ -155,11 +157,7 @@ class ExtractTable:
 
     @outfile.setter
     def outfile(self, filename=None):
-        filename_clean = filename
-
-        # TODO
-
-        self.__outfile = filename_clean
+        self.__outfile = filename
 
 
     @property
@@ -300,7 +298,11 @@ def main():
 #########################################
 def run_tests():
     et = ExtractTable()
-    print(help(ExtractTable))
+    print(et.infile)
+    et.infile = "test/test1.csv"
+    print(et.infile)
+    et.infile = "test/asdf"
+    print(et.infile)
 
 #########################################
 # Function Calls                        #
