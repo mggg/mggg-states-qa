@@ -4,7 +4,7 @@ ExtractTable
 
 Provides
     1. A python class used to extract tabular data by column and value
-    2. Table rotation (if `VALUE` is not specified)
+    2. Pivots table (if `VALUE` is not specified)
     3. A command-line script to run the class' extract function
 
 Metadata
@@ -23,7 +23,7 @@ dependencies:   geopandas
 Documentation
 -------------
 Documentation for the ExtractTable module can be found as docstrings in the
-source code. 
+source code. Run `help(ExtractTable)` to view documentation.
 
 Usage
 -----
@@ -76,73 +76,23 @@ import warnings; warnings.filterwarnings(
 #########################################
 class ExtractTable:
     '''
-    Class for extracting tabular data 
-
-    Attributes
-    ----------
-    infile : str
-        Path to tabular data file containing tables to extract
-    outfile : str | None
-        Path to output csv file containing extracted table. Defaults to stdout
-    colname : str
-        Name of column in source table to use as index for extracted table
-    filterval : str | None
-        Value in column in source table to use as filter for extracting 
-        subtable. If not specified, output file is a rotated table
-    
-    Class Methods
-    -------------
-    read_file(self, filename, colname=None, filterval=None)
-        Returns an ExtractTable instance with a specified input filename
-
-    Instance Methods
-    ----------------
-    infile()
-        Returns a string representing the input file's path
-    infile(filename)
-        Given a string representing the input file's path, sets the `infile` 
-        attribute of the instance
-    outfile()
-        Returns a string representing the output file's path
-    outfile(filename=None)
-        Given a string representing the output file's path, sets the `outfile`
-        attribute of the instance
-    colname()
-        Returns a string representing the name of the column to use as the 
-        extracted table's index
-    colname(colname)
-        Given a string representing the name of the column to use as the 
-        extracted table's index, sets the `colname` attribute of the instance
-    filterval()
-        Returns a string representing the value to use for filtering the 
-        extracted table data
-    filterval(filterval)
-        Given a string representing the value to use for filtering the 
-        extracted table data, sets the `filterval` attribute of the instance
+    Class for extracting tabular data. Run `help(ExtractTable)` to view docs
     '''
-
 
     #--------------------------------
     # Constructors                  
     #--------------------------------
-    def __init__(self, 
-                infile=None, 
-                outfile=None, 
-                colname=None, 
-                filterval=None):
+    def __init__(self, infile=None, outfile=None, column=None, value=None):
+        self.__table = None
         self.__infile = None
         self.__outfile = None
-        self.__colname = None
-        self.__filterval = None
-        
-        # Input sanitation
-        self.infile(infile)
-        self.outfile(outfile)
-        self.colname(colname)
-        self.filterval(filterval)
-    
+        self.__column = None
+        self.__value = None
+        self.__sanitize_init(infile, outfile, column, value)
+
+
     @classmethod
-    def read_file(self, filename, colname=None, filterval=None):
+    def read_file(self, filename, column=None, value=None):
         '''
         Returns an ExtractTable instance with a specified input filename
 
@@ -150,9 +100,9 @@ class ExtractTable:
         ----------
         filename : str
             Input file to read
-        colname : str | None
-            Column to use as index for extracted table
-        filterval : str | None
+        column : str | None
+            Label of column to use as index for extracted table
+        value : str | None
             Value to use as filter for extracted table
 
         Returns
@@ -160,8 +110,19 @@ class ExtractTable:
         ExtractTable
         '''
 
-        return self(filename, None, colname, filterval)
+        return self(filename, None, column, val)
     
+
+    # Constructor input sanitation
+    def __sanitize_init(self, infile, outfile, column, value):
+        try:
+            self.infile = infile
+            self.outfile = outfile
+            self.column = column
+            self.value = value
+        except Exception as e:
+            print("Initialization Error:", e)
+
 
     #--------------------------------
     # Getters and Setters                 
@@ -169,35 +130,13 @@ class ExtractTable:
     @property
     def infile(self):
         '''
-        `infile` getter
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str | None
+        {str} 
+            Path to tabular data file containing tables to extract
         '''
-
         return self.__infile
-
 
     @infile.setter
     def infile(self, filename):
-        '''
-        `infile` setter
-
-        Parameters
-        ----------
-        filename : str
-            input file path
-        
-        Returns
-        -------
-        None
-        '''
-
         filename_clean = filename
 
         # TODO
@@ -208,35 +147,14 @@ class ExtractTable:
     @property
     def outfile(self):
         '''
-        `outfile` getter
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str | None
+        {str | None}
+            Path to output csv file containing extracted table. 
+            Defaults to stdout
         '''
-
         return self.__outfile
-
 
     @outfile.setter
     def outfile(self, filename=None):
-        '''
-        `outfile` setter. Defaults to stdout with null filename
-
-        Parameters
-        ----------
-        filename : str
-            output file path
-        
-        Returns
-        -------
-        None
-        ''' 
-
         filename_clean = filename
 
         # TODO
@@ -245,80 +163,38 @@ class ExtractTable:
 
 
     @property
-    def colname(self):
+    def column(self):
         '''
-        `colname` getter
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str | None
+        {str}
+            Name of column in source table to use as index for extracted table
         '''
+        return self.__column
 
-        return self.__colname
-
-
-    @colname.setter
-    def colname(self, colname):
-        '''
-        `colname` setter
-
-        Parameters
-        ----------
-        colname : str
-            name of column to use as index for extracted table
-        
-        Returns
-        -------
-        None
-        ''' 
-        colname_clean = colname
+    @column.setter
+    def column(self, column):
+        column_clean = column
 
         # TODO
 
-        self.__colname = colname_clean
+        self.__column = column_clean
     
 
     @property
-    def filterval(self):
+    def value(self):
         '''
-        `filterval` getter
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str | None
+        {str | None}
+            Value in column in source table to use as filter for extracting 
+            subtable. If not specified, output file is a rotated table
         '''
+        return self.__value
 
-        return self.__filterval
-
-
-    @filterval.setter
-    def filterval(self, filterval):
-        '''
-        `colname` setter
-
-        Parameters
-        ----------
-        filterval : str
-            value to use as filter for extracted table
-        
-        Returns
-        -------
-        None
-        ''' 
-
-        filterval_clean = filterval
+    @value.setter
+    def value(self, value):
+        value_clean = value
 
         # TODO
 
-        self.__filterval = filterval_clean
+        self.__value = value_clean
 
 
     #--------------------------------
@@ -346,8 +222,8 @@ def parse_arguments():
 
     description = 'script to extract tabular data by column as a CSV'
     infile_help = 'path to file from which to extract data'
-    colname_help = 'column name with value to extract and to become new index'
-    filterval_help = 'value to use as filter for extraction'
+    column_help = 'column label to use as extracted index'
+    value_help = 'value in column to use as filter for extraction'
     outfile_help = 'path to output extracted table'
     
     examples = \
@@ -371,10 +247,10 @@ examples:
     parser.add_argument(
             '-v', 
             '--value', 
-            dest='filterval',
+            dest='value',
             metavar='VALUE', 
             type=str, 
-            help=filterval_help)
+            help=value_help)
     parser.add_argument(
             '-o', 
             '--output', 
@@ -387,11 +263,11 @@ examples:
     required.add_argument(
                 '-c', 
                 '--column', 
-                dest='colname', 
+                dest='column', 
                 metavar='COLUMN', 
                 type=str, 
                 required=True,
-                help=colname_help)
+                help=column_help)
 
     return parser.parse_args()
 
@@ -420,7 +296,18 @@ def main():
 
 
 #########################################
+# Regression Tests                      #
+#########################################
+def run_tests():
+    et = ExtractTable()
+    print(help(ExtractTable))
+
+#########################################
 # Function Calls                        #
 #########################################
 if __name__ == "__main__":
-        main()
+        #main()
+        run_tests()
+
+
+
