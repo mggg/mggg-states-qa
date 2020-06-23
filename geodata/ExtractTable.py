@@ -70,6 +70,7 @@ import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
 
 
+
 #########################################
 # Class Definition                      #
 #########################################
@@ -119,7 +120,8 @@ class ExtractTable:
         Given a string representing the value to use for filtering the 
         extracted table data, sets the `filterval` attribute of the instance
     '''
-    # TODO: sanitation
+
+
     #--------------------------------
     # Constructors                  
     #--------------------------------
@@ -128,13 +130,36 @@ class ExtractTable:
                 outfile=None, 
                 colname=None, 
                 filterval=None):
-        self._infile = infile 
-        self._outfile = outfile
-        self._colname = colname
-        self._filterval = filterval
+        self.__infile = None
+        self.__outfile = None
+        self.__colname = None
+        self.__filterval = None
+        
+        # Input sanitation
+        self.infile(infile)
+        self.outfile(outfile)
+        self.colname(colname)
+        self.filterval(filterval)
     
     @classmethod
     def read_file(self, filename, colname=None, filterval=None):
+        '''
+        Returns an ExtractTable instance with a specified input filename
+
+        Parameters
+        ----------
+        filename : str
+            Input file to read
+        colname : str | None
+            Column to use as index for extracted table
+        filterval : str | None
+            Value to use as filter for extracted table
+
+        Returns
+        -------
+        ExtractTable
+        '''
+
         return self(filename, None, colname, filterval)
     
 
@@ -143,11 +168,157 @@ class ExtractTable:
     #--------------------------------
     @property
     def infile(self):
-        return self._infile
+        '''
+        `infile` getter
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str | None
+        '''
+
+        return self.__infile
+
 
     @infile.setter
     def infile(self, filename):
-        pass # TODO: finish
+        '''
+        `infile` setter
+
+        Parameters
+        ----------
+        filename : str
+            input file path
+        
+        Returns
+        -------
+        None
+        '''
+
+        filename_clean = filename
+
+        # TODO
+
+        self.__infile = filename_clean
+
+
+    @property
+    def outfile(self):
+        '''
+        `outfile` getter
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str | None
+        '''
+
+        return self.__outfile
+
+
+    @outfile.setter
+    def outfile(self, filename=None):
+        '''
+        `outfile` setter. Defaults to stdout with null filename
+
+        Parameters
+        ----------
+        filename : str
+            output file path
+        
+        Returns
+        -------
+        None
+        ''' 
+
+        filename_clean = filename
+
+        # TODO
+
+        self.__outfile = filename_clean
+
+
+    @property
+    def colname(self):
+        '''
+        `colname` getter
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str | None
+        '''
+
+        return self.__colname
+
+
+    @colname.setter
+    def colname(self, colname):
+        '''
+        `colname` setter
+
+        Parameters
+        ----------
+        colname : str
+            name of column to use as index for extracted table
+        
+        Returns
+        -------
+        None
+        ''' 
+        colname_clean = colname
+
+        # TODO
+
+        self.__colname = colname_clean
+    
+
+    @property
+    def filterval(self):
+        '''
+        `filterval` getter
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str | None
+        '''
+
+        return self.__filterval
+
+
+    @filterval.setter
+    def filterval(self, filterval):
+        '''
+        `colname` setter
+
+        Parameters
+        ----------
+        filterval : str
+            value to use as filter for extracted table
+        
+        Returns
+        -------
+        None
+        ''' 
+
+        filterval_clean = filterval
+
+        # TODO
+
+        self.__filterval = filterval_clean
 
 
     #--------------------------------
@@ -161,6 +332,17 @@ class ExtractTable:
 # Command-Line Parsing                  #
 #########################################
 def parse_arguments():
+    '''
+    Parses command-line arguments and returns a dictionary of argument objects
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    An argparse Namespace object
+    '''
 
     description = 'script to extract tabular data by column as a CSV'
     infile_help = 'path to file from which to extract data'
