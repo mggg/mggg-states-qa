@@ -1,4 +1,4 @@
-__doc__ = '''
+'''
 ExtractTable
 ============
 
@@ -25,8 +25,8 @@ source code. Run `help(ExtractTable)` to view documentation.
 
 Usage
 -----
-```
-usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE] INFILE
+usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] 
+                       INFILE
 
 Script to extract tabular data to a csv. If no column is specified, 
 returns the infile as a csv. If no value is specified, returns the 
@@ -44,7 +44,7 @@ optional arguments:
                         path to output extracted table
   -c COLUMN, --column COLUMN
                         column label to use as extracted index
-  -v VALUE, --value VALUE
+  -v VALUE [VALUE ...], --value VALUE [VALUE ...]
                         value in column to use as filter for extraction
 
 examples:
@@ -52,8 +52,7 @@ examples:
     python ExtractTable.py input.xlsx -c ID > output.csv
     python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
     python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-```
-
+    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
 '''
 
 import argparse
@@ -61,6 +60,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import sys
+from typing import NoReturn, Optional, Union
 
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
@@ -78,24 +78,31 @@ class ExtractTable:
     #--------------------------------
     # Constructors                  
     #--------------------------------
-    def __init__(self, infile=None, outfile=None, column=None, value=None):
+    def __init__(self, 
+                infile:     Optional[str] = None, 
+                outfile:    Optional[str] = None, 
+                column:     Optional[str] = None, 
+                value:      Optional[str] = None):
         # Encapsulated attributes
-        self.__infile = None
-        self.__outfile = None
-        self.__column = None
-        self.__value = None
+        self.__infile =     None
+        self.__outfile =    None
+        self.__column =     None
+        self.__value =      None
 
         # Protected attributes
-        self.__table = None
-        self.__coldata = None
-        self.__foundval = False
-        self.__extracted = None
+        self.__table =      None
+        self.__coldata =    None
+        self.__foundval =   False
+        self.__extracted =  None
 
         self.__sanitize_init(infile, outfile, column, value)
 
 
     @classmethod
-    def read_file(self, filename, column=None, value=None):
+    def read_file(self, 
+                  filename: str, 
+                  column:   Optional[str] = None, 
+                  value:    Optional[str] = None):
         '''
         Returns an ExtractTable instance with a specified input filename
 
@@ -116,7 +123,11 @@ class ExtractTable:
     
 
     # Constructor input sanitation
-    def __sanitize_init(self, infile, outfile, column, value):
+    def __sanitize_init(self, 
+                        infile:     Optional[str], 
+                        outfile:    Optional[str], 
+                        column:     Optional[str], 
+                        value:      Optional[str]):
         try:
             self.infile = infile
             self.outfile = outfile
@@ -130,7 +141,7 @@ class ExtractTable:
     # Getters and Setters                 
     #--------------------------------
     @property
-    def infile(self):
+    def infile(self) -> str:
         '''
         {str} 
             Path to tabular data file containing tables to extract
@@ -138,14 +149,14 @@ class ExtractTable:
         return self.__infile
 
     @infile.setter
-    def infile(self, filename):
+    def infile(self, filename: Optional[str]) -> NoReturn:
         if filename:
             self.__table = gpd.read_file(filename)
             self.__infile = filename
 
 
     @property
-    def outfile(self):
+    def outfile(self) -> str:
         '''
         {str | None}
             Path to output csv file containing extracted table. 
@@ -154,12 +165,12 @@ class ExtractTable:
         return self.__outfile
 
     @outfile.setter
-    def outfile(self, filename=None):
+    def outfile(self, filename: Optional[str] = None) -> NoReturn:
         self.__outfile = filename
 
 
     @property
-    def column(self):
+    def column(self) -> str:
         '''
         {str}
             Name of column in source table to use as index for extracted table
@@ -167,7 +178,7 @@ class ExtractTable:
         return self.__column
 
     @column.setter
-    def column(self, column):
+    def column(self, column: Optional[str]) -> NoReturn:
         if column:
             try:
                 self.__coldata = self.__table[column]
@@ -177,7 +188,7 @@ class ExtractTable:
 
 
     @property
-    def value(self):
+    def value(self) -> str:
         '''
         {str | None}
             Value in column in source table to use as filter for extracting 
@@ -186,7 +197,7 @@ class ExtractTable:
         return self.__value
 
     @value.setter
-    def value(self, value):
+    def value(self, value: str) -> NoReturn:
         if value:
             if self.__table is None:
                 raise KeyError("Cannot set value without specifying tabular data")
@@ -206,19 +217,16 @@ class ExtractTable:
     #--------------------------------
     # Method Definitions                
     #--------------------------------
-    def __reindex(self):
+    def __reindex(self) -> gpd.GeoDataFrame:
         if self.value:
             return self.__extracted.set_index(self.column)
         else:
             return self.__table.set_index(self.column)
 
-    def extract(self):
+
+    def extract(self) -> gpd.GeoDataFrame:
         '''
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
@@ -232,20 +240,28 @@ class ExtractTable:
             return self.__table
             
 
-    def to_file(self, gdf, filename=None):
+    def to_file(self, gdf: gpd.GeoDataFrame, filename: str) -> NoReturn:
+        '''
+        Given a GeoDataFrame and a filename string, writes the tabular
+        data to a csv with the given filename.
+
+        Parameters
+        ----------
+        gdf : gpd.GeoDataFrame
+            Tabular data to write to file
+        filename : str
+            Path to which file is to be written
+        '''
+
         pass # TODO
 
 
 #########################################
 # Command-Line Parsing                  #
 #########################################
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     '''
     Parses command-line arguments and returns a dictionary of argument objects
-
-    Parameters
-    ----------
-    None
 
     Returns
     -------
@@ -273,6 +289,7 @@ examples:
     python ExtractTable.py input.xlsx -c ID > output.csv
     python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
     python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
+    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
     
 '''
 
@@ -303,7 +320,8 @@ examples:
                 '--value', 
                 dest='value',
                 metavar='VALUE', 
-                type=str, 
+                type=str,
+                nargs='+',
                 help=value_help)
 
     return parser.parse_args()
@@ -312,17 +330,9 @@ examples:
 #########################################
 # Main                                  #
 #########################################
-def main():
+def main() -> NoReturn:
     '''
     Validates input, parses command-line arguments, runs program.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
     '''
     args = parse_arguments()
 
@@ -334,6 +344,7 @@ def main():
 #########################################
 # Regression Tests                      #
 #########################################
+
 def run_tests():
     print('et = ExtractTable()')
     et = ExtractTable()
@@ -426,8 +437,8 @@ def run_tests2():
 # Function Calls                        #
 #########################################
 if __name__ == "__main__":
-        main()
-        #run_tests()
+        #main()
+        run_tests()
         #run_tests2()
 
 
