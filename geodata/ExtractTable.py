@@ -60,7 +60,7 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 import sys
-from typing import NoReturn, Optional, Union
+from typing import List, NoReturn, Optional, Union
 
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
@@ -82,7 +82,7 @@ class ExtractTable:
                 infile:     Optional[str] = None, 
                 outfile:    Optional[str] = None, 
                 column:     Optional[str] = None, 
-                value:      Optional[str] = None):
+                value:      Union[str, List[str], None] = None):
         # Encapsulated attributes
         self.__infile =     None
         self.__outfile =    None
@@ -102,7 +102,7 @@ class ExtractTable:
     def read_file(self, 
                   filename: str, 
                   column:   Optional[str] = None, 
-                  value:    Optional[str] = None):
+                  value:    Union[str, List[str], None] = None):
         '''
         Returns an ExtractTable instance with a specified input filename
 
@@ -127,7 +127,7 @@ class ExtractTable:
                         infile:     Optional[str], 
                         outfile:    Optional[str], 
                         column:     Optional[str], 
-                        value:      Optional[str]):
+                        value:      Union[str, List[str], None]):
         try:
             self.infile = infile
             self.outfile = outfile
@@ -156,7 +156,7 @@ class ExtractTable:
 
 
     @property
-    def outfile(self) -> str:
+    def outfile(self) -> Optional[str]:
         '''
         {str | None}
             Path to output csv file containing extracted table. 
@@ -188,30 +188,33 @@ class ExtractTable:
 
 
     @property
-    def value(self) -> str:
+    def value(self) -> Union[str, List[str], None]:
         '''
-        {str | None}
+        {str | List[str] | None}
             Value in column in source table to use as filter for extracting 
-            subtable. If not specified, output file is a rotated table
+            subtable. If not specified, output file is a reindexed table
         '''
         return self.__value
 
     @value.setter
-    def value(self, value: str) -> NoReturn:
-        if value:
-            if self.__table is None:
-                raise KeyError("Cannot set value without specifying tabular data")
-            elif not self.column:
-                raise KeyError("Cannot set value without specifying column")
-            else:
-                self.__extracted = self.__table.loc[
-                                    self.__table[self.column] == value]
+    def value(self, value: Union[str, List[str], None]) -> NoReturn:
+        if value and (self.__table is None):
+            raise KeyError("Cannot set value without specifying tabular data")
+        elif value and (not self.column):
+            raise KeyError("Cannot set value without specifying column")
+        elif value:
+            try: # value is a singleton
+                self.__extracted = self.__table[
+                                        self.__table[self.column] == value]
+            except: # value is a list
+                self.__extracted = self.__table[
+                                        self.__table[self.column].isin(value)]
 
-                if self.__extracted.empty:
-                    raise KeyError("Column '{}' has no value '{}'".format(
-                                        self.column, value))
-                else:
-                    self.__value = value
+            if self.__extracted.empty:
+                raise KeyError("Column '{}' has no value '{}'".format(
+                                    self.column, value))
+            else:
+                self.__value = value
             
 
     #--------------------------------
@@ -431,6 +434,55 @@ def run_tests2():
     except Exception as e:
         print('Expected failure.', e)
 
+    try:
+        et = ExtractTable.read_file(column=2, value='asdf')
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        et = ExtractTable.read_file("test/test1.csv", column="3")
+    except Exception as e:
+        print('Expected failure.', e) 
+
+    try:
+        et = ExtractTable.read_file("test/test1.csv", value="3")
+    except Exception as e:
+        print('Expected failure.', e) 
+
+    try:
+        et = ExtractTable.read_file("test/test1.csv", column="col1", value=3)
+    except Exception as e:
+        print('Expected failure.', e) 
+    print()
+
+    et = ExtractTable.read_file("test/test1.csv")
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+    print()
+
+
+    et = ExtractTable.read_file("test/test1.csv", column="col1")
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+    print()
+
+    et = ExtractTable.read_file("test/test1.csv", column="col1", value="c")
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+    print() 
+
+    et = ExtractTable.read_file("test/test1.csv", column="col1", value=['a', 'c'])
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+    print()
 
 
 #########################################
@@ -438,8 +490,8 @@ def run_tests2():
 #########################################
 if __name__ == "__main__":
         #main()
-        run_tests()
-        #run_tests2()
+        #run_tests()
+        run_tests2()
 
 
 
