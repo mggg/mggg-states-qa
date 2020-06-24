@@ -261,19 +261,19 @@ examples:
                 metavar='INFILE', 
                 help=infile_help)
     parser.add_argument(
-            '-v', 
-            '--value', 
-            dest='value',
-            metavar='VALUE', 
-            type=str, 
-            help=value_help)
+                '-v', 
+                '--value', 
+                dest='value',
+                metavar='VALUE', 
+                type=str, 
+                help=value_help)
     parser.add_argument(
-            '-o', 
-            '--output', 
-            dest='outfile',
-            metavar='OUTFILE', 
-            type=str, 
-            help=outfile_help)
+                '-o', 
+                '--output', 
+                dest='outfile',
+                metavar='OUTFILE', 
+                type=str, 
+                help=outfile_help)
     
     required = parser.add_argument_group('required arguments')
     required.add_argument(
