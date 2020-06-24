@@ -3,10 +3,9 @@ ExtractTable
 ============
 
 Provides
-    1. A python class used to extract tabular data by column and value. 
+    1. A python class used to extract subtables from given tabular data. 
        Can manage filetypes: csv, xlsx, geojson, shp
-    2. Table pivoting (if `VALUE` is not specified)
-    3. A command-line script to run the class' extract function
+    2. A command-line script to run the class' extract function
 
 Metadata
 --------
@@ -14,10 +13,8 @@ filename:       ExtractTable.py
 author:         @KeiferC
 date:           23 June 2020
 version:        0.0.1
-description:    Script to extract tabular data by column to a CSV
+description:    Script and module to extract subtables from given tabular data
 dependencies:   geopandas
-                matplotlib
-                maup
                 numpy
                 pandas
 
@@ -29,43 +26,41 @@ source code. Run `help(ExtractTable)` to view documentation.
 Usage
 -----
 ```
-ExtractTable.py [-h] [-v VALUE] [-o OUTFILE] -c COLUMN INFILE
+usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE] INFILE
 
-script to extract tabular data by column to a CSV
+Script to extract tabular data to a csv. If no column is specified, 
+returns the infile as a csv. If no value is specified, returns the 
+infile as a csv where required specified column is the output's index. 
+If both value and column are specified, returns a csv containing a 
+subtable where the column is the index in which every row is equal to
+the specified value.
 
 positional arguments:
-    INFILE                path to file from which to extract data
+  INFILE                path to file from which to extract data
 
 optional arguments:
--h, --help            show this help message and exit
--v VALUE, --value VALUE
-                        value to use as filter for extraction
--o OUTFILE, --output OUTFILE
+  -h, --help            show this help message and exit
+  -o OUTFILE, --output OUTFILE
                         path to output extracted table
-
-required arguments:
--c COLUMN, --column COLUMN
-                        column name with value to extract and to become new
-                        index
+  -c COLUMN, --column COLUMN
+                        column label to use as extracted index
+  -v VALUE, --value VALUE
+                        value in column to use as filter for extraction
 
 examples:
-
+    
     python ExtractTable.py input.xlsx -c ID > output.csv
     python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
-    python Extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-
+    python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
 ```
+
 '''
 
 import argparse
 import geopandas as gpd
-import matplotlib.pyplot as plt
-import maup
 import numpy as np
-import os.path
 import pandas as pd
 import sys
-import zipfile
 
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
@@ -84,11 +79,13 @@ class ExtractTable:
     # Constructors                  
     #--------------------------------
     def __init__(self, infile=None, outfile=None, column=None, value=None):
+        # Encapsulated attributes
         self.__infile = None
         self.__outfile = None
         self.__column = None
         self.__value = None
 
+        # Protected attributes
         self.__table = None
         self.__coldata = None
         self.__foundval = False
@@ -115,8 +112,7 @@ class ExtractTable:
         -------
         ExtractTable
         '''
-
-        return self(filename, None, column, val)
+        return self(filename, None, column, value)
     
 
     # Constructor input sanitation
@@ -217,6 +213,17 @@ class ExtractTable:
             return self.__table.set_index(self.column)
 
     def extract(self):
+        '''
+        Returns a GeoPandas GeoDataFrame containing extracted subtable.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        GeoDataFrame
+        '''
         if self.__table is None:
             raise RuntimeError("Unable to find tabular data to extract")
         elif self.column:
@@ -244,12 +251,20 @@ def parse_arguments():
     -------
     An argparse Namespace object
     '''
-
-    description = 'script to extract tabular data by column as a CSV'
     infile_help = 'path to file from which to extract data'
     column_help = 'column label to use as extracted index'
     value_help = 'value in column to use as filter for extraction'
     outfile_help = 'path to output extracted table'
+
+    description = \
+'''
+Script to extract tabular data to a csv. If no column is specified, 
+returns the infile as a csv. If no value is specified, returns the 
+infile as a csv where required specified column is the output's index. 
+If both value and column are specified, returns a csv containing a 
+subtable where the column is the index in which every row is equal to
+the specified value.
+'''
     
     examples = \
 '''
@@ -270,29 +285,26 @@ examples:
                 metavar='INFILE', 
                 help=infile_help)
     parser.add_argument(
-                '-v', 
-                '--value', 
-                dest='value',
-                metavar='VALUE', 
-                type=str, 
-                help=value_help)
-    parser.add_argument(
                 '-o', 
                 '--output', 
                 dest='outfile',
                 metavar='OUTFILE', 
                 type=str, 
                 help=outfile_help)
-    
-    required = parser.add_argument_group('required arguments')
-    required.add_argument(
+    parser.add_argument(
                 '-c', 
                 '--column', 
                 dest='column', 
                 metavar='COLUMN', 
                 type=str, 
-                required=True,
                 help=column_help)
+    parser.add_argument(
+                '-v', 
+                '--value', 
+                dest='value',
+                metavar='VALUE', 
+                type=str, 
+                help=value_help)
 
     return parser.parse_args()
 
@@ -312,7 +324,6 @@ def main():
     -------
     None
     '''
-
     args = parse_arguments()
 
     # TODO
@@ -398,12 +409,26 @@ def run_tests():
     print()
 
 
+def run_tests2():
+    try:
+        et = ExtractTable.read_file()
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        et = ExtractTable.read_file("asdf/asdf")
+    except Exception as e:
+        print('Expected failure.', e)
+
+
+
 #########################################
 # Function Calls                        #
 #########################################
 if __name__ == "__main__":
-        #main()
-        run_tests()
+        main()
+        #run_tests()
+        #run_tests2()
 
 
 

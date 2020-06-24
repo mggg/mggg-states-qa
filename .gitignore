@@ -18,3 +18,4 @@
 *.log
 *.gz
 *.swp
+__pycache__
