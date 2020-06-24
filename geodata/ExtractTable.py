@@ -75,6 +75,7 @@ class ExtractTable:
     Class for extracting tabular data. Run `help(ExtractTable)` to view docs
     '''
 
+
     #--------------------------------
     # Constructors                  
     #--------------------------------
@@ -147,7 +148,6 @@ class ExtractTable:
             Path to tabular data file containing tables to extract
         '''
         return self.__infile
-
     @infile.setter
     def infile(self, filename: Optional[str]) -> NoReturn:
         if filename:
@@ -163,7 +163,6 @@ class ExtractTable:
             Defaults to stdout
         '''
         return self.__outfile
-
     @outfile.setter
     def outfile(self, filename: Optional[str] = None) -> NoReturn:
         self.__outfile = filename
@@ -176,7 +175,6 @@ class ExtractTable:
             Name of column in source table to use as index for extracted table
         '''
         return self.__column
-
     @column.setter
     def column(self, column: Optional[str]) -> NoReturn:
         if column:
@@ -195,7 +193,6 @@ class ExtractTable:
             subtable. If not specified, output file is a reindexed table
         '''
         return self.__value
-
     @value.setter
     def value(self, value: Union[str, List[str], None]) -> NoReturn:
         if value and (self.__table is None):
@@ -218,15 +215,8 @@ class ExtractTable:
             
 
     #--------------------------------
-    # Method Definitions                
+    # Instace Methods               
     #--------------------------------
-    def __reindex(self) -> gpd.GeoDataFrame:
-        if self.value:
-            return self.__extracted.set_index(self.column)
-        else:
-            return self.__table.set_index(self.column)
-
-
     def extract(self) -> gpd.GeoDataFrame:
         '''
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
@@ -255,8 +245,18 @@ class ExtractTable:
         filename : str
             Path to which file is to be written
         '''
-
         pass # TODO
+
+
+    #--------------------------------
+    # Helper Methods              
+    #--------------------------------
+    def __reindex(self) -> gpd.GeoDataFrame:
+        if self.value:
+            return self.__extracted.set_index(self.column)
+        else:
+            return self.__table.set_index(self.column)
+
 
 
 #########################################
@@ -460,6 +460,7 @@ def run_tests2():
     print('outfile = ', et.outfile)
     print('column = ', et.column)
     print('value = ', et.value)
+    print(et.extract())
     print()
 
 
@@ -468,6 +469,7 @@ def run_tests2():
     print('outfile = ', et.outfile)
     print('column = ', et.column)
     print('value = ', et.value)
+    print(et.extract())
     print()
 
     et = ExtractTable.read_file("test/test1.csv", column="col1", value="c")
@@ -475,6 +477,7 @@ def run_tests2():
     print('outfile = ', et.outfile)
     print('column = ', et.column)
     print('value = ', et.value)
+    print(et.extract())
     print() 
 
     et = ExtractTable.read_file("test/test1.csv", column="col1", value=['a', 'c'])
@@ -482,6 +485,7 @@ def run_tests2():
     print('outfile = ', et.outfile)
     print('column = ', et.column)
     print('value = ', et.value)
+    print(et.extract())
     print()
 
 
