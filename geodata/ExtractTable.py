@@ -91,6 +91,7 @@ class ExtractTable:
 
         self.__table = None
         self.__coldata = None
+        self.__foundval = False
         self.__extracted = None
 
         self.__sanitize_init(infile, outfile, column, value)
@@ -126,7 +127,7 @@ class ExtractTable:
             self.column = column
             self.value = value
         except Exception as e:
-            print("Initialization Error:", e)
+            raise AttributeError("Initialization failed. {}".format(e))
 
 
     #--------------------------------
@@ -143,11 +144,8 @@ class ExtractTable:
     @infile.setter
     def infile(self, filename):
         if filename:
-            try:
-                self.__table = gpd.read_file(filename)
-                self.__infile = filename
-            except Exception as e:
-                print("File opening error:", e)
+            self.__table = gpd.read_file(filename)
+            self.__infile = filename
 
 
     @property
@@ -177,9 +175,9 @@ class ExtractTable:
         if column:
             try:
                 self.__coldata = self.__table[column]
-                self.__column = column
             except Exception as e:
-                print('Column not found error:', e)
+                raise KeyError("Column not found: {}".format(e))
+            self.__column = column
 
 
     @property
@@ -194,29 +192,40 @@ class ExtractTable:
     @value.setter
     def value(self, value):
         if value:
-            try:
+            if self.__table is None:
+                raise KeyError("Cannot set value without specifying tabular data")
+            elif not self.column:
+                raise KeyError("Cannot set value without specifying column")
+            else:
                 self.__extracted = self.__table.loc[
-                                        self.__table[self.column] == value]
+                                    self.__table[self.column] == value]
+
                 if self.__extracted.empty:
-                    raise Exception('column "{}" has no value "{}"'.format(
+                    raise KeyError("Column '{}' has no value '{}'".format(
                                         self.column, value))
                 else:
                     self.__value = value
-            except Exception as e:
-                print('Value not found error:', e)
-
+            
 
     #--------------------------------
     # Method Definitions                
     #--------------------------------
-    def __pivot(self):
-        return self.__extracted # TODO
+    def __reindex(self):
+        if self.value:
+            return self.__extracted.set_index(self.column)
+        else:
+            return self.__table.set_index(self.column)
 
     def extract(self):
-        return self.__pivot()
+        if self.__table is None:
+            raise RuntimeError("Unable to find tabular data to extract")
+        elif self.column:
+            return self.__reindex()
+        else:
+            return self.__table
+            
 
-
-    def to_file(self):
+    def to_file(self, gdf, filename=None):
         pass # TODO
 
 
@@ -315,18 +324,78 @@ def main():
 # Regression Tests                      #
 #########################################
 def run_tests():
+    print('et = ExtractTable()')
     et = ExtractTable()
-    print(et.infile)
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+    print()
+
+    try:
+        et.value = 'fail'
+    except Exception as e:
+        print('Expected failure:', e)
+    
+    try:
+        et.column = 'fail'
+    except Exception as e:
+        print('Expected failure:', e)
+
+    try:
+        et.infile = "test/asdf"
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        extracted = et.extract()
+    except Exception as e:
+        print('Expected failure.', e)
+    print()
+
     et.infile = "test/test1.csv"
-    print(et.infile)
-    et.infile = "test/asdf"
-    print(et.infile)
+
+    try:
+        et.value = "sdf"
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        et.infile = "asdf/asdf"
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        et.column = "col"
+    except Exception as e:
+        print('Expected failure.', e)
+
+    print(et.extract())
+    print()
+
     et.column = "col1"
-    print(et.column)
+    
+    try:
+        et.value = "fda"
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        et.column = "col"
+    except Exception as e:
+        print('Expected failure.', e)
+    
+    try:
+        et.value = "fda"
+    except Exception as e:
+        print('Expected failure.', e)
+
+    print(et.extract())
+    print()
+
     et.value = "c"
-    extracted = et.extract()
-    print(type(extracted))
-    print(extracted.head())
+    print(et.extract())
+    print()
 
 
 #########################################
