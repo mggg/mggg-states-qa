@@ -84,11 +84,15 @@ class ExtractTable:
     # Constructors                  
     #--------------------------------
     def __init__(self, infile=None, outfile=None, column=None, value=None):
-        self.__table = None
         self.__infile = None
         self.__outfile = None
         self.__column = None
         self.__value = None
+
+        self.__table = None
+        self.__coldata = None
+        self.__extracted = None
+
         self.__sanitize_init(infile, outfile, column, value)
 
 
@@ -170,12 +174,13 @@ class ExtractTable:
 
     @column.setter
     def column(self, column):
-        column_clean = column
+        if column:
+            try:
+                self.__coldata = self.__table[column]
+                self.__column = column
+            except Exception as e:
+                print('Column not found error:', e)
 
-        # TODO
-
-        self.__column = column_clean
-    
 
     @property
     def value(self):
@@ -188,18 +193,31 @@ class ExtractTable:
 
     @value.setter
     def value(self, value):
-        value_clean = value
-
-        # TODO
-
-        self.__value = value_clean
+        if value:
+            try:
+                self.__extracted = self.__table.loc[
+                                        self.__table[self.column] == value]
+                if self.__extracted.empty:
+                    raise Exception('column "{}" has no value "{}"'.format(
+                                        self.column, value))
+                else:
+                    self.__value = value
+            except Exception as e:
+                print('Value not found error:', e)
 
 
     #--------------------------------
     # Method Definitions                
     #--------------------------------
-    #### File Reading
+    def __pivot(self):
+        return self.__extracted # TODO
 
+    def extract(self):
+        return self.__pivot()
+
+
+    def to_file(self):
+        pass # TODO
 
 
 #########################################
@@ -303,6 +321,13 @@ def run_tests():
     print(et.infile)
     et.infile = "test/asdf"
     print(et.infile)
+    et.column = "col1"
+    print(et.column)
+    et.value = "c"
+    extracted = et.extract()
+    print(type(extracted))
+    print(extracted.head())
+
 
 #########################################
 # Function Calls                        #
