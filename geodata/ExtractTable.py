@@ -45,7 +45,7 @@ optional arguments:
   -c COLUMN, --column COLUMN
                         column label to use as extracted index
   -v VALUE [VALUE ...], --value VALUE [VALUE ...]
-                        value in column to use as filter for extraction
+                        value(s) in column to use as filter for extraction
 
 examples:
     
@@ -215,7 +215,7 @@ class ExtractTable:
             
 
     #--------------------------------
-    # Instace Methods               
+    # Instance Methods               
     #--------------------------------
     def extract(self) -> gpd.GeoDataFrame:
         '''
@@ -247,6 +247,9 @@ class ExtractTable:
         '''
         pass # TODO
 
+    # TODO: Column listing
+
+    # TODO: unique value listing
 
     #--------------------------------
     # Helper Methods              
@@ -272,7 +275,7 @@ def parse_arguments() -> argparse.Namespace:
     '''
     infile_help = 'path to file from which to extract data'
     column_help = 'column label to use as extracted index'
-    value_help = 'value in column to use as filter for extraction'
+    value_help = 'value(s) in column to use as filter for extraction'
     outfile_help = 'path to output extracted table'
 
     description = \
