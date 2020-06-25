@@ -28,7 +28,7 @@ Usage
 usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] 
                        INFILE
 
-Script to extract tabular data to a csv. If no column is specified, 
+Script to extract tabular data. If no column is specified, 
 returns the infile as a csv. If no value is specified, returns the 
 infile as a csv where required specified column is the output's index. 
 If both value and column are specified, returns a csv containing a 
@@ -238,17 +238,46 @@ class ExtractTable:
             return self.__table
             
 
-    def extract_to_file(self, filename: str) -> NoReturn:
+    def extract_to_file(self, 
+                        filename: Optional[str] = None,
+                        driver: Optional[str] = None) -> NoReturn:
         '''
-        Given a filename string, writes the tabular extracted data to a csv 
-        with the given filename.
+        Given a filename string, writes the tabular extracted data to a file.
+        Given an optional Fiona support OGR driver, writes to file using the 
+        driver. If filename is None, data is printed as a csv to stdout
 
         Parameters
         ----------
-        filename : str
-            Path to which file is to be written
+        filename : str | None
+            Path to which file is to be written.
+        driver: str | None
+            Name of Fiona supported OGR drivers
         '''
-        pass # TODO
+
+        # TODO: test
+
+        is_geo = self.__has_spatial_data() # TODO: finish
+
+        if not filename:
+            self.__print_csv() # TODO: finish
+        else:
+            ext = self.__get_extension(filename)
+
+            if is_geo and ext == '.shp':
+                self.__extracted.to_file(filename)
+            elif is_geo and ext == '.geojson':
+                self.__extracted.to_file(filename, driver='GeoJSON')
+            elif is_geo and ext == '.gpkg':
+                self.__extracted.to_file(filename, driver='GPKG')
+            elif is_geo and driver:
+                self.__extracted.to_file(filename, driver=driver)
+            else:
+                if not is_geo:
+                    self.__extract_to_inferred_file(
+                            pd.DataFrame(self.__extracted), filename, ext)
+                else:
+                    self.__extract_to_inferred_file(
+                            self.__extracted, filename, ext)
 
 
     def list_columns(self) -> np.ndarray:
@@ -364,6 +393,34 @@ class ExtractTable:
             return [os.path.join(cwd, file) for file in files]
 
 
+    def __has_spatial_data(self) -> bool:
+        True # TODO: check if all geometries are empty
+                
+
+    def __print_csv(self) -> NoReturn:
+        pass # TODO: print extracted to stdout in csv form
+
+
+    def __extract_to_inferred_file(self, 
+                                   df: Union[gpd.GeoDataFrame, pd.DataFrame], 
+                                   filename: str, 
+                                   ext: str) -> NoReturn:
+        # TODO: test each
+
+        if ext == '.parquet':
+            df.to_parquet(filename)
+        elif ext == '.gzip':
+            df.to_parquet(filename, compression='gzip')
+        elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or ext == '.xz':
+            df.to_pickle(filename)
+        elif ext == '.h5':
+            df.to_hdf(filename, key='extracted')
+        elif ext == '.xlsx':
+            df.to_excel(filename)
+        else:
+            df.to_csv(filename)
+
+
 #########################################
 # Command-Line Parsing                  #
 #########################################
@@ -382,10 +439,10 @@ def parse_arguments() -> argparse.Namespace:
 
     description = \
 '''
-Script to extract tabular data to a csv. If no column is specified, 
-returns the infile as a csv. If no value is specified, returns the 
-infile as a csv where required specified column is the output's index. 
-If both value and column are specified, returns a csv containing a 
+Script to extract tabular data. If no outfile is specified, outputs default
+to having csv filetype. If no column is specified, returns the infile as a 
+an outfile filetype. If no value is specified, returns the infile reindexed
+with the specified column. If both value and column are specified, returns a
 subtable where the column is the index in which every row is equal to
 the specified value.
 '''
@@ -396,8 +453,8 @@ examples:
     
     python ExtractTable.py input.xlsx -c ID > output.csv
     python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
-    python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
+    python ExtractTable.py input.shp -o ../output.shp -c Name -v "Rick Astley"
+    python ExtractTable.py in.csv -o out.geojson -c NUM -v 0 1 2 3
     
 '''
 
