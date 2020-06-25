@@ -417,8 +417,20 @@ class ExtractTable:
             df.to_hdf(filename, key='extracted')
         elif ext == '.xlsx':
             df.to_excel(filename)
+        elif ext == '.html':
+            df.to_html(buf=filename)
+        elif ext == '.json':
+            df.to_json(path_or_buf=filename)
+        elif ext == '.md':
+            df.to_markdown(buf=filename)
+        elif ext == '.tex':
+            df.to_latex(buf=filename)
+        elif ext == '.feather' or ext == '.ftr':
+            df.to_feather(filename)
+        elif ext == '.dta':
+            df.to_stata(filename)
         else:
-            df.to_csv(filename)
+            df.to_string(buf=filename)
 
 
 #########################################
