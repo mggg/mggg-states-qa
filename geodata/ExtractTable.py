@@ -404,34 +404,27 @@ class ExtractTable:
                                    filename: pathlib.Path, 
                                    ext: str) -> NoReturn:
         # TODO: test each
-        
+
         if ext == '.csv':
             df.to_csv(path_or_buf=filename)
-        elif ext == '.parquet':
-            df.to_parquet(filename)
-        elif ext == '.gzip':
-            df.to_parquet(filename, compression='gzip')
-        elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or ext == '.xz':
+        elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
+             ext == '.gzip' or ext == '.xz':
             df.to_pickle(filename)
-        elif ext == '.h5':
-            df.to_hdf(filename, key='extracted')
         elif ext == '.xlsx':
             df.to_excel(filename)
         elif ext == '.html':
             df.to_html(buf=filename)
         elif ext == '.json':
             df.to_json(path_or_buf=filename)
-        elif ext == '.md':
-            df.to_markdown(buf=filename)
         elif ext == '.tex':
             df.to_latex(buf=filename)
-        elif ext == '.feather' or ext == '.ftr':
-            df.to_feather(filename)
-        elif ext == '.dta':
-            df.to_stata(filename)
         else:
             with open(filename, 'w') as out:
-                out.write(df.to_string())
+                if ext == '.md':
+                    print(type(df))
+                    out.write(df.to_markdown())
+                else:
+                    out.write(df.to_string())
 
 
 #########################################
@@ -519,18 +512,19 @@ def main() -> NoReturn:
     column = args.column
     value = args.value
 
-    #try:
-    et = ExtractTable(infile, outfile, column, value)
+    try:
+        et = ExtractTable(infile, outfile, column, value)
 
-    # debug - testing
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
+        # debug - testing
+        print('infile = ', et.infile)
+        print('outfile = ', et.outfile)
+        print('column = ', et.column)
+        print('value = ', et.value)
 
-    et.extract_to_file()
-    #except Exception as e:
-        #print(e)
+        et.extract_to_file()
+
+    except Exception as e:
+        print(e)
 
     sys.exit()
 
