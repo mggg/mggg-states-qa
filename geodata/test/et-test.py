@@ -179,6 +179,6 @@ def run_tests3():
 #########################################
 # Function Calls                        #
 #########################################
-# run_tests()
-# run_tests2()
+run_tests()
+run_tests2()
 run_tests3()

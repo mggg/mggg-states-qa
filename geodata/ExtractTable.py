@@ -61,9 +61,9 @@ import numpy as np
 import os.path
 import pandas as pd
 import sys
-from typing import List, NoReturn, Optional, Tuple, Union
 import zipfile
 
+from typing import List, NoReturn, Optional, Tuple, Union
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
 
@@ -154,10 +154,7 @@ class ExtractTable:
     @infile.setter
     def infile(self, filename: Optional[str]) -> NoReturn:
         if filename:
-            try:
-                (self.__infile, self.__table) = self.__read_file(filename)
-            except Exception as e:
-                print(e)
+            (self.__infile, self.__table) = self.__read_file(filename)
 
 
     @property
@@ -452,13 +449,16 @@ def main() -> NoReturn:
     column = args.column
     value = args.value
 
-    et = ExtractTable(infile, outfile, column, value)
+    try:
+        et = ExtractTable(infile, outfile, column, value)
 
-    # debug - testing
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
+        # debug - testing
+        print('infile = ', et.infile)
+        print('outfile = ', et.outfile)
+        print('column = ', et.column)
+        print('value = ', et.value)
+    except Exception as e:
+        print(e)
 
     sys.exit()
 
