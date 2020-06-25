@@ -19,3 +19,7 @@
 *.gz
 *.swp
 **/__pycache__
+**/__MACOSX
+
+**/test*/
+**/test*.zip

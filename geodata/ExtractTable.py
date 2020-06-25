@@ -58,9 +58,11 @@ examples:
 import argparse
 import geopandas as gpd
 import numpy as np
+import os.path
 import pandas as pd
 import sys
-from typing import List, NoReturn, Optional, Union
+from typing import List, NoReturn, Optional, Tuple, Union
+import zipfile
 
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
@@ -134,7 +136,7 @@ class ExtractTable:
             self.outfile = outfile
             self.column = column
             self.value = value
-            
+
         except Exception as e:
             raise AttributeError("Initialization failed. {}".format(e))
 
@@ -152,8 +154,10 @@ class ExtractTable:
     @infile.setter
     def infile(self, filename: Optional[str]) -> NoReturn:
         if filename:
-            self.__table = gpd.read_file(filename)
-            self.__infile = filename
+            try:
+                (self.__infile, self.__table) = self.__read_file(filename)
+            except Exception as e:
+                print(e)
 
 
     @property
@@ -205,15 +209,15 @@ class ExtractTable:
 
         elif value:
             try: # value is a singleton
-                self.__extracted = self.__table[
-                                        self.__table[self.column] == value]
+                self.__extracted = \
+                    self.__table[self.__table[self.column] == value]
             except: # value is a list
-                self.__extracted = self.__table[
-                                        self.__table[self.column].isin(value)]
+                self.__extracted = \
+                    self.__table[self.__table[self.column].isin(value)]
 
             if self.__extracted.empty:
-                raise KeyError("Column '{}' has no value '{}'".format(
-                                    self.column, value))
+                raise KeyError(
+                    "Column '{}' has no value '{}'".format(self.column, value))
             else:
                 self.__value = value
             
@@ -317,6 +321,51 @@ class ExtractTable:
             return self.__table.set_index(self.column)
 
 
+    def __read_file(self, filename: str) -> Tuple[str, gpd.GeoDataFrame]:
+        '''
+        Given a filename, returns a tuple of a tabular file name and 
+        a GeoDataFrame
+        '''
+        if self.__get_extension(filename) != '.zip':
+            return (filename, gpd.read_file(filename))
+
+        else: # Recursively handles relative paths to zip files
+            (name, gdf) = (None, None)
+            for file in self.__unzip(filename):
+                try:
+                    (name, gdf) = self.__read_file(file)
+                    break
+                except:
+                    continue
+
+            if gdf is None:
+                raise FileNotFoundError("No file found".format(name))
+            else:
+                return (name, gdf)
+
+
+    def __get_extension(self, filename: str) -> str:
+        if os.path.isfile(filename):
+            return os.path.splitext(filename)[-1].lower()
+        else:
+            raise FileNotFoundError("\'{}\' not found".format(filename))
+        
+
+    def __unzip(self, filename: str) -> List[str]:
+        '''
+        Given a zipfile filename, returns a list of filenames in the 
+        zipped directory
+        '''
+        cwd = os.path.splitext(filename)[0]
+        with zipfile.ZipFile(filename, 'r') as zipped:
+            zipped.extractall(cwd)
+            
+        if not os.path.isdir(cwd):
+            raise IOError("Directory \'{}\' not found.".format(cwd))
+        else:
+            (_, _, files) = next(os.walk(cwd))
+            return [os.path.join(cwd, file) for file in files]
+
 
 #########################################
 # Command-Line Parsing                  #
@@ -398,8 +447,18 @@ def main() -> NoReturn:
     Validates input, parses command-line arguments, runs program.
     '''
     args = parse_arguments()
+    infile = args.infile
+    outfile = args.outfile
+    column = args.column
+    value = args.value
 
-    # TODO
+    et = ExtractTable(infile, outfile, column, value)
+
+    # debug - testing
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
 
     sys.exit()
 
