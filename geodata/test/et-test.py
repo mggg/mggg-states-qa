@@ -1,4 +1,3 @@
-
 import sys
 sys.path.insert(1, '../..')
 
@@ -148,8 +147,38 @@ def run_tests2():
     print(et.extract())
     print()
 
+
+def run_tests3():
+    et = ExtractTable.read_file("test1.csv")
+    print(type(et.list_columns()))
+    print(et.list_columns())
+
+    try:
+        et.list_column_values()
+    except Exception as e:
+        print("Expected failure.", e)
+    print()
+    
+    print(type(et.list_values('field_1')))
+    print(et.list_values('field_1'))
+    print(et.list_values('field_1', unique=True))
+    print()
+
+    et.column = 'col1'
+    print(type(et.list_values()))
+    print(et.list_values())
+    print(et.list_values(unique=True))
+    print()
+
+    print(type(et.list_values('geometry')))
+    print(et.list_values('geometry'))
+    print(et.list_values('geometry', unique=True))
+    print()
+
+
 #########################################
 # Function Calls                        #
 #########################################
-run_tests()
-run_tests2()
+# run_tests()
+# run_tests2()
+run_tests3()

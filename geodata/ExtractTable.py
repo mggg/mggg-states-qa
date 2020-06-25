@@ -134,6 +134,7 @@ class ExtractTable:
             self.outfile = outfile
             self.column = column
             self.value = value
+            
         except Exception as e:
             raise AttributeError("Initialization failed. {}".format(e))
 
@@ -182,6 +183,7 @@ class ExtractTable:
                 self.__coldata = self.__table[column]
             except Exception as e:
                 raise KeyError("Column not found: {}".format(e))
+
             self.__column = column
 
 
@@ -197,8 +199,10 @@ class ExtractTable:
     def value(self, value: Union[str, List[str], None]) -> NoReturn:
         if value and (self.__table is None):
             raise KeyError("Cannot set value without specifying tabular data")
+
         elif value and (not self.column):
             raise KeyError("Cannot set value without specifying column")
+
         elif value:
             try: # value is a singleton
                 self.__extracted = self.__table[
@@ -233,23 +237,75 @@ class ExtractTable:
             return self.__table
             
 
-    def to_file(self, gdf: gpd.GeoDataFrame, filename: str) -> NoReturn:
+    def extract_to_file(self, filename: str) -> NoReturn:
         '''
-        Given a GeoDataFrame and a filename string, writes the tabular
-        data to a csv with the given filename.
+        Given a filename string, writes the tabular extracted data to a csv 
+        with the given filename.
 
         Parameters
         ----------
-        gdf : gpd.GeoDataFrame
-            Tabular data to write to file
         filename : str
             Path to which file is to be written
         '''
         pass # TODO
 
-    # TODO: Column listing
 
-    # TODO: unique value listing
+    def list_columns(self) -> np.ndarray:
+        '''
+        Returns a list of all columns in the initialized source table
+
+        Returns
+        -------
+        np.ndarray
+        '''
+        if self.__table is None:
+            raise RuntimeError("Unable to find tabular data to extract")
+        else:
+            return self.__table.columns.values
+
+
+    def list_values(self, 
+                    column: Optional[str] = None,
+                    unique: bool = False) -> \
+            Union[np.ndarray, gpd.array.GeometryArray]:
+        '''
+        Returns a list of values in the initialized column (default).
+        Returns a list of values in the given column (if specified).
+        Returns a list of unique values (if specified)
+
+        Parameters
+        ----------
+        column : str | None
+            Name of the column whose values are to be listed. If None,
+            lists the values of the initialized column. Defaults to None
+        unique : bool
+            If True, function lists only unique values. Defaults to False
+
+        Returns
+        -------
+        np.ndarray | gpd.array.GeometryArray
+        '''
+        if self.__table is None:
+            raise RuntimeError("Unable to find tabular data to extract")
+
+        elif column: 
+            try:
+                if unique:
+                    return self.__table[column].unique()
+                else:
+                    return self.__table[column].values
+            except:
+                raise KeyError("Unable to find column '{}'".format(column))
+
+        elif not self.column:
+            raise RuntimeError("No default column exists")
+
+        else:
+            if unique:
+                return self.__table[self.column].unique()
+            else:
+                return self.__table[self.column].values
+            
 
     #--------------------------------
     # Helper Methods              
