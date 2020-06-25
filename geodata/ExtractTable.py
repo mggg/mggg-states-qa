@@ -60,6 +60,7 @@ import geopandas as gpd
 import numpy as np
 import os.path
 import pandas as pd
+import pathlib
 import sys
 import zipfile
 
@@ -155,19 +156,23 @@ class ExtractTable:
     def infile(self, filename: Optional[str]) -> NoReturn:
         if filename:
             (self.__infile, self.__table) = self.__read_file(filename)
+            self.__table = self.__table.set_index(self.__table.columns.values[0])
 
 
     @property
-    def outfile(self) -> Optional[str]:
+    def outfile(self) -> Optional[pathlib.Path]:
         '''
-        {str | None}
+        {pathlib.Path | None}
             Path to output csv file containing extracted table. 
             Defaults to stdout
         '''
         return self.__outfile
     @outfile.setter
     def outfile(self, filename: Optional[str] = None) -> NoReturn:
-        self.__outfile = filename
+        try:
+            self.__outfile = pathlib.Path(filename)
+        except:
+            self.__outfile = None
 
 
     @property
@@ -238,46 +243,45 @@ class ExtractTable:
             return self.__table
             
 
-    def extract_to_file(self, 
-                        filename: Optional[str] = None,
-                        driver: Optional[str] = None) -> NoReturn:
+    def extract_to_file(self, driver: Optional[str] = None) -> NoReturn:
         '''
-        Given a filename string, writes the tabular extracted data to a file.
-        Given an optional Fiona support OGR driver, writes to file using the 
-        driver. If filename is None, data is printed as a csv to stdout
+        Writes the tabular extracted data to a file. Given an optional Fiona 
+        support OGR driver, writes to file using the driver. If outfile 
+        is None, data is printed as plaintext to stdout
 
         Parameters
         ----------
-        filename : str | None
-            Path to which file is to be written.
         driver: str | None
             Name of Fiona supported OGR drivers
         '''
 
         # TODO: test
-
-        is_geo = self.__has_spatial_data() # TODO: finish
+        filename = self.outfile
+        gdf = self.extract()
+        is_geo = self.__has_spatial_data(gdf) # TODO: finish
 
         if not filename:
-            self.__print_csv() # TODO: finish
+            if is_geo:
+                gdf.to_string(buf=sys.stdout)
+            else:
+                pd.DataFrame(gdf).to_string(buf=sys.stdout)
+
         else:
             ext = self.__get_extension(filename)
 
             if is_geo and ext == '.shp':
-                self.__extracted.to_file(filename)
+                gdf.to_file(filename)
             elif is_geo and ext == '.geojson':
-                self.__extracted.to_file(filename, driver='GeoJSON')
+                gdf.to_file(filename, driver='GeoJSON')
             elif is_geo and ext == '.gpkg':
-                self.__extracted.to_file(filename, driver='GPKG')
+                gdf.to_file(filename, driver='GPKG')
             elif is_geo and driver:
-                self.__extracted.to_file(filename, driver=driver)
+                gdf.to_file(filename, driver=driver)
+            elif is_geo:
+                self.__extract_to_inferred_file(gdf, filename, ext)
             else:
-                if not is_geo:
-                    self.__extract_to_inferred_file(
-                            pd.DataFrame(self.__extracted), filename, ext)
-                else:
-                    self.__extract_to_inferred_file(
-                            self.__extracted, filename, ext)
+                self.__extract_to_inferred_file(pd.DataFrame(gdf), 
+                                                filename, ext)
 
 
     def list_columns(self) -> np.ndarray:
@@ -371,10 +375,8 @@ class ExtractTable:
 
 
     def __get_extension(self, filename: str) -> str:
-        if os.path.isfile(filename):
-            return os.path.splitext(filename)[-1].lower()
-        else:
-            raise FileNotFoundError("\'{}\' not found".format(filename))
+        (_, extension) = os.path.splitext(filename)
+        return extension.lower()
         
 
     def __unzip(self, filename: str) -> List[str]:
@@ -393,21 +395,19 @@ class ExtractTable:
             return [os.path.join(cwd, file) for file in files]
 
 
-    def __has_spatial_data(self) -> bool:
+    def __has_spatial_data(self, gdf: gpd.GeoDataFrame) -> bool:
         True # TODO: check if all geometries are empty
-                
-
-    def __print_csv(self) -> NoReturn:
-        pass # TODO: print extracted to stdout in csv form
 
 
     def __extract_to_inferred_file(self, 
                                    df: Union[gpd.GeoDataFrame, pd.DataFrame], 
-                                   filename: str, 
+                                   filename: pathlib.Path, 
                                    ext: str) -> NoReturn:
         # TODO: test each
-
-        if ext == '.parquet':
+        
+        if ext == '.csv':
+            df.to_csv(path_or_buf=filename)
+        elif ext == '.parquet':
             df.to_parquet(filename)
         elif ext == '.gzip':
             df.to_parquet(filename, compression='gzip')
@@ -430,7 +430,8 @@ class ExtractTable:
         elif ext == '.dta':
             df.to_stata(filename)
         else:
-            df.to_string(buf=filename)
+            with open(filename, 'w') as out:
+                out.write(df.to_string())
 
 
 #########################################
@@ -518,16 +519,18 @@ def main() -> NoReturn:
     column = args.column
     value = args.value
 
-    try:
-        et = ExtractTable(infile, outfile, column, value)
+    #try:
+    et = ExtractTable(infile, outfile, column, value)
 
-        # debug - testing
-        print('infile = ', et.infile)
-        print('outfile = ', et.outfile)
-        print('column = ', et.column)
-        print('value = ', et.value)
-    except Exception as e:
-        print(e)
+    # debug - testing
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+
+    et.extract_to_file()
+    #except Exception as e:
+        #print(e)
 
     sys.exit()
 
