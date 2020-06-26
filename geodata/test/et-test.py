@@ -152,9 +152,10 @@ def run_tests3():
     et = ExtractTable.read_file("test1.csv")
     print(type(et.list_columns()))
     print(et.list_columns())
+    print(et.extract())
 
     try:
-        et.list_column_values()
+        et.list_columns()
     except Exception as e:
         print("Expected failure.", e)
     print()
@@ -175,6 +176,14 @@ def run_tests3():
     print(et.list_values('geometry', unique=True))
     print()
 
+def run_tests4():
+    et = ExtractTable('test1.csv', column="col2", value=['3', '5'])
+    print('infile = ', et.infile)
+    print('outfile = ', et.outfile)
+    print('column = ', et.column)
+    print('value = ', et.value)
+    print(et.extract())
+    print()
 
 #########################################
 # Function Calls                        #
@@ -182,3 +191,4 @@ def run_tests3():
 run_tests()
 run_tests2()
 run_tests3()
+# run_tests4()

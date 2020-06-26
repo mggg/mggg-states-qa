@@ -1,60 +1,70 @@
-'''
+"""
 ExtractTable
 ============
 
 Provides
-    1. A python class used to extract subtables from given tabular data. 
-       Can manage filetypes: csv, xlsx, geojson, shp
-    2. A command-line script to run the class' extract function
+    - A python class for extracting subtables from given tabular data. 
+      Can manage filetypes .csv, .xlsx, .geojson, .shp, etc.
+    - A command-line script that can be used to
+        1. convert input filetype to output filetype (ex. .shp -> .csv);
+        2. output tabular data reindexed with a specified column label
+        3. output subtables from input tabular data
 
 Metadata
 --------
 filename:       ExtractTable.py
 author:         @KeiferC
-date:           23 June 2020
+date:           26 June 2020
 version:        0.0.1
 description:    Script and module to extract subtables from given tabular data
 dependencies:   geopandas
                 numpy
-                pandas
 
 Documentation
 -------------
-Documentation for the ExtractTable module can be found as docstrings in the
-source code. Run `help(ExtractTable)` to view documentation.
+Documentation for the ExtractTable module can be found as docstrings. 
+Run `import ExtractTable; help(ExtractTable)` to view documentation.
 
 Usage
 -----
-usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] 
+usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]]
                        INFILE
 
-Script to extract tabular data. If no column is specified, 
-returns the infile as a csv. If no value is specified, returns the 
-infile as a csv where required specified column is the output's index. 
-If both value and column are specified, returns a csv containing a 
-subtable where the column is the index in which every row is equal to
-the specified value.
+Script to extract tabular data. 
+
+If no outfile is specified, outputs plaintext to stdout.
+If no column is specified, outputs filetype converted input. 
+If no value is specified, outputs table indexed with given column (required).
+If value and column are specified, outputs subtable indexed with given column
+and containing only rows equal to given value(s).
+
+supported input filetypes:
+    .csv .geojson .shp .xlsx .zip
+
+supported output filetypes:
+    .bz2 .csv .geojson .gpkg .gzip .html .json .md .pkl .tex .xlsx .zip 
+    all other extensions will contain output in plaintext
 
 positional arguments:
-  INFILE                path to file from which to extract data
+  INFILE                name/path of input file of tabular data to read
 
 optional arguments:
   -h, --help            show this help message and exit
   -o OUTFILE, --output OUTFILE
-                        path to output extracted table
+                        name/path of output file for writing
   -c COLUMN, --column COLUMN
-                        column label to use as extracted index
+                        label of column to use as index for extracted table
   -v VALUE [VALUE ...], --value VALUE [VALUE ...]
-                        value(s) in column to use as filter for extraction
+                        value(s) of specified column in rows to extract
 
 examples:
     
-    python ExtractTable.py input.xlsx -c ID > output.csv
+    python ExtractTable.py input.xlsx -c ID > output.csv; ls
     python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
     python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
     python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
-'''
 
+"""
 import argparse
 import geopandas as gpd
 import numpy as np
@@ -71,22 +81,95 @@ import warnings; warnings.filterwarnings(
 
 
 #########################################
-# Class Definition                      #
+#                                       #
+#       Class Definition                #
+#                                       #
 #########################################
+
 class ExtractTable:
-    '''
-    Class for extracting tabular data. Run `help(ExtractTable)` to view docs
-    '''
+    """
+    For extracting tabular data. Run `help(ExtractTable)` to view docs.
 
+    Specifying `column` uses given column as output's index. Specifying 
+    `value` isolates output to rows that contain values in specified column.
+    Specifying `outfile` determines the filetype of the output table. 
 
-    #--------------------------------
-    # Constructors                  
-    #--------------------------------
-    def __init__(self, 
-                infile:     Optional[str] = None, 
-                outfile:    Optional[str] = None, 
-                column:     Optional[str] = None, 
-                value:      Union[str, List[str], None] = None):
+    Attributes
+    ----------
+    infile : str
+        Name/path of input file of tabular data to read
+    outfile : pathlib.Path
+        Path of output file for writing
+    column : str
+        Label of column to use as index for extracted table
+    value : str | List[str]
+        Value(s) of specified column in rows to extract
+
+    Class Methods
+    -------------
+    __init__(Optional[str], Optional[str], Optional[str], 
+             Optional[Union[str, List[str]]) -> ExtractTable
+        `ExtractTable initializer
+    read_file(str, Optional[str], Optional[Union[str, List[str]]])
+            -> ExtractTable
+        Returns an ExtractTable instance with a specified input filename
+    
+    Public Instance Methods
+    -----------------------
+    extract() -> gpd.GeoDataFrame
+        TODO
+    extract_to_file(Optional[str]) -> NoReturn
+        TODO
+    list_columns() -> np.ndarray
+        TODO
+    list_values(Optional[str], bool) -> 
+            Union[np.ndarray, gpd.array.GeometryArray]
+        TODO
+
+    """
+
+    #===========================================+
+    # Constructors                              |
+    #===========================================+
+
+    def __init__(self, infile:  Optional[str] = None, 
+                 outfile:       Optional[str] = None, 
+                 column:        Optional[str] = None, 
+                 value:         Optional[Union[str, List[str]]] = None):
+        """
+        ExtractTable initializer.
+
+        Parameters
+        ----------
+        infile : str | None, optional
+            Name/path of input file of tabular data to read
+        outfile: str | None, optional
+            Name/path of output file for writing
+        column: str | None, optional
+            Label of column to use as index for extracted table
+        value: str | List[str] | None, optional
+            Value(s) of specified column in rows to extract
+        
+        Returns
+        -------
+        ExtractTable
+
+        See Also
+        --------
+        read_file(str, Optional[str], Optional[Union[str, List[str]]]) 
+                -> ExtractTable
+
+        Examples
+        --------
+        >>> et1 = ExtractTable()
+        >>> et2 = ExtractTable('example/input.shp')
+        >>> et3 = ExtractTable('example/file.csv', column='ID')
+        >>> et4 = ExtractTable('input.xlsx', 'output.md')
+        >>> et5 = ExtractTable('in.csv', 'out.tex', 'ID', '01')
+        >>> et6 = ExtractTable('in.csv', column='ID', value=['01', '03'])
+        >>> et7 = ExtractTable('in.shp', outfile='out', column='X', value='y')
+
+        """
         # Encapsulated attributes
         self.__infile =     None
         self.__outfile =    None
@@ -103,35 +186,60 @@ class ExtractTable:
 
 
     @classmethod
-    def read_file(self, 
-                  filename: str, 
-                  column:   Optional[str] = None, 
-                  value:    Union[str, List[str], None] = None):
-        '''
-        Returns an ExtractTable instance with a specified input filename
+    def read_file(self, filename: str, 
+                  column:         Optional[str] = None, 
+                  value:          Optional[Union[str, List[str]]] = None):
+        """
+        Returns an ExtractTable instance with a specified input filename.
 
         Parameters
         ----------
         filename : str
-            Input file to read
-        column : str | None
+            Name/path of input file of tabular data to read
+        column : str | None, optional
             Label of column to use as index for extracted table
-        value : str | None
-            Value to use as filter for extracted table
+        value : str | List[str] | None, optional
+            Value(s) of specified column in rows to extract
 
         Returns
         -------
         ExtractTable
-        '''
+
+        Examples
+        --------
+        >>> et1 = ExtractTable.read_file('example/input.shp')
+        >>> et2 = ExtractTable.read_file('example/file.csv', column='ID')
+        >>> et3 = ExtractTable.read_file('in.shp', column='foo', value='bar')
+        >>> et4 = ExtractTable.read_file('in.csv', column='X', value=['1','3'])
+
+        """
         return self(filename, None, column, value)
     
 
-    # Constructor input sanitation
-    def __sanitize_init(self, 
-                        infile:     Optional[str], 
-                        outfile:    Optional[str], 
-                        column:     Optional[str], 
-                        value:      Union[str, List[str], None]):
+    def __sanitize_init(self, infile:   Optional[str], 
+                        outfile:        Optional[str], 
+                        column:         Optional[str], 
+                        value:          Optional[Union[str, List[str]]]):
+        """
+        Safely initializes attributes using setters.
+
+        Parameters
+        ----------
+        infile : str | None, optional
+            Name/path of input file of tabular data to read
+        outfile: str | None, optional
+            Name/path of output file for writing
+        column: str | None, optional
+            Label of column to use as index for extracted table
+        value: str | List[str] | None, optional
+            Value(s) of specified column in rows to extract
+        
+        Raises
+        ------
+        AttributeError
+            Raised if setter throws an error
+
+        """
         try:
             self.infile = infile
             self.outfile = outfile
@@ -142,91 +250,10 @@ class ExtractTable:
             raise AttributeError("Initialization failed. {}".format(e))
 
 
-    #--------------------------------
-    # Getters and Setters                 
-    #--------------------------------
-    @property
-    def infile(self) -> str:
-        '''
-        {str} 
-            Path to tabular data file containing tables to extract
-        '''
-        return self.__infile
-    @infile.setter
-    def infile(self, filename: Optional[str]) -> NoReturn:
-        if filename:
-            (self.__infile, self.__table) = self.__read_file(filename)
-            self.__table = self.__table.set_index(self.__table.columns.values[0])
+    #===========================================+
+    # Public Instance Methods                   |
+    #===========================================+
 
-
-    @property
-    def outfile(self) -> Optional[pathlib.Path]:
-        '''
-        {pathlib.Path | None}
-            Path to output csv file containing extracted table. 
-            Defaults to stdout
-        '''
-        return self.__outfile
-    @outfile.setter
-    def outfile(self, filename: Optional[str] = None) -> NoReturn:
-        try:
-            self.__outfile = pathlib.Path(filename)
-        except:
-            self.__outfile = None
-
-
-    @property
-    def column(self) -> str:
-        '''
-        {str}
-            Name of column in source table to use as index for extracted table
-        '''
-        return self.__column
-    @column.setter
-    def column(self, column: Optional[str]) -> NoReturn:
-        if column:
-            try:
-                self.__coldata = self.__table[column]
-            except Exception as e:
-                raise KeyError("Column not found: {}".format(e))
-
-            self.__column = column
-
-
-    @property
-    def value(self) -> Union[str, List[str], None]:
-        '''
-        {str | List[str] | None}
-            Value in column in source table to use as filter for extracting 
-            subtable. If not specified, output file is a reindexed table
-        '''
-        return self.__value
-    @value.setter
-    def value(self, value: Union[str, List[str], None]) -> NoReturn:
-        if value and (self.__table is None):
-            raise KeyError("Cannot set value without specifying tabular data")
-
-        elif value and (not self.column):
-            raise KeyError("Cannot set value without specifying column")
-
-        elif value:
-            try: # value is a singleton
-                self.__extracted = \
-                    self.__table[self.__table[self.column] == value]
-            except: # value is a list
-                self.__extracted = \
-                    self.__table[self.__table[self.column].isin(value)]
-
-            if self.__extracted.empty:
-                raise KeyError(
-                    "Column '{}' has no value '{}'".format(self.column, value))
-            else:
-                self.__value = value
-            
-
-    #--------------------------------
-    # Instance Methods               
-    #--------------------------------
     def extract(self) -> gpd.GeoDataFrame:
         '''
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
@@ -234,6 +261,7 @@ class ExtractTable:
         Returns
         -------
         GeoDataFrame
+        
         '''
         if self.__table is None:
             raise RuntimeError("Unable to find tabular data to extract")
@@ -302,23 +330,33 @@ class ExtractTable:
                     column: Optional[str] = None,
                     unique: bool = False) -> \
             Union[np.ndarray, gpd.array.GeometryArray]:
-        '''
+        """
         Returns a list of values in the initialized column (default).
         Returns a list of values in the given column (if specified).
         Returns a list of unique values (if specified)
 
         Parameters
         ----------
-        column : str | None
+        column : str | NoneType
             Name of the column whose values are to be listed. If None,
             lists the values of the initialized column. Defaults to None
-        unique : bool
+        unique : bool, optional
             If True, function lists only unique values. Defaults to False
 
         Returns
         -------
         np.ndarray | gpd.array.GeometryArray
-        '''
+
+        Raises
+        ------
+        KeyError
+            TODO
+        RuntimeError
+            TODO
+        RuntimeError
+            TODO
+
+        """
         if self.__table is None:
             raise RuntimeError("Unable to find tabular data to extract")
 
@@ -341,9 +379,10 @@ class ExtractTable:
                 return self.__table[self.column].values
             
 
-    #--------------------------------
-    # Helper Methods              
-    #--------------------------------
+    #===========================================+
+    # Private Helper Methods                    |
+    #===========================================+
+
     def __reindex(self) -> gpd.GeoDataFrame:
         if self.value:
             return self.__extracted.set_index(self.column)
@@ -352,10 +391,11 @@ class ExtractTable:
 
 
     def __read_file(self, filename: str) -> Tuple[str, gpd.GeoDataFrame]:
-        '''
-        Given a filename, returns a tuple of a tabular file name and 
-        a GeoDataFrame
-        '''
+        """
+        Given a filename, returns a tuple of a tabular file's name and 
+        a GeoDataFrame containing tabular data.
+
+        """
         if self.__get_extension(filename) != '.zip':
             return (filename, gpd.read_file(filename))
 
@@ -380,10 +420,11 @@ class ExtractTable:
         
 
     def __unzip(self, filename: str) -> List[str]:
-        '''
+        """
         Given a zipfile filename, returns a list of filenames in the 
-        zipped directory
-        '''
+        unzipped directory.
+
+        """
         cwd = os.path.splitext(filename)[0]
         with zipfile.ZipFile(filename, 'r') as zipped:
             zipped.extractall(cwd)
@@ -427,42 +468,135 @@ class ExtractTable:
                     out.write(df.to_string())
 
 
+    #===========================================+
+    # Getters and Setters                       |
+    #===========================================+
+
+    @property
+    def infile(self) -> str:
+        """
+        {str} 
+            Path to tabular data file containing tables to extract
+        
+        """
+        return self.__infile
+    @infile.setter
+    def infile(self, filename: Optional[str]) -> NoReturn:
+        if filename:
+            (self.__infile, self.__table) = self.__read_file(filename)
+
+
+    @property
+    def outfile(self) -> Optional[pathlib.Path]:
+        """
+        {pathlib.Path | None}
+            Path to output csv file containing extracted table. 
+            Defaults to stdout
+
+        """
+        return self.__outfile
+    @outfile.setter
+    def outfile(self, filename: Optional[str] = None) -> NoReturn:
+        try:
+            self.__outfile = pathlib.Path(filename)
+        except:
+            self.__outfile = None
+
+
+    @property
+    def column(self) -> str:
+        """
+        {str}
+            Name of column in source table to use as index for extracted table.
+        
+        """
+        return self.__column
+    @column.setter
+    def column(self, column: Optional[str]) -> NoReturn:
+        if column:
+            try:
+                self.__coldata = self.__table[column]
+            except Exception as e:
+                raise KeyError("Column not found: {}".format(e))
+
+            self.__column = column
+
+
+    @property
+    def value(self) -> Union[str, List[str], None]:
+        """ 
+        {str | List[str] | None}
+            Value in column in source table to use as filter for extracting 
+            subtable. If not specified, output file is a reindexed table.
+
+        """
+        return self.__value
+    @value.setter
+    def value(self, value: Union[str, List[str], None]) -> NoReturn:
+        if value and (self.__table is None):
+            raise KeyError("Cannot set value without specifying tabular data")
+
+        elif value and (not self.column):
+            raise KeyError("Cannot set value without specifying column")
+
+        elif value:
+            try: # value is a singleton
+                self.__extracted = \
+                    self.__table[self.__table[self.column] == value]
+            except: # value is a list
+                self.__extracted = \
+                    self.__table[self.__table[self.column].isin(value)]
+
+            if self.__extracted.empty:
+                raise KeyError(
+                    "Column '{}' has no value '{}'".format(self.column, value))
+            else:
+                self.__value = value
+
+
 #########################################
-# Command-Line Parsing                  #
+#                                       #
+#       Command-Line Parsing            #
+#                                       #
 #########################################
+
 def parse_arguments() -> argparse.Namespace:
-    '''
-    Parses command-line arguments and returns a dictionary of argument objects
+    """
+    Parses command-line arguments and returns a Namespace of input values.
 
     Returns
     -------
     An argparse Namespace object
-    '''
-    infile_help = 'path to file from which to extract data'
-    column_help = 'column label to use as extracted index'
-    value_help = 'value(s) in column to use as filter for extraction'
-    outfile_help = 'path to output extracted table'
 
-    description = \
-'''
-Script to extract tabular data. If no outfile is specified, outputs default
-to having csv filetype. If no column is specified, returns the infile as a 
-an outfile filetype. If no value is specified, returns the infile reindexed
-with the specified column. If both value and column are specified, returns a
-subtable where the column is the index in which every row is equal to
-the specified value.
-'''
+    """
+    infile_help = "name/path of input file of tabular data to read"
+    column_help = "label of column to use as index for extracted table"
+    value_help = "value(s) of specified column in rows to extract"
+    outfile_help = "name/path of output file for writing"
+
+    description = """Script to extract tabular data. 
+
+If no outfile is specified, outputs plaintext to stdout.
+If no column is specified, outputs filetype converted input. 
+If no value is specified, outputs table indexed with given column (required).
+If value and column are specified, outputs subtable indexed with given column
+and containing only rows equal to given value(s).
+
+supported input filetypes:
+    .csv .geojson .shp .xlsx .zip
+
+supported output filetypes:
+    .bz2 .csv .geojson .gpkg .gzip .html .json .md .pkl .tex .xlsx .zip 
+    all other extensions will contain output in plaintext
+"""
     
-    examples = \
-'''
-examples:
+    examples = """examples:
     
-    python ExtractTable.py input.xlsx -c ID > output.csv
+    python ExtractTable.py input.xlsx -c ID > output.csv; ls
     python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
-    python ExtractTable.py input.shp -o ../output.shp -c Name -v "Rick Astley"
-    python ExtractTable.py in.csv -o out.geojson -c NUM -v 0 1 2 3
-    
-'''
+    python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
+    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
+"""
 
     parser = argparse.ArgumentParser(
                 description=description,
@@ -500,12 +634,13 @@ examples:
 
 
 #########################################
-# Main                                  #
+#                                       #
+#               Main                    #
+#                                       #
 #########################################
+
 def main() -> NoReturn:
-    '''
-    Validates input, parses command-line arguments, runs program.
-    '''
+    """Validates input, parses command-line arguments, runs script."""
     args = parse_arguments()
     infile = args.infile
     outfile = args.outfile
@@ -531,8 +666,11 @@ def main() -> NoReturn:
 
 
 #########################################
-# Function Calls                        #
+#                                       #
+#           Function Calls              #
+#                                       #
 #########################################
+
 if __name__ == "__main__":
     main()
 
