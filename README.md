@@ -8,7 +8,7 @@ Documentation for the ExtractTable module can be found as docstrings.
 Run `import ExtractTable; help(ExtractTable)` to view documentation.
 
 ## Installation
-```
+```bash
 $ git clone https://github.com/KeiferC/ExtractTable.git
 $ cd ExtractTable
 $ pip install -r requirements.txt
@@ -16,7 +16,8 @@ $ pip install -r requirements.txt
 
 ## Usage
 ### As a Script
-```
+```bash
+$ python ExtractTable.py -h
 usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]]
                        INFILE
 
@@ -56,7 +57,25 @@ examples:
 ```
 
 ### As a Module
-```
+```python
+$ python
 >>> import ExtractTable
 >>> help(ExtractTable) # To display module documentation
+Help on module ExtractTable:
+
+NAME
+    ExtractTable
+
+DESCRIPTION
+    ExtractTable
+    ============
+    
+    Provides
+        - A python class for extracting subtables from given tabular data. 
+          Can manage filetypes .csv, .xlsx, .geojson, .shp, etc.
+        - A command-line script that can be used to
+            1. convert input filetype to output filetype (ex. .shp -> .csv);
+            2. output tabular data reindexed with a specified column label
+            3. output subtables from input tabular data
+...
 ```
