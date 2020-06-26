@@ -2,7 +2,7 @@
 ExtractTable
 ============
 
-Provides
+Pronounced as "extractable", provides
     - A python class for extracting subtables from given tabular data. 
       Can manage filetypes .csv, .xlsx, .geojson, .shp, etc.
     - A command-line script that can be used to
@@ -117,14 +117,14 @@ class ExtractTable:
     Public Instance Methods
     -----------------------
     extract() -> gpd.GeoDataFrame
-        TODO
+        Returns a GeoPandas GeoDataFrame containing extracted subtable
     extract_to_file(Optional[str]) -> NoReturn
-        TODO
+        Writes the tabular extracted data to a file
     list_columns() -> np.ndarray
-        TODO
-    list_values(Optional[str], bool) -> 
+        Returns a list of all columns in the initialized source tabular data
+    list_values(Optional[str], Optional[bool]) -> 
             Union[np.ndarray, gpd.array.GeometryArray]
-        TODO
+        Returns a list of values in the initialized column
 
     """
 
@@ -255,14 +255,46 @@ class ExtractTable:
     #===========================================+
 
     def extract(self) -> gpd.GeoDataFrame:
-        '''
+        """
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
 
         Returns
         -------
-        GeoDataFrame
+        gpd.GeoDataFrame
+
+        Raises
+        ------
+        RuntimeError
+            Raised if trying to extract from non-existent tabular data
         
-        '''
+        See Also
+        --------
+        extract_to_file(Optional[str]) -> NoReturn
+
+        Examples
+        --------
+        >>> et = ExtractTable.read_file('input.csv')
+        >>> df1 = et.extract()
+        >>> print(df1.head())
+        field_1 col1 col2 geometry
+        0    asdf    a    b     None
+        1    fdsa    c    d     None
+        2    lkjh    c    3     None
+        >>> et.column = 'col1'
+        >>> print(et.extract().head())
+            field_1 col2 geometry
+        col1                      
+        a       asdf    b     None
+        c       fdsa    d     None
+        c       lkjh    3     None
+        >>> et.value = 'c'
+        >>> print(et.extract().head())
+            field_1 col2 geometry
+        col1                      
+        c       fdsa    d     None
+        c       lkjh    3     None
+
+        """
         if self.__table is None:
             raise RuntimeError("Unable to find tabular data to extract")
         elif self.column:
@@ -272,72 +304,119 @@ class ExtractTable:
             
 
     def extract_to_file(self, driver: Optional[str] = None) -> NoReturn:
-        '''
-        Writes the tabular extracted data to a file. Given an optional Fiona 
-        support OGR driver, writes to file using the driver. If outfile 
-        is None, data is printed as plaintext to stdout
+        """
+        Writes the tabular extracted data to a file. 
+        
+        Given an optional Fiona support OGR driver, writes to file using the 
+        driver. If outfile is None, data is printed as plaintext to stdout.
 
         Parameters
         ----------
-        driver: str | None
-            Name of Fiona supported OGR drivers
-        '''
+        driver: str | None, optional
+            Name of Fiona supported OGR drivers to use for file writing
+        
+        Raises
+        ------
+        RuntimeError
+            Raised if unable to extract to output file
 
-        # TODO: test
+        See Also
+        --------
+        extract() -> gpd.GeoDataFrame
+
+        Examples
+        --------
+        >>> et1 = ExtractTable.read_file('input.csv', 'col2', ['b', 'd'])
+        >>> et1.extract_to_file()
+             field_1 col1
+        col2                      
+        b       asdf    a
+        d       fdsa    c
+        >>> et1.outfile = 'output.xlsx'
+        >>> et1.extract_to_file()
+        >>> et2 = ExtractTable('input.shp', 'output', 'column1', 'square')
+        >>> et2.extract_to_file('ESRI Shapefile')
+
+        """
         filename = self.outfile
         gdf = self.extract()
-        is_geo = self.__has_spatial_data(gdf) # TODO: finish
+        is_geometric = self.__has_spatial_data(gdf)
 
-        if not filename:
-            if is_geo:
+        if filename is None:
+            if is_geometric:
                 gdf.to_string(buf=sys.stdout)
             else:
                 pd.DataFrame(gdf).to_string(buf=sys.stdout)
 
         else:
             ext = self.__get_extension(filename)
-
-            if is_geo and ext == '.shp':
-                gdf.to_file(filename)
-            elif is_geo and ext == '.geojson':
-                gdf.to_file(filename, driver='GeoJSON')
-            elif is_geo and ext == '.gpkg':
-                gdf.to_file(filename, driver='GPKG')
-            elif is_geo and driver:
-                gdf.to_file(filename, driver=driver)
-            elif is_geo:
-                self.__extract_to_inferred_file(gdf, filename, ext)
-            else:
-                self.__extract_to_inferred_file(pd.DataFrame(gdf), 
-                                                filename, ext)
+            try: 
+                if is_geometric and ext == '.shp':
+                    gdf.to_file(filename)
+                elif is_geometric and ext == '.geojson':
+                    gdf.to_file(filename, driver='GeoJSON')
+                elif is_geometric and ext == '.gpkg':
+                    gdf.to_file(filename, driver='GPKG')
+                elif is_geometric and driver is not None:
+                    gdf.to_file(filename, driver=driver)
+                elif is_geometric:
+                    self.__extract_to_inferred_file(
+                            pd.DataFrame(gdf), filename, ext)
+                else:
+                    self.__extract_to_inferred_file(
+                            pd.DataFrame(gdf).drop(columns='geometry'), 
+                            filename, ext)
+            except Exception as e:
+                raise RuntimeError("Extraction failed:", e)
 
 
     def list_columns(self) -> np.ndarray:
-        '''
-        Returns a list of all columns in the initialized source table
+        """
+        Returns a list of all columns in the initialized source tabular data.
 
         Returns
         -------
         np.ndarray
-        '''
+
+        Raises
+        ------
+        RuntimeError
+            Raised if trying to list columns from non-existent tabular data
+        
+        See Also
+        --------
+        list_values(Optional[str], Optional[bool]) 
+                -> Union[np.ndarray, gpd.array.GeometryArray]
+        
+        Examples
+        --------
+        >>> et = ExtractTable.read_file('input.csv)
+        >>> print(et.list_columns())
+        ['field_1' 'col1' 'col2']
+
+        """
         if self.__table is None:
             raise RuntimeError("Unable to find tabular data to extract")
-        else:
+        elif self.__has_spatial_data(self.__table):
             return self.__table.columns.values
+        else:
+            return self.__table.columns.values[
+                        self.__table.columns.values != 'geometry']
 
 
     def list_values(self, 
                     column: Optional[str] = None,
-                    unique: bool = False) -> \
+                    unique: Optional[bool] = False) -> \
             Union[np.ndarray, gpd.array.GeometryArray]:
         """
         Returns a list of values in the initialized column (default).
+        
         Returns a list of values in the given column (if specified).
         Returns a list of unique values (if specified)
 
         Parameters
         ----------
-        column : str | NoneType
+        column : str | NoneType, optional
             Name of the column whose values are to be listed. If None,
             lists the values of the initialized column. Defaults to None
         unique : bool, optional
@@ -349,18 +428,32 @@ class ExtractTable:
 
         Raises
         ------
+        RuntimeError
+            Raised if trying to list values from non-existent tabular data
         KeyError
-            TODO
+            Raised if column does not exist in tabular data
         RuntimeError
-            TODO
-        RuntimeError
-            TODO
+            Raised if trying to list values from non-existent column
+        
+        See Also
+        --------
+        list_columns() -> np.ndarray
+        
+        Examples
+        --------
+        >>> et = ExtractTable.read_file('input.csv', 'col2')
+        >>> print(et.list_values)
+        ['b' 'd' '3' '5' '10']
+        >>> print(et.list_values('col1'))
+        ['a' 'c' 'c' 'c' 'b']
+        >>> print(et.list_values('col1', unique=True))
+        ['a' 'c' 'b']
 
         """
         if self.__table is None:
             raise RuntimeError("Unable to find tabular data to extract")
 
-        elif column: 
+        elif column is not None: 
             try:
                 if unique:
                     return self.__table[column].unique()
@@ -369,14 +462,14 @@ class ExtractTable:
             except:
                 raise KeyError("Unable to find column '{}'".format(column))
 
-        elif not self.column:
-            raise RuntimeError("No default column exists")
-
-        else:
+        elif column is None and self.column is not None:
             if unique:
                 return self.__table[self.column].unique()
             else:
                 return self.__table[self.column].values
+
+        else:
+            raise RuntimeError("No initialized column exists")
             
 
     #===========================================+
@@ -429,7 +522,7 @@ class ExtractTable:
         with zipfile.ZipFile(filename, 'r') as zipped:
             zipped.extractall(cwd)
             
-        if not os.path.isdir(cwd):
+        if os.path.isdir(cwd) is None:
             raise IOError("Directory \'{}\' not found.".format(cwd))
         else:
             (_, _, files) = next(os.walk(cwd))
@@ -437,15 +530,13 @@ class ExtractTable:
 
 
     def __has_spatial_data(self, gdf: gpd.GeoDataFrame) -> bool:
-        True # TODO: check if all geometries are empty
+        return not gdf['geometry'].isna().all()
 
 
     def __extract_to_inferred_file(self, 
                                    df: Union[gpd.GeoDataFrame, pd.DataFrame], 
                                    filename: pathlib.Path, 
                                    ext: str) -> NoReturn:
-        # TODO: test each
-
         if ext == '.csv':
             df.to_csv(path_or_buf=filename)
         elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
@@ -462,7 +553,6 @@ class ExtractTable:
         else:
             with open(filename, 'w') as out:
                 if ext == '.md':
-                    print(type(df))
                     out.write(df.to_markdown())
                 else:
                     out.write(df.to_string())
@@ -476,13 +566,13 @@ class ExtractTable:
     def infile(self) -> str:
         """
         {str} 
-            Path to tabular data file containing tables to extract
+            Name/path of input file of tabular data to read
         
         """
         return self.__infile
     @infile.setter
     def infile(self, filename: Optional[str]) -> NoReturn:
-        if filename:
+        if filename is not None:
             (self.__infile, self.__table) = self.__read_file(filename)
 
 
@@ -490,8 +580,7 @@ class ExtractTable:
     def outfile(self) -> Optional[pathlib.Path]:
         """
         {pathlib.Path | None}
-            Path to output csv file containing extracted table. 
-            Defaults to stdout
+            Path of output file for writing. Defaults to stdout
 
         """
         return self.__outfile
@@ -507,13 +596,13 @@ class ExtractTable:
     def column(self) -> str:
         """
         {str}
-            Name of column in source table to use as index for extracted table.
+           Label of column to use as index for extracted table
         
         """
         return self.__column
     @column.setter
     def column(self, column: Optional[str]) -> NoReturn:
-        if column:
+        if column is not None:
             try:
                 self.__coldata = self.__table[column]
             except Exception as e:
@@ -526,20 +615,19 @@ class ExtractTable:
     def value(self) -> Union[str, List[str], None]:
         """ 
         {str | List[str] | None}
-            Value in column in source table to use as filter for extracting 
-            subtable. If not specified, output file is a reindexed table.
+           Value(s) of specified column in rows to extract 
 
         """
         return self.__value
     @value.setter
     def value(self, value: Union[str, List[str], None]) -> NoReturn:
-        if value and (self.__table is None):
+        if value is not None and self.__table is None:
             raise KeyError("Cannot set value without specifying tabular data")
 
-        elif value and (not self.column):
+        elif value is not None and self.column is None:
             raise KeyError("Cannot set value without specifying column")
 
-        elif value:
+        elif value is not None:
             try: # value is a singleton
                 self.__extracted = \
                     self.__table[self.__table[self.column] == value]
@@ -552,6 +640,7 @@ class ExtractTable:
                     "Column '{}' has no value '{}'".format(self.column, value))
             else:
                 self.__value = value
+
 
 
 #########################################

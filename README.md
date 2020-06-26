@@ -59,23 +59,57 @@ examples:
 ### As a Module
 ```python
 $ python
->>> import ExtractTable
->>> help(ExtractTable) # To display module documentation
-Help on module ExtractTable:
+>>> from ExtractTable import ExtractTable
+>>> help(ExtractTable) # To display class documentation
+Help on class ExtractTable in module ExtractTable:
 
-NAME
-    ExtractTable
-
-DESCRIPTION
-    ExtractTable
-    ============
-    
-    Provides
-        - A python class for extracting subtables from given tabular data. 
-          Can manage filetypes .csv, .xlsx, .geojson, .shp, etc.
-        - A command-line script that can be used to
-            1. convert input filetype to output filetype (ex. .shp -> .csv);
-            2. output tabular data reindexed with a specified column label
-            3. output subtables from input tabular data
+class ExtractTable(builtins.object)
+ |  ExtractTable(infile: Union[str, NoneType] = None, outfile: Union[str, NoneType] = None, column: Union[str, NoneType] = None, value: Union[str, List[str], NoneType] = None)
+ |  
+ |  For extracting tabular data. Run `help(ExtractTable)` to view docs.
+ |  
 ...
+>>> help(ExtractTable.list_values) # To display instance method documentation
+Help on function list_values in module ExtractTable:
+
+list_values(self, column: Union[str, NoneType] = None, unique: Union[bool, NoneType] = False) -> Union[numpy.ndarray, geopandas.array.GeometryArray]
+    Returns a list of values in the initialized column (default).
+    
+    Returns a list of values in the given column (if specified).
+    Returns a list of unique values (if specified)
+
+    Parameters
+    ----------
+    column : str | NoneType, optional
+        Name of the column whose values are to be listed. If None,
+        lists the values of the initialized column. Defaults to None
+    unique : bool, optional
+        If True, function lists only unique values. Defaults to False
+    
+    Returns
+    -------
+    np.ndarray | gpd.array.GeometryArray
+    
+    Raises
+    ------
+    RuntimeError
+        Raised if trying to list values from non-existent tabular data
+    KeyError
+        Raised if column does not exist in tabular data
+    RuntimeError
+        Raised if trying to list values from non-existent column
+    
+    See Also
+    --------
+    list_columns() -> np.ndarray
+    
+    Examples
+    --------
+    >>> et = ExtractTable.read_file('input.csv', 'col2')
+    >>> print(et.list_values)
+    ['b' 'd' '3' '5' '10']
+    >>> print(et.list_values('col1'))
+    ['a' 'c' 'c' 'c' 'b']
+    >>> print(et.list_values('col1', unique=True))
+    ['a' 'c' 'b']
 ```
