@@ -14,7 +14,7 @@ Metadata
 --------
 filename:       ExtractTable.py
 author:         @KeiferC
-date:           26 June 2020
+date:           29 June 2020
 version:        0.0.1
 description:    Script and module to extract subtables from given tabular data
 dependencies:   geopandas
