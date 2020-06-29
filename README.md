@@ -1,4 +1,4 @@
-# Extract Table
+# extract
 
 A combined script and `python` module for extracting tabular data for data 
 science purposes. A user-friendly, lite wrapper of `geopandas`.
