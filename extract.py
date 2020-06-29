@@ -1,10 +1,11 @@
 """
-ExtractTable
+extract
 ============
 
-Pronounced as "extractable", provides
-    - A python class for extracting subtables from given tabular data. 
-      Can manage filetypes .csv, .xlsx, .geojson, .shp, etc.
+Provides
+    - A python class, `ExtractTable` (pronounced "extractable") for extracting 
+      subtables from given tabular data. Can manage filetypes .csv, .xlsx, 
+      .geojson, .shp, etc.
     - A command-line script that can be used to
         1. convert input filetype to output filetype (ex. .shp -> .csv);
         2. output tabular data reindexed with a specified column label
@@ -12,7 +13,7 @@ Pronounced as "extractable", provides
 
 Metadata
 --------
-filename:       ExtractTable.py
+filename:       extract.py
 author:         @KeiferC
 date:           29 June 2020
 version:        0.0.1
@@ -22,13 +23,13 @@ dependencies:   geopandas
 
 Documentation
 -------------
-Documentation for the ExtractTable module can be found as docstrings. 
-Run `import ExtractTable; help(ExtractTable)` to view documentation.
+Documentation for the `extract` module can be found as docstrings. 
+Run `import extract; help(extract)` to view documentation.
 
 Usage
 -----
-usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]]
-                       INFILE
+```
+usage: extract.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] INFILE
 
 Script to extract tabular data. 
 
@@ -59,10 +60,11 @@ optional arguments:
 
 examples:
     
-    python ExtractTable.py input.xlsx -c ID > output.csv; ls
-    python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
-    python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
+    python extract.py input.xlsx -c ID > output.csv; ls
+    python extract.py foo.csv -o bar.csv -c "state fips" -v 01
+    python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
+    python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
+```
 
 """
 import argparse
@@ -152,7 +154,7 @@ class ExtractTable:
         
         Returns
         -------
-        ExtractTable
+        extract.ExtractTable
 
         See Also
         --------
@@ -203,7 +205,7 @@ class ExtractTable:
 
         Returns
         -------
-        ExtractTable
+        extract.ExtractTable
 
         Examples
         --------
@@ -688,10 +690,10 @@ supported output filetypes:
     
     examples = """examples:
     
-    python ExtractTable.py input.xlsx -c ID > output.csv; ls
-    python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
-    python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
+    python extract.py input.xlsx -c ID > output.csv; ls
+    python extract.py foo.csv -o bar.csv -c "state fips" -v 01
+    python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
+    python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
 """
 
     parser = argparse.ArgumentParser(
@@ -745,15 +747,7 @@ def main() -> NoReturn:
 
     try:
         et = ExtractTable(infile, outfile, column, value)
-
-        # debug - testing
-        print('infile = ', et.infile)
-        print('outfile = ', et.outfile)
-        print('column = ', et.column)
-        print('value = ', et.value)
-
         et.extract_to_file()
-
     except Exception as e:
         print(e)
 
