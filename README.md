@@ -1,25 +1,24 @@
-# ExtractTable
+# Extract Table
 
 A combined script and `python` module for extracting tabular data for data 
 science purposes. A user-friendly, lite wrapper of `geopandas`.
 
 ## Documentation
-Documentation for the ExtractTable module can be found as docstrings. 
-Run `import ExtractTable; help(ExtractTable)` to view documentation.
+Documentation for the `extract` module can be found as docstrings. 
+Run `import extract; help(extract)` to view documentation.
 
 ## Installation
 ```bash
-$ git clone https://github.com/KeiferC/ExtractTable.git
-$ cd ExtractTable
+$ git clone https://github.com/KeiferC/extract-table.git
+$ cd extract-table
 $ pip install -r requirements.txt
 ```
 
 ## Usage
 ### As a Script
 ```bash
-$ python ExtractTable.py -h
-usage: ExtractTable.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]]
-                       INFILE
+$ python extract.py -h
+usage: extract.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] INFILE
 
 Script to extract tabular data. 
 
@@ -50,18 +49,18 @@ optional arguments:
 
 examples:
     
-    python ExtractTable.py input.xlsx -c ID > output.csv; ls
-    python ExtractTable.py foo.csv -o bar.csv -c "state fips" -v 01
-    python ExtractTable.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-    python ExtractTable.py in.csv -o out.csv -c NUM -v 0 1 2 3
+    python extract.py input.xlsx -c ID > output.csv; ls
+    python extract.py foo.csv -o bar.csv -c "state fips" -v 01
+    python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
+    python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
 ```
 
 ### As a Module
 ```python
 $ python
->>> from ExtractTable import ExtractTable
+>>> from extract import ExtractTable
 >>> help(ExtractTable) # To display class documentation
-Help on class ExtractTable in module ExtractTable:
+Help on class ExtractTable in module extract:
 
 class ExtractTable(builtins.object)
  |  ExtractTable(infile: Union[str, NoneType] = None, outfile: Union[str, NoneType] = None, column: Union[str, NoneType] = None, value: Union[str, List[str], NoneType] = None)
@@ -72,7 +71,7 @@ class ExtractTable(builtins.object)
 ...
 
 >>> help(ExtractTable.list_values) # To display instance method documentation
-Help on function list_values in module ExtractTable:
+Help on function list_values in module extract:
 
 list_values(self, column: Union[str, NoneType] = None, unique: Union[bool, NoneType] = False) -> Union[numpy.ndarray, geopandas.array.GeometryArray]
     Returns a list of values in the initialized column (default).
