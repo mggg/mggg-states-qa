@@ -118,7 +118,7 @@ class ExtractTable:
     -----------------------
     extract() -> gpd.GeoDataFrame
         Returns a GeoPandas GeoDataFrame containing extracted subtable
-    extract_to_file(Optional[str]) -> NoReturn
+    extract_to_file(Optional[str], Optional[str]) -> NoReturn
         Writes the tabular extracted data to a file
     list_columns() -> np.ndarray
         Returns a list of all columns in the initialized source tabular data
@@ -269,7 +269,7 @@ class ExtractTable:
         
         See Also
         --------
-        extract_to_file(Optional[str]) -> NoReturn
+        extract_to_file(Optional[str], Optional[str]) -> NoReturn
 
         Examples
         --------
@@ -303,7 +303,8 @@ class ExtractTable:
             return self.__table
             
 
-    def extract_to_file(self, driver: Optional[str] = None) -> NoReturn:
+    def extract_to_file(self, outfile: Optional[str] = None,
+                        driver: Optional[str] = None) -> NoReturn:
         """
         Writes the tabular extracted data to a file. 
         
@@ -312,6 +313,8 @@ class ExtractTable:
 
         Parameters
         ----------
+        outfile: str | None, optional
+            Name of file to write extracted data
         driver: str | None, optional
             Name of Fiona supported OGR drivers to use for file writing
         
@@ -338,9 +341,13 @@ class ExtractTable:
         >>> et2.extract_to_file('ESRI Shapefile')
 
         """
-        filename = self.outfile
         gdf = self.extract()
         is_geometric = self.__has_spatial_data(gdf)
+
+        if outfile is None:
+            filename = self.outfile
+        else:
+            filename = outfile
 
         if filename is None:
             if is_geometric:
