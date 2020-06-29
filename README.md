@@ -67,8 +67,10 @@ class ExtractTable(builtins.object)
  |  ExtractTable(infile: Union[str, NoneType] = None, outfile: Union[str, NoneType] = None, column: Union[str, NoneType] = None, value: Union[str, List[str], NoneType] = None)
  |  
  |  For extracting tabular data. Run `help(ExtractTable)` to view docs.
- |  
+ | 
+  
 ...
+
 >>> help(ExtractTable.list_values) # To display instance method documentation
 Help on function list_values in module ExtractTable:
 
