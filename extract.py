@@ -109,11 +109,12 @@ class ExtractTable:
 
     Class Methods
     -------------
-    __init__(Optional[str], Optional[str], Optional[str], 
-             Optional[Union[str, List[str]]) -> ExtractTable
-        `ExtractTable initializer
+    __init__(Optional[Union[str, gpd.GeoDataFrame, pd.DataFrame]], 
+             Optional[str], Optional[str], Optional[Union[str, List[str]]) 
+            -> extract.ExtractTable
+        `ExtractTable` initializer
     read_file(str, Optional[str], Optional[Union[str, List[str]]])
-            -> ExtractTable
+            -> extract.ExtractTable
         Returns an ExtractTable instance with a specified input filename
     
     Public Instance Methods

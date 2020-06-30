@@ -50,7 +50,7 @@ optional arguments:
 
 examples:
     
-    python extract.py input.xlsx -c ID > output.csv; ls
+    python extract.py input.xlsx -c ID > output.csv
     python extract.py foo.csv -o bar.csv -c "state fips" -v 01
     python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
     python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
@@ -64,10 +64,10 @@ $ python
 Help on class ExtractTable in module extract:
 
 class ExtractTable(builtins.object)
- |  ExtractTable(infile: Union[str, NoneType] = None, outfile: Union[str, NoneType] = None, column: Union[str, NoneType] = None, value: Union[str, List[str], NoneType] = None)
+ |  ExtractTable(infile: Union[str, geopandas.geodataframe.GeoDataFrame, pandas.core.frame.DataFrame, NoneType] = None, outfile: Union[str, NoneType] = None, column: Union[str, NoneType] = None, value: Union[str, List[str], NoneType] = None)
  |  
  |  For extracting tabular data. Run `help(ExtractTable)` to view docs.
- | 
+ |
   
 ...
 
