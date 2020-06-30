@@ -60,7 +60,7 @@ optional arguments:
 
 examples:
     
-    python extract.py input.xlsx -c ID > output.csv; ls
+    python extract.py input.xlsx -c ID > output.csv
     python extract.py foo.csv -o bar.csv -c "state fips" -v 01
     python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
     python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
@@ -134,23 +134,28 @@ class ExtractTable:
     # Constructors                              |
     #===========================================+
 
-    def __init__(self, infile:  Optional[str] = None, 
-                 outfile:       Optional[str] = None, 
-                 column:        Optional[str] = None, 
-                 value:         Optional[Union[str, List[str]]] = None):
+    def __init__(self, 
+                 infile:    Optional[Union[str, 
+                                           gpd.GeoDataFrame,
+                                           pd.DataFrame]] = None, 
+                 outfile:   Optional[str] = None, 
+                 column:    Optional[str] = None, 
+                 value:     Optional[Union[str, List[str]]] = None):
         """
         ExtractTable initializer.
 
         Parameters
         ----------
-        infile : str | None, optional
-            Name/path of input file of tabular data to read
-        outfile: str | None, optional
-            Name/path of output file for writing
-        column: str | None, optional
-            Label of column to use as index for extracted table
-        value: str | List[str] | None, optional
-            Value(s) of specified column in rows to extract
+        infile : str | gpd.GeoDataFrame | pd.DataFrame | None, optional
+            Name/path of input file of tabular data to read or geopandas
+            GeoDataFrame or pandas DataFrame. Default is None.
+        outfile : str | None, optional
+            Name/path of output file for writing. Default is None.
+        column : str | None, optional
+            Label of column to use as index for extracted table. Default 
+            is None
+        value : str | List[str] | None, optional
+            Value(s) of specified column in rows to extract. Default is None
         
         Returns
         -------
@@ -170,6 +175,8 @@ class ExtractTable:
         >>> et5 = ExtractTable('in.csv', 'out.tex', 'ID', '01')
         >>> et6 = ExtractTable('in.csv', column='ID', value=['01', '03'])
         >>> et7 = ExtractTable('in.shp', outfile='out', column='X', value='y')
+        >>> et8 = ExtractTable(gpd.GeoDataFrame())
+        >>> et9 = ExtractTable(pd.DataFrame())
 
         """
         # Encapsulated attributes
@@ -197,11 +204,12 @@ class ExtractTable:
         Parameters
         ----------
         filename : str
-            Name/path of input file of tabular data to read
+            Name/path of input file of tabular data to read. Default is None
         column : str | None, optional
-            Label of column to use as index for extracted table
+            Label of column to use as index for extracted table. Default 
+            is None
         value : str | List[str] | None, optional
-            Value(s) of specified column in rows to extract
+            Value(s) of specified column in rows to extract. Default is None
 
         Returns
         -------
@@ -218,17 +226,21 @@ class ExtractTable:
         return self(filename, None, column, value)
     
 
-    def __sanitize_init(self, infile:   Optional[str], 
-                        outfile:        Optional[str], 
-                        column:         Optional[str], 
-                        value:          Optional[Union[str, List[str]]]):
+    def __sanitize_init(self,
+                        infile:     Optional[Union[str, 
+                                             gpd.GeoDataFrame,
+                                             pd.DataFrame]], 
+                        outfile:    Optional[str], 
+                        column:     Optional[str], 
+                        value:      Optional[Union[str, List[str]]]):
         """
         Safely initializes attributes using setters.
 
         Parameters
         ----------
-        infile : str | None, optional
-            Name/path of input file of tabular data to read
+        infile : str | gpd.GeoDataFrame | pd.DataFrame | None, optional
+            Name/path of input file of tabular data to read or geopandas
+            GeoDataFrame or pandas DataFrame
         outfile: str | None, optional
             Name/path of output file for writing
         column: str | None, optional
@@ -316,9 +328,10 @@ class ExtractTable:
         Parameters
         ----------
         outfile: str | None, optional
-            Name of file to write extracted data
+            Name of file to write extracted data. Default is None
         driver: str | None, optional
-            Name of Fiona supported OGR drivers to use for file writing
+            Name of Fiona supported OGR drivers to use for file writing.
+            Default is None
         
         Raises
         ------
@@ -580,9 +593,19 @@ class ExtractTable:
         """
         return self.__infile
     @infile.setter
-    def infile(self, filename: Optional[str]) -> NoReturn:
-        if filename is not None:
-            (self.__infile, self.__table) = self.__read_file(filename)
+    def infile(self, 
+               infile: Optional[Union[str, 
+                                      gpd.GeoDataFrame,
+                                      pd.DataFrame]]) -> NoReturn:
+        if infile is not None:
+            try:
+                (self.__infile, self.__table) = self.__read_file(infile)
+            except:
+                try:
+                    self.__infile = None
+                    self.__table = gpd.GeoDataFrame(infile)
+                except:
+                    raise FileNotFoundError('{} not found.'.format(infile))
 
 
     @property
@@ -621,7 +644,7 @@ class ExtractTable:
 
 
     @property
-    def value(self) -> Union[str, List[str], None]:
+    def value(self) -> Optional[Union[str, List[str]]]:
         """ 
         {str | List[str] | None}
            Value(s) of specified column in rows to extract 
@@ -629,7 +652,7 @@ class ExtractTable:
         """
         return self.__value
     @value.setter
-    def value(self, value: Union[str, List[str], None]) -> NoReturn:
+    def value(self, value: Optional[Union[str, List[str]]]) -> NoReturn:
         if value is not None and self.__table is None:
             raise KeyError("Cannot set value without specifying tabular data")
 
@@ -690,7 +713,7 @@ supported output filetypes:
     
     examples = """examples:
     
-    python extract.py input.xlsx -c ID > output.csv; ls
+    python extract.py input.xlsx -c ID > output.csv
     python extract.py foo.csv -o bar.csv -c "state fips" -v 01
     python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
     python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
