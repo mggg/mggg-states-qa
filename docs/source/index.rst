@@ -3,8 +3,11 @@ Documentation of the `extract` Module
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :glob:
 
+   pages/installation
+   pages/usage
+   pages/et-class
 
 
 Indices and tables
