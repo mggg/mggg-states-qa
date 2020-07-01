@@ -73,6 +73,7 @@ import numpy as np
 import os.path
 import pandas as pd
 import pathlib
+import shapely.wkt
 import sys
 import zipfile
 
@@ -369,7 +370,8 @@ class ExtractTable:
             if is_geometric:
                 gdf.to_string(buf=sys.stdout)
             else:
-                pd.DataFrame(gdf).to_string(buf=sys.stdout)
+                pd.DataFrame(gdf).drop(
+                        columns='geometry').to_string(buf=sys.stdout)
 
         else:
             ext = self.__get_extension(filename)
@@ -523,8 +525,8 @@ class ExtractTable:
             try:
                 return (filename, gpd.read_file(filename))
             except: # gpd's read uses pd's init, which has recursion depth cap
-                return (filename, 
-                        gpd.GeoDataFrame(self.__read_inferred(filename, ext)))
+                return (filename, self.__geometrize_gdf(
+                        gpd.GeoDataFrame(self.__read_inferred(filename, ext))))
         else:
             return self.__read_zip(filename)
 
@@ -611,6 +613,15 @@ class ExtractTable:
                     out.write(df.to_markdown())
                 else:
                     out.write(df.to_string())
+    
+
+    def __geometrize_gdf(self, gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        try:
+            geometry = gdf['geometry'].map(shapely.wkt.loads)
+            geometrized = gdf.drop(columns='geometry')
+            return gpd.GeoDataFrame(geometrized, geometry=geometry)
+        except:
+            return gdf
 
 
     #===========================================+
@@ -625,7 +636,7 @@ class ExtractTable:
         
         """
         return self.__infile
-        
+
     @infile.setter
     def infile(self, 
                infile: Optional[Union[str, 
