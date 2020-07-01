@@ -587,26 +587,28 @@ class ExtractTable:
         elif ext == '.json':
             return pd.read_json(filename)
         else:
-            return pd.read_table(filename)
+            raise FileNotFoundError('Cannot read {}'.format(filename))
 
 
     def __extract_to_inferred_file(self, 
                                    df: Union[gpd.GeoDataFrame, pd.DataFrame], 
                                    filename: pathlib.Path, 
                                    ext: str) -> NoReturn:
+        has_index = self.column is not None
+
         if ext == '.csv':
-            df.to_csv(path_or_buf=filename)
+            df.to_csv(path_or_buf=filename, index=has_index)
         elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
              ext == '.gzip' or ext == '.xz':
             df.to_pickle(filename)
         elif ext == '.xlsx':
-            df.to_excel(filename)
+            df.to_excel(filename, index=has_index)
         elif ext == '.html':
-            df.to_html(buf=filename)
+            df.to_html(buf=filename, index_names=has_index)
         elif ext == '.json':
             df.to_json(path_or_buf=filename)
         elif ext == '.tex':
-            df.to_latex(buf=filename)
+            df.to_latex(buf=filename, index=has_index)
         else:
             with open(filename, 'w') as out:
                 if ext == '.md':
