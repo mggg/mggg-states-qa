@@ -1,18 +1,17 @@
-Documentation of the `extract` Module
-=====================================
-
+Documentation: ``extract.py`` 
+=============================
 .. toctree::
-   :maxdepth: 2
-   :glob:
+   :maxdepth: 3
+   :hidden:
+   
+   ./src/classes
+   ./src/examples
 
-   pages/installation
-   pages/usage
-   pages/et-class
+.. automodule:: extract
 
 
-Indices and tables
-==================
-
+Indices
+=======
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`

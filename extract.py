@@ -1,70 +1,78 @@
 """
-extract
-============
+extract.py
+==========
 
 Provides
-    - A python class, `ExtractTable` (pronounced "extractable") for extracting 
-      subtables from given tabular data. Can manage filetypes .csv, .xlsx, 
-      .geojson, .shp, etc.
+    - A python class, ``ExtractTable`` (pronounced "extractable") for 
+      extracting subtables from given tabular data. Can manage filetypes 
+      .csv, .xlsx, .geojson, .shp, etc.
     - A command-line script that can be used to
         1. convert input filetype to output filetype (ex. .shp -> .csv);
-        2. output tabular data reindexed with a specified column label
+        2. output tabular data reindexed with a specified column label; or
         3. output subtables from input tabular data
 
 Metadata
 --------
-filename:       extract.py
-author:         @KeiferC
-date:           29 June 2020
-version:        0.0.1
-description:    Script and module to extract subtables from given tabular data
-dependencies:   geopandas
-                numpy
+
+:Filename:      `extract.py <https://github.com/keiferc/extract-table>`_
+:Author:        `@KeiferC <https://github.com/keiferc>`_
+:Date:          1 July 2020
+:Version:       0.0.1
+:Description:   Script and module to extract subtables from given tabular data
+:Dependencies:  
+
+                - ``geopandas``
+                - ``numpy``
 
 Documentation
 -------------
-Documentation for the `extract` module can be found as docstrings. 
-Run `import extract; help(extract)` to view documentation.
 
-Usage
------
-```
-usage: extract.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] INFILE
+Documentation for the ``extract`` module can be found as docstrings. 
+Run ``import extract; help(extract)`` to view documentation.
 
-Script to extract tabular data. 
+Additionally, documentation can be found on `Read the Docs 
+<https://extract-table.readthedocs.io>`_.
 
-If no outfile is specified, outputs plaintext to stdout.
-If no column is specified, outputs filetype converted input. 
-If no value is specified, outputs table indexed with given column (required).
-If value and column are specified, outputs subtable indexed with given column
-and containing only rows equal to given value(s).
+Script Usage 
+------------
+::
 
-supported input filetypes:
-    .csv .geojson .shp .xlsx .zip
+    usage: extract.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] 
+                      INFILE
 
-supported output filetypes:
-    .bz2 .csv .geojson .gpkg .gzip .html .json .md .pkl .tex .xlsx .zip 
-    all other extensions will contain output in plaintext
+    Script to extract tabular data. 
 
-positional arguments:
-  INFILE                name/path of input file of tabular data to read
+    If no outfile is specified, outputs plaintext to stdout. If no column is 
+    specified, outputs filetype converted input. If no value is specified, 
+    outputs table indexed with given column (required). If value and column 
+    are specified, outputs subtable indexed with given column and containing 
+    only rows equal to given value(s).
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -o OUTFILE, --output OUTFILE
-                        name/path of output file for writing
-  -c COLUMN, --column COLUMN
-                        label of column to use as index for extracted table
-  -v VALUE [VALUE ...], --value VALUE [VALUE ...]
-                        value(s) of specified column in rows to extract
+    supported input filetypes:
+        .csv .geojson .shp .xlsx .zip
 
-examples:
-    
-    python extract.py input.xlsx -c ID > output.csv
-    python extract.py foo.csv -o bar.csv -c "state fips" -v 01
-    python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-    python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
-```
+    supported output filetypes:
+        .bz2 .csv .geojson .gpkg .gzip .html .json .md .pkl .tex .xlsx .zip 
+        all other extensions will contain output in plaintext
+
+    positional arguments:
+    INFILE                name/path of input file of tabular data to read
+
+    optional arguments:
+    -h, --help            show this help message and exit
+    -o OUTFILE, --output OUTFILE
+                            name/path of output file for writing
+    -c COLUMN, --column COLUMN
+                            label of column to use as index for extracted table
+    -v VALUE [VALUE ...], --value VALUE [VALUE ...]
+                            value(s) of specified column in rows to extract
+
+    examples:
+        
+        python extract.py input.xlsx -c ID > output.csv
+        python extract.py foo.csv -o bar.csv -c "state fips" -v 01
+        python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
+        python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
 
 """
 import argparse
@@ -91,45 +99,25 @@ import warnings; warnings.filterwarnings(
 
 class ExtractTable:
     """
-    For extracting tabular data. Run `help(ExtractTable)` to view docs.
+    For extracting tabular data. Run ``help(ExtractTable)`` to view docs.
 
+    
+    Specifying `outfile` determines the filetype of the output table. 
     Specifying `column` uses given column as output's index. Specifying 
     `value` isolates output to rows that contain values in specified column.
-    Specifying `outfile` determines the filetype of the output table. 
+    
 
     Attributes
     ----------
-    infile : str
+    infile : Optional[str]
         Name/path of input file of tabular data to read
-    outfile : pathlib.Path
+    outfile : Optional[pathlib.Path]
         Path of output file for writing
-    column : str
+    column : Optional[str]
         Label of column to use as index for extracted table
-    value : str | List[str]
+    value : Optional[Union[str, List[str]]]
         Value(s) of specified column in rows to extract
-
-    Class Methods
-    -------------
-    __init__(Optional[Union[str, gpd.GeoDataFrame, pd.DataFrame]], 
-             Optional[str], Optional[str], Optional[Union[str, List[str]]) 
-            -> extract.ExtractTable
-        `ExtractTable` initializer
-    read_file(str, Optional[str], Optional[Union[str, List[str]]])
-            -> extract.ExtractTable
-        Returns an ExtractTable instance with a specified input filename
     
-    Public Instance Methods
-    -----------------------
-    extract() -> gpd.GeoDataFrame
-        Returns a GeoPandas GeoDataFrame containing extracted subtable
-    extract_to_file(Optional[str], Optional[str]) -> NoReturn
-        Writes the tabular extracted data to a file
-    list_columns() -> np.ndarray
-        Returns a list of all columns in the initialized source tabular data
-    list_values(Optional[str], Optional[bool]) -> 
-            Union[np.ndarray, gpd.array.GeometryArray]
-        Returns a list of values in the initialized column
-
     """
 
     #===========================================+
@@ -165,19 +153,26 @@ class ExtractTable:
 
         See Also
         --------
-        read_file(str, Optional[str], Optional[Union[str, List[str]]]) 
-                -> ExtractTable
+        extract.ExtractTable.read_file
 
         Examples
         --------
         >>> et1 = ExtractTable()
+
         >>> et2 = ExtractTable('example/input.shp')
+
         >>> et3 = ExtractTable('example/file.csv', column='ID')
+
         >>> et4 = ExtractTable('input.xlsx', 'output.md')
+
         >>> et5 = ExtractTable('in.csv', 'out.tex', 'ID', '01')
+
         >>> et6 = ExtractTable('in.csv', column='ID', value=['01', '03'])
+
         >>> et7 = ExtractTable('in.shp', outfile='out', column='X', value='y')
+
         >>> et8 = ExtractTable(gpd.GeoDataFrame())
+
         >>> et9 = ExtractTable(pd.DataFrame())
 
         """
@@ -220,8 +215,11 @@ class ExtractTable:
         Examples
         --------
         >>> et1 = ExtractTable.read_file('example/input.shp')
+
         >>> et2 = ExtractTable.read_file('example/file.csv', column='ID')
+
         >>> et3 = ExtractTable.read_file('in.shp', column='foo', value='bar')
+
         >>> et4 = ExtractTable.read_file('in.csv', column='X', value=['1','3'])
 
         """
@@ -285,7 +283,7 @@ class ExtractTable:
         
         See Also
         --------
-        extract_to_file(Optional[str], Optional[str]) -> NoReturn
+        extract.ExtractTable.extract_to_file
 
         Examples
         --------
@@ -296,6 +294,7 @@ class ExtractTable:
         0    asdf    a    b     None
         1    fdsa    c    d     None
         2    lkjh    c    3     None
+
         >>> et.column = 'col1'
         >>> print(et.extract().head())
             field_1 col2 geometry
@@ -303,6 +302,7 @@ class ExtractTable:
         a       asdf    b     None
         c       fdsa    d     None
         c       lkjh    3     None
+
         >>> et.value = 'c'
         >>> print(et.extract().head())
             field_1 col2 geometry
@@ -342,7 +342,7 @@ class ExtractTable:
 
         See Also
         --------
-        extract() -> gpd.GeoDataFrame
+        extract.ExtractTable.extract
 
         Examples
         --------
@@ -352,8 +352,10 @@ class ExtractTable:
         col2                      
         b       asdf    a
         d       fdsa    c
+
         >>> et1.outfile = 'output.xlsx'
         >>> et1.extract_to_file()
+
         >>> et2 = ExtractTable('input.shp', 'output', 'column1', 'square')
         >>> et2.extract_to_file('ESRI Shapefile')
 
@@ -410,8 +412,7 @@ class ExtractTable:
         
         See Also
         --------
-        list_values(Optional[str], Optional[bool]) 
-                -> Union[np.ndarray, gpd.array.GeometryArray]
+        extract.ExtractTable.list_values
         
         Examples
         --------
@@ -462,15 +463,17 @@ class ExtractTable:
         
         See Also
         --------
-        list_columns() -> np.ndarray
+        extract.ExtractTable.list_columns
         
         Examples
         --------
         >>> et = ExtractTable.read_file('input.csv', 'col2')
         >>> print(et.list_values)
         ['b' 'd' '3' '5' '10']
+
         >>> print(et.list_values('col1'))
         ['a' 'c' 'c' 'c' 'b']
+        
         >>> print(et.list_values('col1', unique=True))
         ['a' 'c' 'b']
 
@@ -748,11 +751,11 @@ def parse_arguments() -> argparse.Namespace:
 
     description = """Script to extract tabular data. 
 
-If no outfile is specified, outputs plaintext to stdout.
-If no column is specified, outputs filetype converted input. 
-If no value is specified, outputs table indexed with given column (required).
-If value and column are specified, outputs subtable indexed with given column
-and containing only rows equal to given value(s).
+If no outfile is specified, outputs plaintext to stdout. If no column is 
+specified, outputs filetype converted input. If no value is specified, 
+outputs table indexed with given column (required). If value and column 
+are specified, outputs subtable indexed with given column and containing 
+only rows equal to given value(s).
 
 supported input filetypes:
     .csv .geojson .shp .xlsx .zip
@@ -763,12 +766,10 @@ supported output filetypes:
 """
     
     examples = """examples:
-    
     python extract.py input.xlsx -c ID > output.csv
     python extract.py foo.csv -o bar.csv -c "state fips" -v 01
     python extract.py input.csv -o ../output.csv -c Name -v "Rick Astley"
-    python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3
-"""
+    python extract.py in.csv -o out.csv -c NUM -v 0 1 2 3"""
 
     parser = argparse.ArgumentParser(
                 description=description,
