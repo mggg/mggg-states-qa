@@ -506,33 +506,49 @@ class ExtractTable:
             return self.__table.set_index(self.column)
 
 
+    def __get_extension(self, filename: str) -> str:
+        (_, extension) = os.path.splitext(filename)
+        return extension.lower()
+
+
     def __read_file(self, filename: str) -> Tuple[str, gpd.GeoDataFrame]:
         """
         Given a filename, returns a tuple of a tabular file's name and 
         a GeoDataFrame containing tabular data.
 
         """
-        if self.__get_extension(filename) != '.zip':
-            return (filename, gpd.read_file(filename))
+        ext = self.__get_extension(filename)
 
-        else: # Recursively handles relative paths to zip files
-            (name, gdf) = (None, None)
-            for file in self.__unzip(filename):
-                try:
-                    (name, gdf) = self.__read_file(file)
-                    break
-                except:
-                    continue
-
-            if gdf is None:
-                raise FileNotFoundError("No file found".format(name))
-            else:
-                return (name, gdf)
+        if ext != '.zip':
+            try:
+                return (filename, gpd.read_file(filename))
+            except: # gpd's read uses pd's init, which has recursion depth cap
+                return (filename, 
+                        gpd.GeoDataFrame(self.__read_inferred(filename, ext)))
+        else:
+            return self.__read_zip(filename)
 
 
-    def __get_extension(self, filename: str) -> str:
-        (_, extension) = os.path.splitext(filename)
-        return extension.lower()
+    def __read_zip(self, filename: str) -> Tuple[str, gpd.GeoDataFrame]:
+        """
+        Helper to self.__read_file. Recursively unzips given zipfiles.
+        Unlike gpd, can handle relative paths and doesn't require
+        'zip:///' prepend.
+
+        """
+        (name, gdf) = (None, None)
+
+        for file in self.__unzip(filename):
+            try:
+                (name, gdf) = self.__read_file(file)
+                break
+            except:
+                continue
+
+        if gdf is None:
+            raise FileNotFoundError("No file found".format(name))
+        else:
+            return (name, gdf)
         
 
     def __unzip(self, filename: str) -> List[str]:
@@ -554,6 +570,22 @@ class ExtractTable:
 
     def __has_spatial_data(self, gdf: gpd.GeoDataFrame) -> bool:
         return not gdf['geometry'].isna().all()
+
+
+    def __read_inferred(self, filename: str, ext: str) -> pd.DataFrame:
+        if ext == '.csv':
+            return pd.read_csv(filename)
+        elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
+             ext == '.gzip' or ext == '.xz':
+            return pd.read_pickle(filename)
+        elif ext == '.xlsx':
+            return pd.read_excel(filename)
+        elif ext == '.html':
+            return pd.read_html(filename)
+        elif ext == '.json':
+            return pd.read_json(filename)
+        else:
+            return pd.read_table(filename)
 
 
     def __extract_to_inferred_file(self, 
@@ -593,6 +625,7 @@ class ExtractTable:
         
         """
         return self.__infile
+        
     @infile.setter
     def infile(self, 
                infile: Optional[Union[str, 
@@ -605,8 +638,9 @@ class ExtractTable:
                 try:
                     self.__infile = None
                     self.__table = gpd.GeoDataFrame(infile)
-                except:
-                    raise FileNotFoundError('{} not found.'.format(infile))
+                except Exception as e:
+                    raise FileNotFoundError(
+                            '{} not found. {}'.format(infile, e))
 
 
     @property
@@ -617,6 +651,7 @@ class ExtractTable:
 
         """
         return self.__outfile
+
     @outfile.setter
     def outfile(self, filename: Optional[str] = None) -> NoReturn:
         try:
@@ -633,6 +668,7 @@ class ExtractTable:
         
         """
         return self.__column
+
     @column.setter
     def column(self, column: Optional[str]) -> NoReturn:
         if column is not None:
@@ -652,6 +688,7 @@ class ExtractTable:
 
         """
         return self.__value
+
     @value.setter
     def value(self, value: Optional[Union[str, List[str]]]) -> NoReturn:
         if value is not None and self.__table is None:
