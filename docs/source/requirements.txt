@@ -1,5 +1,9 @@
+pandas
+numpy
+geopandas
 numpydoc
 sphinx-rtd-theme
+sphinx>=1.4
 nbsphinx
 pandoc
 IPython
