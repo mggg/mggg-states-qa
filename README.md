@@ -1,4 +1,5 @@
 # extract
+[![Documentation Status](https://readthedocs.org/projects/extract-table/badge/?version=latest)](https://extract-table.readthedocs.io/en/latest/?badge=latest)
 
 A combined script and `python` module for extracting tabular data for data 
 science (data wrangling) purposes. A user-friendly, lite wrapper of 
@@ -6,7 +7,9 @@ science (data wrangling) purposes. A user-friendly, lite wrapper of
 
 ## Documentation
 Documentation for the `extract` module can be found as docstrings. 
-Run `import extract; help(extract)` to view documentation.
+Run `import extract; help(extract)` to view documentation. Additionally,
+the documentation can be found on [Read the
+Docs](https://extract-table.readthedocs.io/)/
 
 ## Installation
 ```bash
