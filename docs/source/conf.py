@@ -42,6 +42,7 @@ extensions = [
         'sphinx.ext.coverage', 
         'sphinx.ext.napoleon',
         'sphinx_rtd_theme',
+        'nbsphinx',
 ]
 
 

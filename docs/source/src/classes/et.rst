@@ -16,20 +16,20 @@ ExtractTable.read_file
 
 Instance Methods
 ----------------
-extract
-~~~~~~~
+ExtractTable.extract
+~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: extract.ExtractTable.extract
 
-extract_to_file
-~~~~~~~~~~~~~~~
+ExtractTable.extract_to_file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: extract.ExtractTable.extract_to_file
 
-list_columns
-~~~~~~~~~~~~
+ExtractTable.list_columns
+~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: extract.ExtractTable.list_columns
 
-list_values
-~~~~~~~~~~~
+ExtractTable.list_values
+~~~~~~~~~~~~~~~~~~~~~~~~
 .. autofunction:: extract.ExtractTable.list_values
 
 

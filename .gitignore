@@ -25,4 +25,6 @@
 **/test*.zip
 **/dump/
 **/test/nhgis0004_shapefile_tl2010_060_block_2010*
-example-inputs/example/*
+**/example-inputs/example/*
+docs/**/extract-table/
+docs/build/

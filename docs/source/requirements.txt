@@ -1,2 +1,6 @@
 numpydoc
 sphinx-rtd-theme
+nbsphinx
+pandoc
+IPython
+ipykernel

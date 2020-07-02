@@ -1,6 +1,13 @@
 Documentation: ``extract.py`` 
 =============================
 .. toctree::
+   :caption: Installation
+   :maxdepth: 1
+   :hidden:
+
+   ./src/install/installation
+
+.. toctree::
    :caption: Classes
    :maxdepth: 3
    :hidden:
@@ -13,7 +20,7 @@ Documentation: ``extract.py``
    :hidden:
 
    ./src/ex/script
-   ./src/ex/et
+   ./src/ex/examples.ipynb
 
 .. automodule:: extract
 
