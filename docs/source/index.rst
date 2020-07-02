@@ -1,11 +1,11 @@
-Documentation: ``extract.py`` 
+Documentation: ``gdutils`` 
 =============================
 .. toctree::
    :caption: Installation
    :maxdepth: 1
    :hidden:
 
-   ./src/install/installation
+   ./src/install/et-install
 
 .. toctree::
    :caption: Classes
@@ -19,10 +19,13 @@ Documentation: ``extract.py``
    :maxdepth: 0
    :hidden:
 
-   ./src/ex/script
-   ./src/ex/examples.ipynb
+   ./src/examples/et-script
+   ./src/examples/et-examples.ipynb
 
-.. automodule:: extract
+
+`extract` Module
+================
+.. automodule:: modules.extract
 
 
 Indices

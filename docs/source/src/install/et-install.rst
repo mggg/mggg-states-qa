@@ -1,10 +1,10 @@
 Installation Guide
-==================
+=============================
 
 To install the ``extract`` module, clone the repository by running:
 ::
 
-    $ git clone https://github.com/KeiferC/extract-table.git
+    $ git clone https://github.com/KeiferC/gdutils.git
 
 
 Installing Dependencies
@@ -16,7 +16,7 @@ packages, which may or may not be installed on your machine.
 To automatically install the dependencies run:
 ::
 
-    $ cd extract-table
+    $ cd gdutils
     $ pip install -r requirements.txt --user
 
 Alternatively, you can manually install the dependecies by running:

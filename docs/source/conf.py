@@ -22,7 +22,7 @@ import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'extract'
+project = 'gdutils'
 copyright = '2020, @KeiferC'
 author = '@KeiferC'
 
