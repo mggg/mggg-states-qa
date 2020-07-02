@@ -1,5 +1,5 @@
-ExtractTable
-============
+extract.ExtractTable
+====================
 .. autoclass:: extract.ExtractTable
 
 
