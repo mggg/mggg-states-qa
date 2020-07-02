@@ -30,3 +30,4 @@ docs/**/gdutils/
 docs/build/
 
 !docs/source/src/examples/example-inputs/example-shp/*
+docs/source/src/examples/example-inputs/example-shp/.DS_Store
