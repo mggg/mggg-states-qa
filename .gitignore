@@ -28,3 +28,5 @@
 **/example-inputs/example/*
 docs/**/gdutils/
 docs/build/
+
+!docs/source/src/examples/example-inputs/example-shp/*
