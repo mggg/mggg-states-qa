@@ -16,7 +16,7 @@ Documentation: ``extract.py``
 
 .. toctree::
    :caption: Examples
-   :maxdepth: 3
+   :maxdepth: 0
    :hidden:
 
    ./src/ex/script
@@ -29,4 +29,3 @@ Indices
 =======
 * :ref:`genindex`
 * :ref:`modindex`
-* :ref:`search`
