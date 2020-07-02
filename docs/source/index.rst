@@ -23,8 +23,17 @@ Documentation: ``gdutils``
    ./src/examples/et-examples.ipynb
 
 
-`extract` Module
-================
+A collection of geodata utility tools.
+
+Available modules:
+
+- ``extract``: combined script and ``python`` module for extracting tabular 
+   data for data science (data wrangling) purposes. A user-friendly, lite 
+   wrapper of ``geopandas``.
+
+
+``extract`` Module
+==================
 .. automodule:: modules.extract
 
 

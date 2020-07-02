@@ -1,7 +1,7 @@
 Installation Guide
 =============================
 
-To install the ``extract`` module, clone the repository by running:
+To install ``gdutils`` modules, clone the repository by running:
 ::
 
     $ git clone https://github.com/KeiferC/gdutils.git
@@ -10,8 +10,9 @@ To install the ``extract`` module, clone the repository by running:
 Installing Dependencies
 -----------------------
 
-The ``extract`` module uses the ``numpy``, ``pandas``, and ``geopandas`` 
-packages, which may or may not be installed on your machine.
+The ``gdutils`` modules uses the ``numpy``, ``pandas``, and 
+``geopandas`` packages, which may or may not be installed on 
+your machine.
 
 To automatically install the dependencies run:
 ::

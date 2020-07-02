@@ -1,5 +1,5 @@
-extract.ExtractTable
-====================
+modules.extract.ExtractTable
+============================
 .. autoclass:: modules.extract.ExtractTable
 
 
