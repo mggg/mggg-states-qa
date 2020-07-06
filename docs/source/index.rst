@@ -25,19 +25,12 @@ Documentation: ``gdutils``
 
 A collection of geodata utility tools.
 
-Available modules:
+**Available modules:**
 
-- ``extract``: combined script and ``python`` module for extracting tabular 
-   data for data science (data wrangling) purposes. A user-friendly, lite 
-   wrapper of ``geopandas``.
+- ``extract``: combined script and ``python`` module for extracting tabular data for data science (data wrangling) purposes. A user-friendly, lite wrapper of ``geopandas``.
 
 
-``extract`` Module
-==================
+Module: ``extract``
+-------------------
 .. automodule:: modules.extract
 
-
-Indices
-=======
-* :ref:`genindex`
-* :ref:`modindex`
