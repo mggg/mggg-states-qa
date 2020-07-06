@@ -1,5 +1,5 @@
 # Geodata Utility Tools
-[![Documentation Status](https://readthedocs.org/projects/extract-table/badge/?version=latest)](https://gdutils.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/gdutils/badge/?version=latest)](https://gdutils.readthedocs.io/en/latest/?badge=latest)
 
 A collection of geodata utility tools. Still in development.
 
