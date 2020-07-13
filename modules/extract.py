@@ -16,7 +16,7 @@ Provides
 Metadata
 --------
 
-:Filename:      `extract.py <https://github.com/keiferc/extract-table>`_
+:Filename:      `extract.py <https://github.com/keiferc/gdutils>`_
 :Author:        `@KeiferC <https://github.com/keiferc>`_
 :Date:          06 July 2020
 :Version:       0.0.1
@@ -37,7 +37,7 @@ Run ``import modules.extract; help(modules.extract)`` to view documentation.
     >>> import modules.extract; help(modules.extract)
 
 Additionally, documentation can be found on `Read the Docs 
-<https://extract-table.readthedocs.io>`_.
+<https://gdutils.readthedocs.io>`_.
 
 Script Usage 
 ------------
