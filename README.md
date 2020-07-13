@@ -7,6 +7,8 @@ Available modules:
 
 - `extract`: combined script and `python` module for extracting tabular data 
   for data science (data wrangling) purposes. A user-friendly, lite wrapper of `geopandas`.
+- `compare`: `python` module for comparing geodata for data QA purposes. 
+   Status: In development.
 
 
 ## Documentation
