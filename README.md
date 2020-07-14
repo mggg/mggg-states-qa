@@ -19,7 +19,5 @@ Additionally, documentation for modules can be found using the `python`
 
 ## Installation
 ```bash
-$ git clone https://github.com/KeiferC/gdutils.git
-$ cd gdutils
-$ pip install -r requirements.txt
+$ pip install git+https://github.com/KeiferC/gdutils.git
 ```
