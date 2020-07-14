@@ -60,11 +60,18 @@ class CompareTables:
     """
     For comparing tabular data for data QA purposes. 
     Run ``help(CompareTables)`` to view docs.
-    
 
     Attributes
     ----------
-    TODO
+    table1 : Union[str, pd.DataFrame, gpd.GeoDataFrame]
+        Name/path of input tabular data file or a pandas DataFrame or a 
+        geopandas GeoDataFrame to compare
+    table2 : Union[str, pd.DataFrame, gpd.GeoDataFrame]
+        Name/path of input tabular data file or a pandas DataFrame or a 
+        geopandas GeoDataFrame to compare
+    outfile : Optional[str, pathlib.Path]
+        Name/path of output file for writing comparison results. Defaults
+        to ``None``
     
     """
 
@@ -72,18 +79,27 @@ class CompareTables:
     # Constructors                              |
     #===========================================+
 
-    def __init__():
+    def __init__(table1:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
+                 table2:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
+                 outfile:   Optional[Union[str, pathlib.Path]] = None):
         """
         CompareTables initializer.
 
         Parameters
         ----------
-        TODO
+        table1 : str | pd.DataFrame | gpd.GeoDataFrame
+            Name/path of input tabular data file or a pandas DataFrame or a 
+            geopandas GeoDataFrame to compare
+        table2 : str | pd.DataFrame | gpd.GeoDataFrame
+            Name/path of input tabular data file or a pandas DataFrame or a 
+            geopandas GeoDataFrame to compare
+        outfile : str | pathlib.Path | None, optional
+            Name/path of output file for writing comparison results. Defaults
+            to ``None``
         
         Returns
         -------
         compare.CompareTables
-
 
         Examples
         --------
@@ -91,6 +107,9 @@ class CompareTables:
 
         """
         # Encapsulated attributes
+        table1 = None
+        table2 = None
+        outfile = None
 
         # Protected attributes
         pass
@@ -99,15 +118,41 @@ class CompareTables:
     @classmethod
     def read_files(self, filename1: str, filename2: str):
         """
-        Returns an CompareTables instance with a specified input filenames.
+        Returns an CompareTables instance with the given filenames.
 
         Parameters
         ----------
-        filename : str
+        filename1 : str
             Name/path of first input file of tabular data to read
-        filename : str
+        filename2 : str
             Name/path of second input file of tabular data to read
 
+        Returns
+        -------
+        compare.CompareTables
+
+        Examples
+        --------
+        TODO
+
+        """
+        pass
+    
+
+    @classmethod
+    def read_tables(self, 
+                    table1: Union[pd.DataFrame, gpd.GeoDataFrame], 
+                    table2: Union[pd.DataFrame, gpd.GeoDataFrame]):
+        """
+        Returns a CompareTables instance with the given GeoDataFrames.
+
+        Parameters
+        ----------
+        table1 : pd.DataFrame | gpd.GeoDataFrame
+            pandas DataFrame or geopandas GeoDataFrame containing table to compare
+        table2 : pd.DataFrame | gpd.GeoDataFrame
+            pandas DataFrame or geopandas GeoDataFrame containing table to compare
+        
         Returns
         -------
         compare.CompareTables
