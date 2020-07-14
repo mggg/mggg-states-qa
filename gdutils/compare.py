@@ -45,6 +45,7 @@ import sys
 import zipfile
 
 from typing import List, NoReturn, Optional, Tuple, Union
+from extract import ExtractTable as et
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
 
@@ -79,7 +80,8 @@ class CompareTables:
     # Constructors                              |
     #===========================================+
 
-    def __init__(table1:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
+    def __init__(self,
+                 table1:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
                  table2:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
                  outfile:   Optional[Union[str, pathlib.Path]] = None):
         """
@@ -112,7 +114,9 @@ class CompareTables:
         outfile = None
 
         # Protected attributes
-        pass
+        # TODO: add if necessary
+
+        self.__sanitize_init(table1, table1, outfile)
 
 
     @classmethod
@@ -165,13 +169,23 @@ class CompareTables:
         pass
     
 
-    def __sanitize_init():
+    def __sanitize_init(self,
+                        table1:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
+                        table2:    Union[str, pd.DataFrame, gpd.GeoDataFrame],
+                        outfile:   Optional[Union[str, pathlib.Path]]):
         """
         Safely initializes attributes using setters.
 
         Parameters
         ----------
-        TODO
+        table1 : str | pd.DataFrame | gpd.GeoDataFrame
+            Name/path of input tabular data file or a pandas DataFrame or a 
+            geopandas GeoDataFrame to compare
+        table2 : str | pd.DataFrame | gpd.GeoDataFrame
+            Name/path of input tabular data file or a pandas DataFrame or a 
+            geopandas GeoDataFrame to compare
+        outfile : str | pathlib.Path | None, optional
+            Name/path of output file for writing comparison results
         
         Raises
         ------
@@ -180,7 +194,9 @@ class CompareTables:
 
         """
         try:
-            pass # TODO
+            self.table1 = table1
+            self.table2 = table2
+            self.outfile = outfile
 
         except Exception as e:
             raise AttributeError("Initialization failed. {}".format(e))
@@ -190,10 +206,71 @@ class CompareTables:
     # Public Instance Methods                   |
     #===========================================+
     
+    # TODO
+    def compare(self) -> NoReturn:
+        pass
+    
+
+    #===========================================+
+    # Private Helper Methods                    |
+    #===========================================+
+
+    def __get_table(self, table: Union[str, pd.DataFrame, 
+                                       gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+        try:
+            return et(table).extract()
+        except Exception as e:
+            raise FileNotFoundError('Could not set table. {}'.format(e))
+
 
     #===========================================+
     # Getters and Setters                       |
     #===========================================+
+
+    @property
+    def table1(self) -> gpd.GeoDataFrame:
+        """
+        {gpd.GeoDataFrame}
+            Table to compare
+        
+        """
+        return self.__table1
+    
+    @table1.setter
+    def table1(self, table: Union[str, pd.DataFrame, 
+                                  gpd.GeoDataFrame]) -> NoReturn:
+        self.__table1 = self.__get_table(table)
+    
+
+    def table2(self) -> gpd.GeoDataFrame:
+        """
+        {gpd.GeoDataFrame}
+            Table to compare
+        
+        """
+        return self.__table2
+    
+    @table1.setter
+    def table2(self, table: Union[str, pd.DataFrame, 
+                                  gpd.GeoDataFrame]) -> NoReturn:
+        self.__table2 = self.__get_table(table)
+    
+
+    @property
+    def outfile(self) -> Optional[pathlib.Path]:
+        """
+        {pathlib.Path | None}
+            Path of output file for writing. Defaults to stdout
+
+        """
+        return self.__outfile
+
+    @outfile.setter
+    def outfile(self, filename: Optional[str] = None) -> NoReturn:
+        try:
+            self.__outfile = pathlib.Path(filename)
+        except:
+            self.__outfile = None
 
 
 
