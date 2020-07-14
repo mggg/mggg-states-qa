@@ -73,13 +73,11 @@ import warnings; warnings.filterwarnings(
 class ExtractTable:
     """
     For extracting tabular data. Run ``help(ExtractTable)`` to view docs.
-
     
     Specifying `outfile` determines the filetype of the output table. 
     Specifying `column` uses given column as output's index. Specifying 
     `value` isolates output to rows that contain values in specified column.
     
-
     Attributes
     ----------
     infile : Optional[str]
