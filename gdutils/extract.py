@@ -365,7 +365,11 @@ class ExtractTable:
                             pd.DataFrame(gdf).drop(columns='geometry'), 
                             filename, ext)
             except Exception as e:
-                raise RuntimeError("Extraction failed:", e)
+                try:
+                    os.makedirs(self.__outfile.parent)
+                    self.extract_to_file(outfile, driver)
+                except:
+                    raise RuntimeError("Extraction failed:", e)
 
 
     def list_columns(self) -> np.ndarray:
@@ -629,7 +633,7 @@ class ExtractTable:
                     self.__table = gpd.GeoDataFrame(infile)
                 except Exception as e:
                     raise FileNotFoundError(
-                            "{} not found. {}'"format(infile, e))
+                            "{} not found. {}".format(infile, e))
 
 
     @property
@@ -667,6 +671,7 @@ class ExtractTable:
                 raise KeyError("Column not found: {}".format(e))
 
             self.__column = column
+            self.__value = None
 
 
     @property
