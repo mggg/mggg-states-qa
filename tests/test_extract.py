@@ -1,6 +1,6 @@
-from shapely.geometry import Point
 import pandas as pd
 import geopandas as gpd
+import numpy as np
 from pathlib import PosixPath
 import os
 
@@ -19,10 +19,14 @@ good_col1a = "col1"
 good_col1b = "col2"
 good_val1a = "c"
 good_val1b = '5'
+good_vals1a = ['a', 'c']
+full_cols1 = ['field_1', 'col1', 'col2']
+full_vals1 = ['a', 'c', 'c', 'c', 'b']
 
 good_inf2 = "tests/inputs/test2.csv"
 good_col2 = "featurecla"
 good_val2 = "Country"
+full_cols2 = ['Unnamed: 0', 'scalerank', 'featurecla', 'geometry']
 
 good_out = "tests/dumps/dump"
 dne_dir = "tests/dumps/dne"
@@ -65,11 +69,11 @@ def test_constructor_errors():
     with pytest.raises(Exception):
         et = ExtractTable(bad_inf)
     with pytest.raises(Exception):
-        et = ExtractTable(good_inf, None, bad_col)
+        et = ExtractTable(good_inf1, None, bad_col)
     with pytest.raises(Exception):
-        et = ExtractTable(good_inf, None, bad_col, bad_val)
+        et = ExtractTable(good_inf1, None, bad_col, bad_val)
     with pytest.raises(Exception):
-        et = ExtractTable(good_inf, None, good_col1a, bad_val)
+        et = ExtractTable(good_inf1, None, good_col1a, bad_val)
 
 
 def test_constructor():
@@ -114,6 +118,12 @@ def test_constructor():
     assert et.outfile == None
     assert et.column == good_col1a
     assert et.value == good_val1a
+
+    et = ExtractTable(good_inf1, None, good_col1a, good_vals1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value == good_vals1a
 
 
 def test_infile():
@@ -164,24 +174,13 @@ def test_value():
 
 
 def test_outfile():
-    et = ExtractTable()
-    et.infile = good_inf1
-
-    del_outs()
+    et = ExtractTable(good_inf1)
 
     et.outfile = good_out
     assert et.outfile == PosixPath(good_out)
-    et.extract_to_file()
-    assert os.path.isfile(good_out)
 
     et.outfile = dne_out
     assert et.outfile == PosixPath(dne_out)
-    assert not os.path.isfile(dne_out)
-    assert not os.path.isdir(dne_dir)
-    et.extract_to_file()
-    assert os.path.isfile(dne_out)
-
-    del_outs()
 
 
 def test_setters_2():
@@ -208,11 +207,6 @@ def test_setters_2():
     assert et2.infile == good_inf2
     assert et2.column == good_col2 
     assert et2.value == good_val2
-
-    extract = et.extract()
-    extract = et2.extract()
-
-    et2.extract_to_file()
 
 
 def test_read_file_errors():
@@ -252,6 +246,12 @@ def test_read_file():
     assert et.column == good_col1a
     assert et.value == good_val1a
 
+    et = ExtractTable.read_file(good_inf1, good_col1a, good_vals1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value == good_vals1a
+
     et = ExtractTable.read_file(good_inf2, good_col2, good_val2)
     assert et.infile == good_inf2
     assert et.outfile == None
@@ -259,161 +259,101 @@ def test_read_file():
     assert et.value == good_val2
 
 
-#===============================================
-
-def run_tests2():
-
-    et = ExtractTable.read_file("tests/inputs/test1.csv")
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print(et.extract())
-    print()
-
-
-    et = ExtractTable.read_file("tests/inputs/test1.csv", column="col1")
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print(et.extract())
-    print()
-
-    et = ExtractTable.read_file("tests/inputs/test1.csv", column="col1", value="c")
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print(et.extract())
-    print() 
-
-    et = ExtractTable.read_file("tests/inputs/test1.csv", column="col1", value=['a', 'c'])
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print(et.extract())
-    print()
-
-
-def run_tests3():
-    et = ExtractTable.read_file("tests/inputs/test1.csv")
-    print(type(et.list_columns()))
-    print(et.list_columns())
-    print(et.extract())
-
-    try:
-        et.list_columns()
-    except Exception as e:
-        print("Expected failure.", e)
-    print()
+def test_list_columns():
+    et = ExtractTable()
     
-    print(type(et.list_values('field_1')))
-    print(et.list_values('field_1'))
-    print(et.list_values('field_1', unique=True))
-    print()
+    with pytest.raises(Exception):
+        cols = et.list_columns()
 
-    et.column = 'col1'
-    print(type(et.list_values()))
-    print(et.list_values())
-    print(et.list_values(unique=True))
-    print()
-
-    print(type(et.list_values('geometry')))
-    print(et.list_values('geometry'))
-    print(et.list_values('geometry', unique=True))
-    print()
-
-def run_tests4():
-    et = ExtractTable('tests/inputs/test1.csv', column="col2", value=['3', '5'])
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print(et.extract())
-    print()
-
-def run_tests5():
-    #et = ExtractTable('nhgis0004_shapefile_tl2010_060_block_2010.zip')
-    gdf = ExtractTable('tests/inputs/test1.csv').extract()
-    print(type(gdf))
-    et = ExtractTable(gdf)
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print(et.list_columns())
-    print(et.list_values('col1', unique=True))
-    print()
-
-    et2 = ExtractTable(et.extract())
-    print('infile = ', et2.infile)
-    print('outfile = ', et2.outfile)
-    print('column = ', et2.column)
-    print('value = ', et2.value)
-    print(et2.list_columns())
-    print(et2.list_values('col1', unique=True))
-    print()
-
-    d = {'col1': ['name1', 'name2'], 'geometry': [Point(1,2), Point(2,1)]}
-    gdf1 = gpd.GeoDataFrame(d, crs="EPSG:4326")
-    et3 = ExtractTable(gdf1)
-    print('infile = ', et3.infile)
-    print('outfile = ', et3.outfile)
-    print('column = ', et3.column)
-    print('value = ', et3.value)
-    print(et3.list_columns())
-    et3.column = 'geometry'
-    print(et3.list_values())
-    print(et3.extract())
-    print()
-
-    df = pd.DataFrame(d)
-    et4 = ExtractTable(df)
-    print('infile = ', et3.infile)
-    print('outfile = ', et3.outfile)
-    print('column = ', et3.column)
-    print('value = ', et3.value)
-    print(et3.list_columns())
-    print(et3.list_values())
-    print(et3.extract())
-    print()
+    et = ExtractTable.read_file(good_inf1)
+    cols = et.list_columns()
+    assert type(cols) == np.ndarray
+    assert (cols == np.array(full_cols1)).all()
 
 
-# def run_tests6():
-#     et = ExtractTable('../example-tests/inputs/example.csv')
-#     gdf = et.extract()
-#     print(gdf.head())
-#     print(type(gdf['geometry'][0]))
-#     et.extract_to_file('../dump/geo.shp')
-#     print()
-
-#     et2 = ExtractTable.read_file('test1.csv')
-#     gdf2 = et2.extract()
-#     print(gdf2.head())
-#     print(type(gdf['geometry'][0]))
-#     et2.extract_to_file('../dump/test1.csv')
-
-# def run_tests7():
-#     et = ExtractTable('../example-tests/inputs/example.zip')
-#     print(et.extract().head())
+    et = ExtractTable.read_file(good_inf2)
+    cols = et.list_columns()
+    assert type(cols) == np.ndarray
+    assert (cols == np.array(full_cols2, dtype=object)).all()
 
 
-#########################################
-# Function Calls                        #
-#########################################
-# try:
-# run_tests()
-# run_tests2()
-# run_tests3()
-# run_tests4()
-# run_tests5()
-#     run_tests6()
-# except Exception as e:
-#     print('failed:', e)
+def test_list_values():
+    et = ExtractTable()
 
-# run_tests7()
+    with pytest.raises(Exception):
+        cols = et.list_values()
+    
+    et.infile = good_inf1
+    
+    vals = et.list_values(good_col1a)
+    assert type(vals) == np.ndarray
+    assert (vals == np.array(full_vals1)).all()
+    
+    vals = et.list_values(good_col1a, unique=True)
+    assert type(vals) == np.ndarray
+    assert set(vals) == set(np.unique(np.array(full_vals1, dtype=object)))
+
+    et.column = good_col1b
+
+    vals = et.list_values(good_col1a)
+    assert type(vals) == np.ndarray
+    assert (vals == np.array(full_vals1)).all()
+    
+    vals = et.list_values(good_col1a, unique=True)
+    assert type(vals) == np.ndarray
+    assert set(vals) == set(np.unique(np.array(full_vals1, dtype=object)))
+
+    et.column = good_col1a
+
+    vals = et.list_values()
+    assert type(vals) == np.ndarray
+    assert (vals == np.array(full_vals1)).all()
+
+    vals = et.list_values(unique=True)
+    assert type(vals) == np.ndarray
+    assert set(vals) == set(np.unique(np.array(full_vals1, dtype=object)))
 
 
+def test_extract():
+    et = ExtractTable(good_inf1)
+    gdf1 = gpd.read_file(good_inf1)
 
+    extract = et.extract()
+    assert type(extract) == gpd.GeoDataFrame
+    assert extract.equals(gdf1)
+
+    et.column = good_col1a
+    gdf1 = gdf1.set_index(good_col1a)
+    extract = et.extract()
+    assert type(extract) == gpd.GeoDataFrame
+    assert extract.equals(gdf1)
+
+    et.value = good_val1a
+    gdf1 = gpd.GeoDataFrame(gdf1.loc[good_val1a])
+    extract = et.extract()
+    assert type(extract) == gpd.GeoDataFrame
+    assert extract.equals(gdf1)
+
+
+def test_extract_to_file():
+    del_outs()
+
+    et = ExtractTable(good_inf1, good_out)
+
+    et.extract_to_file()
+    assert os.path.isfile(good_out)
+
+    et.outfile = dne_out
+    assert not os.path.isfile(dne_out)
+    assert not os.path.isdir(dne_dir)
+    et.extract_to_file()
+    assert os.path.isfile(dne_out)
+
+    del_outs()
+
+
+# to test, remove "no" prefix and insert path to large file
+# def notest_large(): 
+#     large_file = 'tests/inputs/nhgis0004_shapefile_tl2010_060_block_2010.zip'
+#     et = ExtractTable(large_file, 'tests/dumps/large.zip', column='NAME10')
+#     et.extract_to_file()
