@@ -372,6 +372,20 @@ class ExtractTable:
                     raise RuntimeError("Extraction failed:", e)
 
 
+    # TODO: fix - does not work with multi-index columns
+    #
+    # e.g.
+    #
+    # office           Attorney General   ...      US Senate
+    # party          democrat republican  ...  democrat republican
+    # precinct                            ...
+    # District 1        431.0      702.0  ...  702.0         584.0
+    # District 2        361.0      579.0  ...  194.0         471.0
+    # District 3        194.0      389.0  ...  937.0         333.0
+    # ...               ...        ...    ...  ...             ...
+    # District 231      557.0      937.0  ...  38.0          785.0
+
+
     def list_columns(self) -> np.ndarray:
         """
         Returns a list of all columns in the initialized source tabular data.
@@ -491,6 +505,11 @@ class ExtractTable:
         return extension.lower()
 
 
+    # TODO: gpd can't handle super large datasets e.g. 2gb. Maybe set
+    # a timeout then use pandas' read then construct a gdf?
+    # e.g. MEDSL's precinct_2018.csv: gpd doesn't terminate. problem seems
+    # that the dataset contains non-UTF-8-encoded characters. Can load
+    # with pandas when setting encoding to 'ISO-8859-1'
     def __read_file(self, filename: str) -> Tuple[str, gpd.GeoDataFrame]:
         """
         Given a filename, returns a tuple of a tabular file's name and 
