@@ -28,9 +28,9 @@ good_out = "tests/dumps/dump"
 dne_dir = "tests/dumps/dne"
 dne_out = dne_dir + "/dump"
 
-bad_inf1 = "this is a bad infile path"
-bad_val1 = "this is a bad value"
-bad_col1 = "this is a bad column"
+bad_inf = "this is a bad infile path"
+bad_val = "this is a bad value"
+bad_col = "this is a bad column"
 
 def del_outfile(outfile):
     if os.path.exists(outfile):
@@ -58,13 +58,62 @@ def test_empty_constructor():
     assert et.value is None
 
     with pytest.raises(Exception):
-        et.value = good_val1a
-    with pytest.raises(Exception):
-        et.column = good_col1a
-    with pytest.raises(Exception):
-        et.infile = bad_inf
-    with pytest.raises(Exception):
         extracted = et.extract()
+
+
+def test_constructor_errors():
+    with pytest.raises(Exception):
+        et = ExtractTable(bad_inf)
+    with pytest.raises(Exception):
+        et = ExtractTable(good_inf, None, bad_col)
+    with pytest.raises(Exception):
+        et = ExtractTable(good_inf, None, bad_col, bad_val)
+    with pytest.raises(Exception):
+        et = ExtractTable(good_inf, None, good_col1a, bad_val)
+
+
+def test_constructor():
+    et = ExtractTable(good_inf1)
+    assert et.infile == good_inf1
+    assert et.outfile is None
+    assert et.column is None 
+    assert et.value is None
+
+    et = ExtractTable(good_inf1, good_out)
+    assert et.infile == good_inf1
+    assert et.outfile == PosixPath(good_out)
+    assert et.column is None 
+    assert et.value is None
+
+    et = ExtractTable(good_inf1, good_out, good_col1a)
+    assert et.infile == good_inf1
+    assert et.outfile == PosixPath(good_out)
+    assert et.column == good_col1a
+    assert et.value is None
+
+    et = ExtractTable(good_inf1, good_out, good_col1a, good_val1a)
+    assert et.infile == good_inf1
+    assert et.outfile == PosixPath(good_out)
+    assert et.column == good_col1a
+    assert et.value == good_val1a
+
+    et = ExtractTable(good_inf1, None, good_col1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value == None
+
+    et = ExtractTable(good_inf1, column=good_col1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value == None
+
+    et = ExtractTable(good_inf1, column=good_col1a, value=good_val1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value == good_val1a
 
 
 def test_infile():
@@ -163,41 +212,56 @@ def test_setters_2():
     extract = et.extract()
     extract = et2.extract()
 
+    et2.extract_to_file()
+
+
+def test_read_file_errors():
+    with pytest.raises(Exception):
+        et = ExtractTable.read_file()
+    with pytest.raises(Exception): 
+        et = ExtractTable.read_file(bad_inf)
+    with pytest.raises(Exception):
+        et = ExtractTable.read_file(column=good_col1a, value=good_val1a)
+    with pytest.raises(Exception):
+        et = ExtractTable.read_file(good_inf1, column=bad_col)
+    with pytest.raises(Exception):
+        et = ExtractTable.read_file(good_inf1, value=good_val1a)
+    with pytest.raises(Exception):
+        et = ExtractTable.read_file(
+                good_inf1, column=good_col1a, value=bad_val)
+    with pytest.raises(Exception):
+        et = ExtractTable.read_file(bad_inf, column=bad_col, value= bad_val)
+    
+
+def test_read_file():
+    et = ExtractTable.read_file(good_inf1)
+    assert et.infile == good_inf1
+    assert et.outfile is None
+    assert et.column is None
+    assert et.value is None
+
+    et = ExtractTable.read_file(good_inf1, good_col1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value is None
+
+    et = ExtractTable.read_file(good_inf1, good_col1a, good_val1a)
+    assert et.infile == good_inf1
+    assert et.outfile == None
+    assert et.column == good_col1a
+    assert et.value == good_val1a
+
+    et = ExtractTable.read_file(good_inf2, good_col2, good_val2)
+    assert et.infile == good_inf2
+    assert et.outfile == None
+    assert et.column == good_col2
+    assert et.value == good_val2
 
 
 #===============================================
 
 def run_tests2():
-    try:
-        et = ExtractTable.read_file()
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        et = ExtractTable.read_file("asdf/asdf")
-    except Exception as e:
-        print('Expected failure.', e)
-
-    try:
-        et = ExtractTable.read_file(column=2, value='asdf')
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        et = ExtractTable.read_file("tests/inputs/test1.csv", column="3")
-    except Exception as e:
-        print('Expected failure.', e) 
-
-    try:
-        et = ExtractTable.read_file("tests/inputs/test1.csv", value="3")
-    except Exception as e:
-        print('Expected failure.', e) 
-
-    try:
-        et = ExtractTable.read_file("tests/inputs/test1.csv", column="col1", value=3)
-    except Exception as e:
-        print('Expected failure.', e) 
-    print()
 
     et = ExtractTable.read_file("tests/inputs/test1.csv")
     print('infile = ', et.infile)

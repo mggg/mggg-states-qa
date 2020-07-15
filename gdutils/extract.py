@@ -194,7 +194,7 @@ class ExtractTable:
         >>> et4 = ExtractTable.read_file('in.csv', column='X', value=['1','3'])
 
         """
-        return self(filename, None, column, value)
+        return self(filename, outfile=None, column=column, value=value)
     
 
     def __sanitize_init(self,
