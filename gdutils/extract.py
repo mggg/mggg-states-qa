@@ -3,9 +3,9 @@ extract.py
 ==========
 
 Provides
-    - A python class, ``ExtractTable`` (pronounced "extractable") for 
-      extracting subtables from given tabular data. Can manage filetypes 
-      .csv, .xlsx, .geojson, .shp, etc.
+    - A class ``ExtractTable`` (pronounced "extractable") for extracting 
+      subtables from given tabular data. Can manage filetypes .csv, .xlsx, 
+      .geojson, .shp, etc.
 
     - A commandline script that can be used to
 
