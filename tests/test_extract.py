@@ -2,92 +2,107 @@ from shapely.geometry import Point
 import pandas as pd
 import geopandas as gpd
 
+import pytest
+
 from context import gdutils
 from gdutils.extract import ExtractTable
 
-import pytest
 
 #########################################
 # Regression Tests                      #
 #########################################
 
-def test_constructor():
+good_inf1 = "tests/inputs/test1.csv"
+good_col1a = "col1"
+good_col1b = "col2"
+good_val1a = "c"
+good_val1b = 5
+
+good_inf2 = "tests/inputs/test2.csv"
+good_col2 = "featurecla"
+good_val2 = "Country"
+
+bad_inf1 = "tests/inputs/asdf"
+bad_val1 = "this is a bad value"
+bad_col1 = "this is a bad column"
+
+def test_empty_constructor():
     et = ExtractTable()
 
+    assert et.infile is None
+    assert et.outfile is None
+    assert et.column is None 
+    assert et.value is None
+
     with pytest.raises(Exception):
-        et.value = 'fail'
+        et.value = good_val1a
+    with pytest.raises(Exception):
+        et.column = good_col1a
+    with pytest.raises(Exception):
+        et.infile = bad_inf
+    with pytest.raises(Exception):
+        extracted = et.extract()
+
+
+def test_infile():
+    et = ExtractTable()
+
+    et.infile = good_inf1
+    assert et.infile == good_inf1
+
+    with pytest.raises(Exception):
+        et.value = good_val1a
+    with pytest.raises(Exception):
+        et.column = good_column1a
+    with pytest.raises(Exception):
+        et.infile = bad_inf
+    
+    extract = et.extract()
+
+
+def test_column():
+    et = ExtractTable()
+    et.infile = good_inf1
+
+    et.column = good_col1a
+
+    with pytest.raises(Exception):
+        et.value = bad_val
+    with pytest.raises(Exception):
+        et.column = bad_col
+    
+    et.column = good_col1b
+    
+    extract = et.extract()
+
+
+def test_value():
+    et = ExtractTable()
+    et.infile = good_inf1
+    et.column = good_col1a
+
+    et.value = good_val1a
+    et.value = "b"
+
+    extract = et.extract()
+
+
+def test_setters_mix():
+    et = ExtractTable()
+    et.infile = good_inf1
+    et.column = good_col1a
+    et.value = good_val1a
+
+    with pytest.raises(Exception):
+        et.infile = good_inf2
+    
+    extract = et.extract()
+    
+
 
 #===============================================
 
 def run_tests():
-    print('et = ExtractTable()')
-    et = ExtractTable()
-    print('infile = ', et.infile)
-    print('outfile = ', et.outfile)
-    print('column = ', et.column)
-    print('value = ', et.value)
-    print()
-
-    try:
-        et.value = 'fail'
-    except Exception as e:
-        print('Expected failure:', e)
-    
-    try:
-        et.column = 'fail'
-    except Exception as e:
-        print('Expected failure:', e)
-
-    try:
-        et.infile = "tests/inputs/asdf"
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        extracted = et.extract()
-    except Exception as e:
-        print('Expected failure.', e)
-    print()
-
-    et.infile = "tests/inputs/test1.csv"
-
-    try:
-        et.value = "sdf"
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        et.infile = "asdf/asdf"
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        et.column = "col"
-    except Exception as e:
-        print('Expected failure.', e)
-
-    print(et.extract())
-    print()
-
-    et.column = "col1"
-    
-    try:
-        et.value = "fda"
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        et.column = "col"
-    except Exception as e:
-        print('Expected failure.', e)
-    
-    try:
-        et.value = "fda"
-    except Exception as e:
-        print('Expected failure.', e)
-
-    print(et.extract())
-    print()
 
     et.value = "c"
     print(et.extract())
@@ -267,11 +282,11 @@ def run_tests5():
 # Function Calls                        #
 #########################################
 # try:
-run_tests()
-run_tests2()
-run_tests3()
-run_tests4()
-run_tests5()
+# run_tests()
+# run_tests2()
+# run_tests3()
+# run_tests4()
+# run_tests5()
 #     run_tests6()
 # except Exception as e:
 #     print('failed:', e)

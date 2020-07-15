@@ -618,7 +618,9 @@ class ExtractTable:
                infile: Optional[Union[str, 
                                       gpd.GeoDataFrame,
                                       pd.DataFrame]]) -> NoReturn:
-        if infile is not None:
+        if infile is not None and self.__infile is not None:
+            raise Exception("Infile '{}' is already set".format(self.__infile))
+        elif infile is not None:
             try:
                 (self.__infile, self.__table) = self.__read_file(infile)
             except:
@@ -627,7 +629,7 @@ class ExtractTable:
                     self.__table = gpd.GeoDataFrame(infile)
                 except Exception as e:
                     raise FileNotFoundError(
-                            '{} not found. {}'.format(infile, e))
+                            "{} not found. {}'"format(infile, e))
 
 
     @property
