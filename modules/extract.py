@@ -3,9 +3,9 @@ extract.py
 ==========
 
 Provides
-    - A python class, ``ExtractTable`` (pronounced "extractable") for 
-      extracting subtables from given tabular data. Can manage filetypes 
-      .csv, .xlsx, .geojson, .shp, etc.
+    - A class ``ExtractTable`` (pronounced "extractable") for extracting 
+      subtables from given tabular data. Can manage filetypes .csv, .xlsx, 
+      .geojson, .shp, etc.
 
     - A commandline script that can be used to
 
@@ -194,7 +194,7 @@ class ExtractTable:
         >>> et4 = ExtractTable.read_file('in.csv', column='X', value=['1','3'])
 
         """
-        return self(filename, None, column, value)
+        return self(filename, outfile=None, column=column, value=value)
     
 
     def __sanitize_init(self,
@@ -365,7 +365,11 @@ class ExtractTable:
                             pd.DataFrame(gdf).drop(columns='geometry'), 
                             filename, ext)
             except Exception as e:
-                raise RuntimeError("Extraction failed:", e)
+                try:
+                    os.makedirs(self.__outfile.parent)
+                    self.extract_to_file(outfile, driver)
+                except:
+                    raise RuntimeError("Extraction failed:", e)
 
 
     def list_columns(self) -> np.ndarray:
@@ -618,7 +622,9 @@ class ExtractTable:
                infile: Optional[Union[str, 
                                       gpd.GeoDataFrame,
                                       pd.DataFrame]]) -> NoReturn:
-        if infile is not None:
+        if infile is not None and self.__infile is not None:
+            raise Exception("Infile '{}' is already set".format(self.__infile))
+        elif infile is not None:
             try:
                 (self.__infile, self.__table) = self.__read_file(infile)
             except:
@@ -627,7 +633,7 @@ class ExtractTable:
                     self.__table = gpd.GeoDataFrame(infile)
                 except Exception as e:
                     raise FileNotFoundError(
-                            '{} not found. {}'.format(infile, e))
+                            "{} not found. {}".format(infile, e))
 
 
     @property
@@ -665,6 +671,7 @@ class ExtractTable:
                 raise KeyError("Column not found: {}".format(e))
 
             self.__column = column
+            self.__value = None
 
 
     @property
