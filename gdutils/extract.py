@@ -34,7 +34,7 @@ Run ``import modules.extract; help(modules.extract)`` to view documentation.
 ::
 
     $ python
-    >>> import modules.extract; help(modules.extract)
+    >>> import gdutils.extract; help(gdutils.extract)
 
 Additionally, documentation can be found on `Read the Docs 
 <https://gdutils.readthedocs.io>`_.
