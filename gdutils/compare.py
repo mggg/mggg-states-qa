@@ -4,7 +4,7 @@ compare.py
 
 Provides
     - A python class, ``CompareTables`` for comparing geodata. Main use case
-      is Data QA through comparing processed geodata with those from other
+      is for Data QA through comparing processed geodata with those from other
       sources (e.g. MEDSL)
 
 Metadata
@@ -12,7 +12,7 @@ Metadata
 
 :Filename:      `compare.py <https://github.com/keiferc/gdutils/>`_
 :Author:        `@KeiferC <https://github.com/keiferc>`_
-:Date:          06 July 2020
+:Date:          15 July 2020
 :Version:       0.0.1
 :Description:   Module for comparing geodata
 :Dependencies:  

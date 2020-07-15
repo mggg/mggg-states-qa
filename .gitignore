@@ -21,11 +21,10 @@
 **/__MACOSX
 
 # Large Files
-**/test*/
-**/test*.zip
+tests/inputs/*.zip
+!tests/inputs/test.zip
 **/dump/
-**/test/nhgis0004_shapefile_tl2010_060_block_2010*
-**/example-inputs/example/*
+tests/nhgis0004_shapefile_tl2010_060_block_2010*
 
 # Docs
 docs/**/gdutils/
