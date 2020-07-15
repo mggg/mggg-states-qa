@@ -69,6 +69,8 @@ class CompareTables:
     table2 : Union[str, pd.DataFrame, gpd.GeoDataFrame]
         Name/path of input tabular data file or a pandas DataFrame or a 
         geopandas GeoDataFrame to compare
+    columns1 : 
+    columns2 :
     outfile : Optional[str, pathlib.Path]
         Name/path of output file for writing comparison results. Defaults
         to ``None``
