@@ -4,7 +4,7 @@ compare.py
 
 Provides
     - A python class, ``CompareTables`` for comparing geodata. Main use case
-      is for Data QA through comparing processed geodata with those from other
+      is for data QA through comparing processed geodata with those from other
       sources (e.g. MEDSL)
 
 Metadata
@@ -14,40 +14,39 @@ Metadata
 :Author:        `@KeiferC <https://github.com/keiferc>`_
 :Date:          15 July 2020
 :Version:       0.0.1
-:Description:   Module for comparing geodata
+:Description:   Module for comparing geodata tables for data QA purposes
 :Dependencies:  
 
                 - ``geopandas``
                 - ``numpy``
+                - ``gdutils.extract`
 
 Documentation
 -------------
 
 Documentation for the ``compare`` module can be found as docstrings. 
-Run ``import modules.compare; help(modules.compare)`` to view documentation.
+Run ``import gdutils.compare; help(gdutils.compare)`` to view documentation.
 ::
 
     $ python
-    >>> import modules.compare; help(modules.compare)
+    >>> import gdutils.compare; help(gdutils.compare)
 
 Additionally, documentation can be found on `Read the Docs 
 <https://gdutils.readthedocs.io>`_.
 
 """
-import argparse
 import geopandas as gpd
 import numpy as np
 import os.path
 import pandas as pd
 import pathlib
-import shapely.wkt
 import sys
-import zipfile
 
 from typing import List, NoReturn, Optional, Tuple, Union
-from extract import ExtractTable as et
 import warnings; warnings.filterwarnings(
     'ignore', 'GeoSeries.isna', UserWarning)
+
+from gdutils.extract import ExtractTable as et
 
 
 
