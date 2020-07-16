@@ -3,6 +3,7 @@ import pandas as pd
 import geopandas as gpd
 
 from context import gdutils
+from gdutils.extract import ExtractTable
 from gdutils.compare import CompareTables
 
 
@@ -19,10 +20,15 @@ medsl_file = 'tests/inputs/medsl18_ct.csv'
     # from precinct_2018.zip using the ``gdutils.extract``` module
 
 mggg_gdf = ExtractTable(mggg_file).extract()
+
 medsl_df = pd.read_csv(medsl_file)
 medsl_df = medsl_df.pivot_table(index='precinct', 
                                 columns=['office', 'party'], 
                                 values='votes')
+medsl_df.columns = [' '.join(col).strip() for col in medsl_df.columns.values]
+medsl_df.to_csv('tests/inputs/medsl18_ct_clean.csv')
+
+
 
 #########################################
 # Regression Tests                      #

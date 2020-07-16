@@ -239,6 +239,8 @@ class ExtractTable:
     # Public Instance Methods                   |
     #===========================================+
 
+    # TODO: fix - does not preserve datatypes in extracted gdf
+    # i.e. converts all values to strings
     def extract(self) -> gpd.GeoDataFrame:
         """
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
@@ -384,7 +386,9 @@ class ExtractTable:
     # District 3        194.0      389.0  ...  937.0         333.0
     # ...               ...        ...    ...  ...             ...
     # District 231      557.0      937.0  ...  38.0          785.0
-
+    
+    # TODO: fix - throws exception when et is init with a df
+    # looks for a geometry column when it doesn't have one
 
     def list_columns(self) -> np.ndarray:
         """
