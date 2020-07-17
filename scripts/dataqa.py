@@ -176,13 +176,7 @@ def list_files_of_type(filetype: str,
     files_to_list = []
     subdirs = []
 
-    try:
-        root_path = pathlib.Path(dirpath)
-        if not os.path.isdir(root_path):
-            raise FileNotFoundError(
-                    "Unable to find directory '{}'.".format(dirpath))
-    except Exception as e:
-        raise Exception("Failed to traverse path.".format(e))
+    root_path = __get_validated_path(dirpath)
 
     for path, directories, files in os.walk(root_path):
         for directory in directories: # collect subdirectories
@@ -228,10 +222,66 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
 
     Examples
     --------
-    >>> TODO
+    >>> standards = ['COL1', 'COL2', 'COL3']
+    >>> df = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                          columns=['COL1', 'col2', 'COL3'])
+    >>> print(df)
+       COL1  col2  COL3
+    0     1     2     3
+    1     4     5     6
+    >>> (matches, discrepancies) = dataqa.compare_column_names(df, standards)
+    >>> print(matches)
+    {'COL1', 'COL2'}
+    >>> print(discrepancies)
+    {'col2'}
 
     """
-    pass
+    intersection = set(standards).intersection(set(table.columns))
+    difference = set(table.columns) - intersection
+    return (intersection, difference)
+
+
+def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
+                      columns: Union[List[str], Set[str]]) \
+        -> List[Tuple[str, int]]:
+    """
+    Given a pandas DataFrame of a geopandas GeoDataFrame, and given a list of 
+    column names, returns a list of tuples (key-value pairs) of column names 
+    and the sum of their values. It is an unchecked runtime error if a column
+    containing non-numerical values is passed into the function.
+
+    Parameters
+    ----------
+    table : pd.DataFrame, gpd.GeoDataFrame
+        Tabular data containing columns whose values are to be summed
+    columns: List[str] | Set[str]
+        A list/set of column names whose values are to be summed
+    
+    Returns
+    -------
+    List[Tuple[str, int]]
+        A list of key-value pairs of column names associated with the sum
+        of their values. E.g. [('column 1', 100), ('column 2', 53)]
+    
+    Examples
+    --------
+    >>> cols = ['COL1', 'COL3']
+    >>> df = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                          columns=['COL1', 'COL2', 'COL3'])
+    >>> print(df)
+       COL1  COL2  COL3
+    0     1     2     3
+    1     4     5     6
+    >>> totals = dataqa.sum_column_values(df, cols)
+    >>> for column, sum in totals:
+            print("{}: {}".format(column, sum))
+    COL1: 5
+    COL3: 9 
+
+    """
+    totals = [(col, table[col].sum()) for col in list(columns)]
+    totals.sort(key = lambda tuple : tuple[0])
+    return totals
 
 
 #########################################
@@ -239,6 +289,7 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
 #           Helper Definitions          #
 #                                       #
 #########################################
+
 def __get_clone_cmds(account: str,
                      account_type: str,
                      dirpath: Optional[Union[str, pathlib.Path]] = None) \
@@ -277,14 +328,7 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
     """
     repos_to_list = []
     subdirs = []
-
-    try:
-        root_path = pathlib.Path(dirpath)
-        if not os.path.isdir(root_path):
-            raise FileNotFoundError(
-                    "Unable to find directory '{}'.".format(dirpath))
-    except Exception as e:
-        raise Exception("Failed to traverse path.".format(e))
+    root_path = __get_validated_path(dirpath)
 
     for path, dirs, _ in os.walk(root_path):
         [subdirs.append(os.path.join(path, directory)) for directory in dirs]
@@ -296,5 +340,14 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
     return repos_to_list
 
 
-##########
-remove_repos('.')
+def __get_validated_path(dirpath: Union[str, pathlib.Path]) -> pathlib.Path:
+    try:
+        root_path = pathlib.Path(dirpath)
+        if not os.path.isdir(root_path):
+            raise FileNotFoundError(
+                    "Unable to find directory '{}'.".format(dirpath))
+        return root_path
+
+    except Exception as e:
+        raise Exception("Failed to traverse path.".format(e))
+
