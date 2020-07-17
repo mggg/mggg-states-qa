@@ -94,18 +94,18 @@ def clone_repos(account: str,
         raise RuntimeError("Unable to clone repos. {}".format(e))
 
 
-def remove_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
+def remove_repos(dirpath: Union[str, pathlib.Path]) \
         -> NoReturn:
     """
     Given a name/path of a directory, recursively removes all git repositories
-    starting from the given directory.
+    starting from the given directory. This action cannot be undone.
 
-    Note: the function only the repos in the given directory; it does not remove
-    the given directory if the given directory itself is a repo.
+    Warning: this function will remove the given directory if the given directory 
+    itself is a git repo.
 
     Parameters
     ----------
-    dirpath: str | pathlib.Path, optional, default = '.'
+    dirpath: str | pathlib.Path
         Name/path of directory from which recursive removal of repos begins.
     
     Raises
@@ -114,8 +114,18 @@ def remove_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
         Raised if unable to find the given directory.
 
     """
-    repos = __list_repos(dirpath)
-    # TODO
+    try:
+        repos = __list_repos(dirpath)
+        cmds = [['rm', '-r', repo] for repo in repos]
+        
+        responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
+
+        for res in responses:
+            if res.returncode != 0:
+                sys.stderr.write("Failed to remove repo {}.\n".format(res.args[2]))
+
+    except Exception as e:
+        raise RuntimeError("Unable to remove repo. {}".format(e)) 
 
 
 def list_files_of_type(filetype: str, 
@@ -287,4 +297,4 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
 
 
 ##########
-print(__list_repos())
+remove_repos('.')
