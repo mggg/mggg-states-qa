@@ -41,7 +41,7 @@ import subprocess
 import sys
 import urllib.parse
 
-from typing import List, NoReturn, Optional, Tuple, Union
+from typing import List, NoReturn, Optional, Set, Tuple, Union
 
 
 #########################################
@@ -52,7 +52,8 @@ from typing import List, NoReturn, Optional, Tuple, Union
 
 def clone_repos(account: str,
                 account_type: str,
-                dirpath: Optional[Union[str, pathlib.Path]]=None) -> NoReturn:
+                dirpath: Optional[Union[str, pathlib.Path]] = None) \
+        -> NoReturn:
     """
     Clones public GitHub repositories into the given directory. If
     directory path is not provided, clones repos into the current
@@ -93,8 +94,33 @@ def clone_repos(account: str,
         raise RuntimeError("Unable to clone repos. {}".format(e))
 
 
+def remove_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
+        -> NoReturn:
+    """
+    Given a name/path of a directory, recursively removes all git repositories
+    starting from the given directory.
+
+    Note: the function only the repos in the given directory; it does not remove
+    the given directory if the given directory itself is a repo.
+
+    Parameters
+    ----------
+    dirpath: str | pathlib.Path, optional, default = '.'
+        Name/path of directory from which recursive removal of repos begins.
+    
+    Raises
+    ------
+    FileNotFoundError
+        Raised if unable to find the given directory.
+
+    """
+    repos = __list_repos(dirpath)
+    # TODO
+
+
 def list_files_of_type(filetype: str, 
-                       dirpath: Optional[Union[str, pathlib.Path]]='.') \
+                       dirpath: Optional[Union[str, pathlib.Path]] = '.',
+                       exclude_hidden: Optional[bool] = True) \
         -> List[str]:
     """
     Given a file extension and an optional directory path, returns a list of
@@ -109,6 +135,8 @@ def list_files_of_type(filetype: str,
     dirpath: str | pathlib.Path, optional, default = '.'.
         Path to directory from which file listing begins. Defaults to
         current working directory if not specified.
+    exclude_hidden: bool, option, default = True
+        If false, function includes hidden directories in the search.
     
     Returns
     -------
@@ -123,29 +151,33 @@ def list_files_of_type(filetype: str,
     --------
     >>> list_of_zips = dataqa.list_files_of_type('.zip')
     >>> print(list_of_zips)
-    ['zipfile1.zip', 'zipfile2.zip', 'shapefiles/shape1.zip', 
-    'shapefiles/shape2.zip']
+    ['./zipfile1.zip', './zipfile2.zip', './shapefiles/shape1.zip', 
+    './shapefiles/shape2.zip']
 
     >>> list_of_shps = dataqa.list_files_of_type('.shp', 'shapefiles/')
     >>> print(list_of_shps)
-    ['shapefiles/shape1/shape1.shp', 'shapefiles/shape2/shape2.shp']
+    ['./shapefiles/shape1/shape1.shp', './shapefiles/shape2/shape2.shp']
+
+    >>> list_of_csvs = dataqa.list_files_of_type('.csv', exclude_hidden=False)
+    >>> print(list_of_csvs)
+    ['./csv1.csv', './.hidden-dir/csv_hidden.csv']
 
     """
     files_to_list = []
     subdirs = []
 
-
     try:
         root_path = pathlib.Path(dirpath)
         if not os.path.isdir(root_path):
-            raise FileNotFoundError("Unable to find directory '{}'.".format(dirpath))
+            raise FileNotFoundError(
+                    "Unable to find directory '{}'.".format(dirpath))
     except Exception as e:
         raise Exception("Failed to traverse path.".format(e))
 
-    for path, directories, files in os.walk(dirpath):
+    for path, directories, files in os.walk(root_path):
         for directory in directories: # collect subdirectories
-            if not directory.startswith('.'): # excludes hidden directories
-                subdirs.append(os.path.join(path,directory))
+            if exclude_hidden and not directory.startswith('.'):
+                subdirs.append(os.path.join(path, directory))
 
         for file in files: # collect files
             if file.endswith(filetype): 
@@ -157,6 +189,41 @@ def list_files_of_type(filetype: str,
     return files_to_list
 
 
+def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
+                         standards: Union[List[str], Set[str]]) \
+        -> Tuple[Set[str], Set[str]]:
+    """
+    Given either a pandas DataFrame or a geopandas GeoDataFrame and a list
+    of standardized column names, returns a tuple containing the intersection
+    between standardized column names and columns in the table and the set of
+    columns names in the table that are not in the standards.
+
+    Parameters
+    ----------
+    table : pd.DataFrame | gpd.GeoDataFrame
+        Tabular data whose column names are to be compared against the 
+        standards.
+    standards : List[str] | Set[str]
+        List/set of standardized column names to be compared against the given
+        tabular data.
+    
+    Returns
+    -------
+    Tuple[Set[str], Set[str]]
+        The first set in the tuple contains the intersection of column names
+        between the table and the standards list. The second set in the tuple
+        contains the column name in the difference between the table and the
+        standards list.
+
+
+    Examples
+    --------
+    >>> TODO
+
+    """
+    pass
+
+
 #########################################
 #                                       #
 #           Helper Definitions          #
@@ -164,7 +231,7 @@ def list_files_of_type(filetype: str,
 #########################################
 def __get_clone_cmds(account: str,
                      account_type: str,
-                     dirpath: Optional[Union[str, pathlib.Path]]=None) \
+                     dirpath: Optional[Union[str, pathlib.Path]] = None) \
         -> List[str]:
     """
     Returns a list of subprocess-valid git clone commands.
@@ -191,4 +258,33 @@ def __get_clone_cmds(account: str,
     return cmds
 
 
+def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
+        -> List[str]:
+    """
+    Given a starting search directory, returns a list of paths to git repos
+    on the local machine.
+
+    """
+    repos_to_list = []
+    subdirs = []
+
+    try:
+        root_path = pathlib.Path(dirpath)
+        if not os.path.isdir(root_path):
+            raise FileNotFoundError(
+                    "Unable to find directory '{}'.".format(dirpath))
+    except Exception as e:
+        raise Exception("Failed to traverse path.".format(e))
+
+    for path, dirs, _ in os.walk(root_path):
+        [subdirs.append(os.path.join(path, directory)) for directory in dirs]
+    
+    repos_to_list = [subdir.rstrip(os.path.basename(subdir)) 
+                        for subdir in subdirs 
+                        if pathlib.Path(subdir).name == '.git']
+
+    return repos_to_list
+
+
 ##########
+print(__list_repos())
