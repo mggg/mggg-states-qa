@@ -173,24 +173,13 @@ def list_files_of_type(filetype: str,
     ['./csv1.csv', './.hidden-dir/csv_hidden.csv']
 
     """
-    files_to_list = []
-    subdirs = []
-
     root_path = __get_validated_path(dirpath)
 
-    for path, directories, files in os.walk(root_path):
-        for directory in directories: # collect subdirectories
-            if exclude_hidden and not directory.startswith('.'):
-                subdirs.append(os.path.join(path, directory))
-
-        for file in files: # collect files
-            if file.endswith(filetype): 
-                files_to_list.append(os.path.join(path, file))
-
-    for directory in subdirs:
-        files_to_list += list_files_of_type(filetype, directory)
-
-    return files_to_list
+    all_files = []
+    for path, _, files in os.walk(root_path):
+        [all_files.append(os.path.join(path, file)) for file in files]
+    
+    return [file for file in all_files if file.endswith(filetype)]
 
 
 def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
@@ -326,18 +315,14 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
     on the local machine.
 
     """
-    repos_to_list = []
-    subdirs = []
     root_path = __get_validated_path(dirpath)
 
+    subdirs = []
     for path, dirs, _ in os.walk(root_path):
         [subdirs.append(os.path.join(path, directory)) for directory in dirs]
-    
-    repos_to_list = [subdir.rstrip(os.path.basename(subdir)) 
-                        for subdir in subdirs 
-                        if pathlib.Path(subdir).name == '.git']
 
-    return repos_to_list
+    return [subdir.rstrip(os.path.basename(subdir)) 
+                for subdir in subdirs if pathlib.Path(subdir).name == '.git']
 
 
 def __get_validated_path(dirpath: Union[str, pathlib.Path]) -> pathlib.Path:
@@ -350,4 +335,4 @@ def __get_validated_path(dirpath: Union[str, pathlib.Path]) -> pathlib.Path:
 
     except Exception as e:
         raise Exception("Failed to traverse path.".format(e))
-
+        
