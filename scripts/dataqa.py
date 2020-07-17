@@ -77,7 +77,7 @@ def clone_repos(account: str,
     Examples
     --------
     >>> dataqa.clone_repos('mggg-states', 'orgs')
-    
+
     >>> dataqa.clone_repos('octocat', 'users', 'cloned-repos')
 
     """
@@ -91,6 +91,70 @@ def clone_repos(account: str,
 
     except Exception as e:
         raise RuntimeError("Unable to clone repos. {}".format(e))
+
+
+def list_files_of_type(filetype: str, 
+                       dirpath: Optional[Union[str, pathlib.Path]]='.') \
+        -> List[str]:
+    """
+    Given a file extension and an optional directory path, returns a list of
+    file paths of files containing the extension. If the directory path is not
+    specified, function defaults to listing files from the current 
+    working directory.
+
+    Parameters
+    ----------
+    filetype: str
+        File extension of files to list (e.g. '.zip').
+    dirpath: str | pathlib.Path, optional, default = '.'.
+        Path to directory from which file listing begins. Defaults to
+        current working directory if not specified.
+    
+    Returns
+    -------
+    List[str]
+
+    Raises
+    ------
+    FileNotFoundError
+        Raised if unable to find given directory.
+
+    Examples
+    --------
+    >>> list_of_zips = dataqa.list_files_of_type('.zip')
+    >>> print(list_of_zips)
+    ['zipfile1.zip', 'zipfile2.zip', 'shapefiles/shape1.zip', 
+    'shapefiles/shape2.zip']
+
+    >>> list_of_shps = dataqa.list_files_of_type('.shp', 'shapefiles/')
+    >>> print(list_of_shps)
+    ['shapefiles/shape1/shape1.shp', 'shapefiles/shape2/shape2.shp']
+
+    """
+    files_to_list = []
+    subdirs = []
+
+
+    try:
+        root_path = pathlib.Path(dirpath)
+        if not os.path.isdir(root_path):
+            raise FileNotFoundError("Unable to find directory '{}'.".format(dirpath))
+    except Exception as e:
+        raise Exception("Failed to traverse path.".format(e))
+
+    for path, directories, files in os.walk(dirpath):
+        for directory in directories: # collect subdirectories
+            if not directory.startswith('.'): # excludes hidden directories
+                subdirs.append(os.path.join(path,directory))
+
+        for file in files: # collect files
+            if file.endswith(filetype): 
+                files_to_list.append(os.path.join(path, file))
+
+    for directory in subdirs:
+        files_to_list += list_files_of_type(filetype, directory)
+
+    return files_to_list
 
 
 #########################################
@@ -127,5 +191,4 @@ def __get_clone_cmds(account: str,
     return cmds
 
 
-# Function calls -- testing
-clone_repos('keiferc', 'users', 'dump')
+##########
