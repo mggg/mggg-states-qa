@@ -30,7 +30,7 @@
         {"U":   "Unaffiliated"}
     ],
     "demographics": [
-        {"TOTPOP":      "Total population"}
+        {"TOTPOP":      "Total population"},
         {"NH_WHITE":    "White, non-Hispanic"},
         {"NH_BLACK":    "Black, non-Hispanic "},
         {"NH_AMIN":     "American Indian and Alaska Native, non-Hispanic"},
