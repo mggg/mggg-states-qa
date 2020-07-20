@@ -74,5 +74,8 @@
         {"TOTREG":  "Total registered voters on election day"},
         {"TOTVOTE": "Total votes cast on election day"},
         {"TURNOUT": "Turnout proportion on election day"}
-    ] 
+    ],
+    "other": [
+        {"geometry": "Shapefile geometries column"}
+    ]
 }

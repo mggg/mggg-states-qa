@@ -52,7 +52,7 @@ from typing import Any, Dict, List, NoReturn, Optional, Set, Tuple, Union
 
 def clone_repos(account: str,
                 account_type: str,
-                dirpath: Optional[Union[str, pathlib.Path]] = None) \
+                outpath: Optional[Union[str, pathlib.Path]] = None) \
         -> NoReturn:
     """
     Clones public GitHub repositories into the given directory. If
@@ -66,7 +66,7 @@ def clone_repos(account: str,
     account_type: str
         Type of github account whose public repos are to be cloned.
         Valid options: 'users', 'orgs'.
-    dirpath: str | pathlib.Path, optional
+    outpath: str | pathlib.Path, optional
         Path to which repos are to be cloned. If not specified, clones
         repos into current working directory.
     
@@ -83,7 +83,7 @@ def clone_repos(account: str,
 
     """
     try:
-        cmds = __get_clone_cmds(account, account_type, dirpath)
+        cmds = __get_clone_cmds(account, account_type, outpath)
         responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
 
         for res in responses:
