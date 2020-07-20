@@ -41,7 +41,7 @@ import subprocess
 import sys
 import urllib.parse
 
-from typing import List, NoReturn, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, NoReturn, Optional, Set, Tuple, Union
 
 
 #########################################
@@ -271,6 +271,44 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     totals = [(col, table[col].sum()) for col in list(columns)]
     totals.sort(key = lambda tuple : tuple[0])
     return totals
+
+
+def get_keys_by_category(dictionary: Dict[Any, Any], category: Any) \
+        -> List[Any]:
+    """
+    Given a dictionary with categories, returns a list of keys in the
+    given category.
+
+    Accepted forms of dictionary input:
+    ::
+
+        {category1 : [{key1 : value1}, {key2 : value2}]
+         category2 : [{key3 : value3},]}
+
+    Parameters
+    ----------
+    dictionary : Dict[Any, Any]
+        Dictionary containing categories in which keys are stored.
+    category : Any
+        Category containing keys-value pairs.
+    
+    Returns
+    -------
+    List[Any]
+        List of keys of every key-value pair in the given category of the
+        given dictionary.
+    
+    Examples
+    --------
+    >>> sample_dict = {'category1' : [{'key1': 1}],
+                       'category2' : [{'key2' : 2}, {'key3' : 3}]}
+    >>> keys = dataqa.get_keys_by_category(sample_dict, 'category2')
+    >>> print(keys)
+    ['key2', 'key3']
+
+    """
+    flatten = lambda xs : [x for sublist in xs for x in sublist]
+    return flatten([list(x) for x in dictionary[category]])
 
 
 #########################################
