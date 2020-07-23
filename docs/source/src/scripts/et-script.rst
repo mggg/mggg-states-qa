@@ -1,5 +1,5 @@
-extract.py Script
-=================
+extract.py
+==========
 .. code-block:: bash
 
     usage: extract.py [-h] [-o OUTFILE] [-c COLUMN] [-v VALUE [VALUE ...]] INFILE

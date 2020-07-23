@@ -1,36 +1,43 @@
 Documentation: ``gdutils`` 
-=============================
+==========================
 .. toctree::
    :caption: Installation
    :maxdepth: 1
    :hidden:
 
-   ./src/install/et-install
+   src/install.rst
 
 .. toctree::
-   :caption: Classes
+   :caption: Modules
    :maxdepth: 3
    :hidden:
    
-   ./src/classes/et
+   src/modules/dataqa
+   src/modules/extract
 
 .. toctree::
    :caption: Examples
    :maxdepth: 0
    :hidden:
 
-   ./src/examples/et-script
-   ./src/examples/et-examples.ipynb
+   src/examples/et-examples.ipynb
+
+.. toctree::
+   :caption: Scripts
+   :maxdepth: 0
+   :hidden:
+
+   src/scripts/et-script
 
 
 A collection of geodata utility tools.
 
 **Available modules:**
 
-- ``extract``: combined script and ``python`` module for extracting tabular data for data science (data wrangling) purposes. A user-friendly, lite wrapper of ``geopandas``.
+- ``gdutils.dataqa``: a ``python`` module for analyzing and comparing data for QA purposes.
+- ``gdutils.extract``: combined script and ``python`` module for extracting tabular data for data science (data wrangling) purposes. A user-friendly, lite wrapper of ``geopandas``.
 
+.. automodule:: gdutils.dataqa
+.. automodule:: gdutils.extract
 
-Module: ``extract``
--------------------
-.. automodule:: modules.extract
 

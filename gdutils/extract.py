@@ -1,6 +1,6 @@
 """
-extract.py
-==========
+gdutils.extract
+===============
 
 Provides
     - A class ``ExtractTable`` (pronounced "extractable") for extracting 
@@ -15,7 +15,7 @@ Provides
 
 Metadata
 --------
-
+:Module:        ``gdutils.extract``
 :Filename:      `extract.py <https://github.com/keiferc/gdutils>`_
 :Author:        `@KeiferC <https://github.com/keiferc>`_
 :Date:          06 July 2020
@@ -28,7 +28,6 @@ Metadata
 
 Documentation
 -------------
-
 Documentation for the ``extract`` module can be found as docstrings. 
 Run ``import modules.extract; help(modules.extract)`` to view documentation.
 ::
@@ -41,7 +40,6 @@ Additionally, documentation can be found on `Read the Docs
 
 Script Usage 
 ------------
-
 To get help on using the ``extract.py`` script, run ``extract.py -h``.
 ::
 

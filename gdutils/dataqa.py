@@ -1,12 +1,13 @@
 """
-dataqa.py
-=========
+gdutils.dataqa
+==============
 
 Provides
     - A ``python`` module containing data quality assurance functions.
 
 Metadata
 --------
+:Module:        ``gdutils.dataqa``
 :Filename:      `dataqa.py <https://github.com/keiferc/gdutils/>`_
 :Author:        `@KeiferC <https://github.com/keiferc>`_
 :Date:          17 July 2020
