@@ -72,7 +72,8 @@ import warnings; warnings.filterwarnings(
 
 class ExtractTable:
     """
-    For extracting tabular data. Run ``help(ExtractTable)`` to view docs.
+    For extracting tabular data. Run ``help(extract.ExtractTable)`` to
+    view docs.
     
     Specifying `outfile` determines the filetype of the output table. 
     Specifying `column` uses given column as output's index. Specifying 
@@ -103,20 +104,20 @@ class ExtractTable:
                  column:    Optional[str] = None, 
                  value:     Optional[Union[str, List[str]]] = None):
         """
-        ExtractTable initializer.
+        ExtractTable initializer. Returns an ExtractTable instance.
 
         Parameters
         ----------
-        infile : str | gpd.GeoDataFrame | pd.DataFrame | None, optional
+        infile : str | gpd.GeoDataFrame | pd.DataFrame 
+                     | None, optional, default = None
             Name/path of input file of tabular data to read or geopandas
-            GeoDataFrame or pandas DataFrame. Default is None.
-        outfile : str | None, optional
-            Name/path of output file for writing. Default is None.
-        column : str | None, optional
-            Label of column to use as index for extracted table. Default 
-            is None
-        value : str | List[str] | None, optional
-            Value(s) of specified column in rows to extract. Default is None
+            GeoDataFrame or pandas DataFrame.
+        outfile : str | None, optional, default = None
+            Name/path of output file for writing.
+        column : str | None, optional, default = None
+            Label of column to use as index for extracted table
+        value : str | List[str] | None, optional, default = None
+            Value(s) of specified column in rows to extract.
         
         Returns
         -------
@@ -124,27 +125,25 @@ class ExtractTable:
 
         See Also
         --------
-        extract.ExtractTable.read_file
+        extract.read_file
 
         Examples
         --------
-        >>> et1 = ExtractTable()
+        >>> et1 = extract.ExtractTable()
 
-        >>> et2 = ExtractTable('example/input.shp')
+        >>> et2 = extract.ExtractTable('example/input.shp')
 
-        >>> et3 = ExtractTable('example/file.csv', column='ID')
+        >>> et3 = extract.ExtractTable('example/file.csv', column='ID')
 
-        >>> et4 = ExtractTable('input.xlsx', 'output.md')
+        >>> et4 = extract.ExtractTable('input.xlsx', 'output.md')
 
-        >>> et5 = ExtractTable('in.csv', 'out.tex', 'ID', '01')
+        >>> et5 = extract.ExtractTable('in.csv', 'out.tex', 'ID', '01')
 
-        >>> et6 = ExtractTable('in.csv', column='ID', value=['01', '03'])
+        >>> et6 = extract.ExtractTable('in.shp', column='ID', value=['1', '3'])
 
-        >>> et7 = ExtractTable('in.shp', outfile='out', column='X', value='y')
+        >>> et7 = extract.ExtractTable(gpd.GeoDataFrame())
 
-        >>> et8 = ExtractTable(gpd.GeoDataFrame())
-
-        >>> et9 = ExtractTable(pd.DataFrame())
+        >>> et8 = extract.ExtractTable(pd.DataFrame())
 
         """
         # Encapsulated attributes
@@ -160,41 +159,6 @@ class ExtractTable:
         self.__extracted =  None
 
         self.__sanitize_init(infile, outfile, column, value)
-
-
-    @classmethod
-    def read_file(self, filename: str, 
-                  column:         Optional[str] = None, 
-                  value:          Optional[Union[str, List[str]]] = None):
-        """
-        Returns an ExtractTable instance with a specified input filename.
-
-        Parameters
-        ----------
-        filename : str
-            Name/path of input file of tabular data to read. Default is None
-        column : str | None, optional
-            Label of column to use as index for extracted table. Default 
-            is None
-        value : str | List[str] | None, optional
-            Value(s) of specified column in rows to extract. Default is None
-
-        Returns
-        -------
-        extract.ExtractTable
-
-        Examples
-        --------
-        >>> et1 = ExtractTable.read_file('example/input.shp')
-
-        >>> et2 = ExtractTable.read_file('example/file.csv', column='ID')
-
-        >>> et3 = ExtractTable.read_file('in.shp', column='foo', value='bar')
-
-        >>> et4 = ExtractTable.read_file('in.csv', column='X', value=['1','3'])
-
-        """
-        return self(filename, outfile=None, column=column, value=value)
     
 
     def __sanitize_init(self,
@@ -727,6 +691,47 @@ class ExtractTable:
                     "Column '{}' has no value '{}'".format(self.column, value))
             else:
                 self.__value = value
+
+
+
+#########################################
+#                                       #
+#       Module Functions                #
+#                                       #
+#########################################
+
+def read_file(filename: str, 
+              column:   Optional[str] = None, 
+              value:    Optional[Union[str, List[str]]] = None):
+    """
+    Returns an ExtractTable instance with a specified input filename.
+
+    Parameters
+    ----------
+    filename : str
+        Name/path of input file of tabular data to read. Default is None
+    column : str | None, optional
+        Label of column to use as index for extracted table. Default 
+        is None
+    value : str | List[str] | None, optional
+        Value(s) of specified column in rows to extract. Default is None
+
+    Returns
+    -------
+    extract.ExtractTable
+
+    Examples
+    --------
+    >>> et1 = extract.read_file('example/input.shp')
+
+    >>> et2 = extract.read_file('example/file.csv', column='ID')
+
+    >>> et3 = extract.read_file('in.shp', column='foo', value='bar')
+
+    >>> et4 = extract.read_file('in.csv', column='X', value=['1','3'])
+
+    """
+    return ExtractTable(filename, None, column=column, value=value)
 
 
 
