@@ -5,11 +5,11 @@ A collection of geodata utility tools. Still in development.
 
 Available modules:
 
-- `dataqa`: `python` module for comparing analyzing and comparing data for 
-   QA purposes. Status: In development.
-- `extract`: combined script and `python` module for extracting tabular data 
-  for data science (data wrangling) purposes. A user-friendly, lite wrapper of 
-  `geopandas`.
+- `gdutils.dataqa`: `python` module for comparing analyzing and comparing 
+   data for QA purposes. Status: In development.
+- `gdutils.extract`: combined script and `python` module for extracting 
+  tabular data for data science (data wrangling) purposes. A user-friendly, 
+  lite wrapper of `geopandas` with the power of `pandas`.
 
 ## Installation
 ```bash
