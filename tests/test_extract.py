@@ -352,8 +352,10 @@ def test_extract_to_file():
     del_outs()
 
 
-# to test, remove "no" prefix and insert path to large file
-# def notest_large(): 
-#     large_file = 'tests/inputs/nhgis0004_shapefile_tl2010_060_block_2010.zip'
-#     et = ExtractTable(large_file, 'tests/dumps/large.zip', column='NAME10')
-#     et.extract_to_file()
+# To test, remove "no" prefix from function name and insert path to large file
+def notest_large(): 
+    large_file = ''
+    et = ExtractTable(large_file, 'tests/dumps/large.zip', column='NAME10')
+    et.extract_to_file()
+
+
