@@ -6,7 +6,6 @@ import os
 
 import pytest
 
-from context import gdutils
 import gdutils.extract as et
 
 

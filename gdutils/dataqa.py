@@ -20,11 +20,11 @@ Metadata
 Documentation
 -------------
 Documentation for the ``dataqa`` module can be found as docstrings. 
-Run ``from gdutils import dataqa; help(dataqa)`` to view documentation.
+Run ``import gdutils.dataqa; help(gdutils.dataqa)`` to view documentation.
 ::
 
     $ python
-    >>> from gdutils import dataqa; help(dataqa)
+    >>> import gdutils.dataqa; help(gdutils.dataqa)
 
 Additionally, documentation can be found on `Read the Docs 
 <https://gdutils.readthedocs.io>`_.

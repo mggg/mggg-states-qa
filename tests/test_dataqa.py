@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 import geopandas as gpd
 
-from context import gdutils
-from gdutils.extract import ExtractTable
-from gdutils.compare import CompareTables
+import pytest
 
+import gdutils.extract as et
+import gdutils.dataqa as dq
 
 #########################################
 # Regression Test Inputs                #
@@ -19,7 +19,7 @@ medsl_file = 'tests/inputs/medsl18_ct.csv'
     # file used in test contains a subtable of CT specific data extracted
     # from precinct_2018.zip using the ``gdutils.extract``` module
 
-mggg_gdf = ExtractTable(mggg_file).extract()
+mggg_gdf = et.ExtractTable(mggg_file).extract()
 
 medsl_df = pd.read_csv(medsl_file)
 medsl_df = medsl_df.pivot_table(index='precinct', 
