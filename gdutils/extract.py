@@ -577,7 +577,7 @@ class ExtractTable:
 
     def __read_inferred(self, filename: str, ext: str) -> pd.DataFrame:
         if ext == '.csv':
-            return pd.read_csv(filename)
+            return pd.read_csv(filename) # TODO: csv values are all strings?
         elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
              ext == '.gzip' or ext == '.xz':
             return pd.read_pickle(filename)
