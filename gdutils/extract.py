@@ -472,11 +472,6 @@ class ExtractTable:
         return extension.lower()
 
 
-    # TODO: gpd can't handle super large datasets e.g. 2gb. Maybe set
-    # a timeout then use pandas' read then construct a gdf?
-    # e.g. MEDSL's precinct_2018.csv: gpd doesn't terminate. problem seems
-    # that the dataset contains non-UTF-8-encoded characters. Can load
-    # with pandas when setting encoding to 'ISO-8859-1'
     def __read_file(self, filename: str) -> Tuple[str, gpd.GeoDataFrame]:
         """
         Given a filename, returns a tuple of a tabular file's name and 
@@ -486,11 +481,11 @@ class ExtractTable:
         ext = self.__get_extension(filename)
 
         if ext != '.zip':
-            try:
-                return (filename, gpd.read_file(filename))
-            except: # gpd's read uses pd's init, which has recursion depth cap
+            try: # gpd has df init problems. Fix: try converting a pd read
                 return (filename, self.__geometrize_gdf(
                         gpd.GeoDataFrame(self.__read_inferred(filename, ext))))
+            except:
+                return (filename, gpd.read_file(filename))
         else:
             return self.__read_zip(filename)
 
@@ -539,8 +534,11 @@ class ExtractTable:
 
 
     def __read_inferred(self, filename: str, ext: str) -> pd.DataFrame:
-        if ext == '.csv':
-            return pd.read_csv(filename) # TODO: csv values are all strings?
+        if ext == '.csv': # TODO: csv values are all strings?
+            try:
+                return pd.read_csv(filename) 
+            except:
+                return pd.read_csv(filename, encoding='ISO-8859-1')
         elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
              ext == '.gzip' or ext == '.xz':
             return pd.read_pickle(filename)
