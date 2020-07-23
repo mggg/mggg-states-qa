@@ -7,17 +7,20 @@ Available modules:
 
 - `extract`: combined script and `python` module for extracting tabular data 
   for data science (data wrangling) purposes. A user-friendly, lite wrapper of `geopandas`.
-- `compare`: `python` module for comparing geodata for data QA purposes. 
-   Status: In development.
-
-
-## Documentation
-Documentation can be found on [Read the Docs](https://gdutils.readthedocs.io/).
-Additionally, documentation for modules can be found using the `python` 
-`help()` function, e.g. `import modules.extract; help(modules.extract)`.
-
+- `dataqa`: `python` module for comparing analyzing and comparing data for 
+   QA purposes. Status: In development.
 
 ## Installation
 ```bash
 $ pip install git+https://github.com/KeiferC/gdutils.git
 ```
+
+To uninstall, run `pip uninstall gdutils`.
+
+## Documentation
+Documentation can be found on [Read the Docs](https://gdutils.readthedocs.io/).
+Additionally, documentation for modules can be found using the `python` 
+`help()` function, e.g. `import gdutils.extract; help(gdutils.extract)`.
+
+
+
