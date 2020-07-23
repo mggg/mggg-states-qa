@@ -204,7 +204,7 @@ class ExtractTable:
     #===========================================+
 
     # TODO: fix - does not preserve datatypes in extracted gdf
-    # i.e. converts all values to strings
+    # i.e. converts all values to strings -- verify bug
     def extract(self) -> gpd.GeoDataFrame:
         """
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
@@ -337,22 +337,6 @@ class ExtractTable:
                     raise RuntimeError("Extraction failed:", e)
 
 
-    # TODO: fix - does not work with multi-index columns
-    #
-    # e.g.
-    #
-    # office           Attorney General   ...      US Senate
-    # party          democrat republican  ...  democrat republican
-    # precinct                            ...
-    # District 1        431.0      702.0  ...  702.0         584.0
-    # District 2        361.0      579.0  ...  194.0         471.0
-    # District 3        194.0      389.0  ...  937.0         333.0
-    # ...               ...        ...    ...  ...             ...
-    # District 231      557.0      937.0  ...  38.0          785.0
-    
-    # TODO: fix - throws exception when et is init with a df
-    # looks for a geometry column when it doesn't have one
-
     def list_columns(self) -> np.ndarray:
         """
         Returns a list of all columns in the initialized source tabular data.
@@ -382,8 +366,11 @@ class ExtractTable:
         elif self.__has_spatial_data(self.__table):
             return self.__table.columns.values
         else:
-            return self.__table.columns.values[
-                        self.__table.columns.values != 'geometry']
+            try:
+                return self.__table.columns.values[
+                            self.__table.columns.values != 'geometry']
+            except: # for multi-index columns
+                return self.__table.columns.get_level_values(0)
 
 
     def list_values(self, 
@@ -461,10 +448,12 @@ class ExtractTable:
     #===========================================+
 
     def __reindex(self) -> gpd.GeoDataFrame:
-        if self.value:
-            return self.__extracted.set_index(self.column)
+        if self.value is not None:
+            return self.__geometrize_gdf(gpd.GeoDataFrame(
+                        self.__extracted.set_index(self.column)))
         else:
-            return self.__table.set_index(self.column)
+            return self.__geometrize_gdf(gpd.GeoDataFrame(
+                        self.__table.set_index(self.column)))
 
 
     def __get_extension(self, filename: str) -> str:
@@ -483,9 +472,11 @@ class ExtractTable:
         if ext != '.zip':
             try: # gpd has df init problems. Fix: try converting a pd read
                 return (filename, self.__geometrize_gdf(
-                        gpd.GeoDataFrame(self.__read_inferred(filename, ext))))
+                                        gpd.GeoDataFrame(self.__read_inferred(
+                                                            filename, ext))))
             except:
-                return (filename, gpd.read_file(filename))
+                return (filename, self.__geometrize_gdf(
+                                        gpd.read_file(filename)))
         else:
             return self.__read_zip(filename)
 
@@ -534,7 +525,7 @@ class ExtractTable:
 
 
     def __read_inferred(self, filename: str, ext: str) -> pd.DataFrame:
-        if ext == '.csv': # TODO: csv values are all strings?
+        if ext == '.csv': # TODO: check if csv values are all strings?
             try:
                 return pd.read_csv(filename) 
             except:
@@ -584,8 +575,12 @@ class ExtractTable:
             geometry = gdf['geometry'].map(shapely.wkt.loads)
             geometrized = gdf.drop(columns='geometry')
             return gpd.GeoDataFrame(geometrized, geometry=geometry)
+
         except:
-            return gdf
+            if 'geometry' not in gdf.columns:
+                return gpd.GeoDataFrame(gdf, geometry=gpd.GeoSeries())
+            else:
+                return gdf
 
 
     #===========================================+
@@ -614,7 +609,9 @@ class ExtractTable:
             except:
                 try:
                     self.__infile = None
-                    self.__table = gpd.GeoDataFrame(infile)
+                    self.__table = self.__geometrize_gdf(
+                                        gpd.GeoDataFrame(infile))
+
                 except Exception as e:
                     raise FileNotFoundError(
                             "{} not found. {}".format(infile, e))

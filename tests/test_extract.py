@@ -355,7 +355,8 @@ def test_extract_to_file():
 # To test, remove "no" prefix from function name and insert path to large file
 def notest_large(): 
     large_file = ''
-    test_et = et.ExtractTable(large_file, 'tests/dumps/large.zip', column='NAME10')
+    test_et = et.ExtractTable(large_file, 'tests/dumps/large.zip', 
+                              column='NAME10')
     test_et.extract_to_file()
 
 
