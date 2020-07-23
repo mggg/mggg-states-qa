@@ -224,7 +224,7 @@ class ExtractTable:
 
         Examples
         --------
-        >>> et = ExtractTable.read_file('input.csv')
+        >>> et = extract.read_file('input.csv')
         >>> df1 = et.extract()
         >>> print(df1.head())
         field_1 col1 col2 geometry
@@ -266,11 +266,10 @@ class ExtractTable:
 
         Parameters
         ----------
-        outfile: str | None, optional
-            Name of file to write extracted data. Default is None
-        driver: str | None, optional
+        outfile: str | None, optional, default = None
+            Name of file to write extracted data.
+        driver: str | None, optional, default = None
             Name of Fiona supported OGR drivers to use for file writing.
-            Default is None
         
         Raises
         ------
@@ -283,7 +282,7 @@ class ExtractTable:
 
         Examples
         --------
-        >>> et1 = ExtractTable.read_file('input.csv', 'col2', ['b', 'd'])
+        >>> et1 = extract.read_file('input.csv', 'col2', ['b', 'd'])
         >>> et1.extract_to_file()
              field_1 col1
         col2                      
@@ -293,7 +292,7 @@ class ExtractTable:
         >>> et1.outfile = 'output.xlsx'
         >>> et1.extract_to_file()
 
-        >>> et2 = ExtractTable('input.shp', 'output', 'column1', 'square')
+        >>> et2 = extract.ExtractTable('input.shp', 'output', 'col1', 'square')
         >>> et2.extract_to_file('ESRI Shapefile')
 
         """
@@ -373,7 +372,7 @@ class ExtractTable:
         
         Examples
         --------
-        >>> et = ExtractTable.read_file('input.csv)
+        >>> et = extract.read_file('input.csv)
         >>> print(et.list_columns())
         ['field_1' 'col1' 'col2']
 
@@ -399,11 +398,11 @@ class ExtractTable:
 
         Parameters
         ----------
-        column : str | NoneType, optional
+        column : str | NoneType, optional, default = None
             Name of the column whose values are to be listed. If None,
-            lists the values of the initialized column. Defaults to None
-        unique : bool, optional
-            If True, function lists only unique values. Defaults to False
+            lists the values of the initialized column.
+        unique : bool, optional, default = False
+            If True, function lists only unique values.
 
         Returns
         -------
@@ -424,7 +423,7 @@ class ExtractTable:
         
         Examples
         --------
-        >>> et = ExtractTable.read_file('input.csv', 'col2')
+        >>> et = extract.read_file('input.csv', 'col2')
         >>> print(et.list_values)
         ['b' 'd' '3' '5' '10']
 
@@ -709,12 +708,11 @@ def read_file(filename: str,
     Parameters
     ----------
     filename : str
-        Name/path of input file of tabular data to read. Default is None
-    column : str | None, optional
-        Label of column to use as index for extracted table. Default 
-        is None
-    value : str | List[str] | None, optional
-        Value(s) of specified column in rows to extract. Default is None
+        Name/path of input file of tabular data to read.
+    column : str | None, optional, default = None
+        Label of column to use as index for extracted table.
+    value : str | List[str] | None, optional, default = None
+        Value(s) of specified column in rows to extract.
 
     Returns
     -------
