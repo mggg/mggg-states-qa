@@ -20,7 +20,7 @@ good_col1b = "col2"
 good_val1a = "c"
 good_val1b = '5'
 good_vals1a = ['a', 'c']
-full_cols1 = ['field_1', 'col1', 'col2']
+full_cols1 = ['Unnamed: 0', 'col1', 'col2']
 full_vals1 = ['a', 'c', 'c', 'c', 'b']
 
 good_inf2 = "tests/inputs/test2.csv"
@@ -270,7 +270,6 @@ def test_list_columns():
     assert type(cols) == np.ndarray
     assert (cols == np.array(full_cols1)).all()
 
-
     test_et = et.read_file(good_inf2)
     cols = test_et.list_columns()
     assert type(cols) == np.ndarray
@@ -317,6 +316,8 @@ def test_list_values():
 def test_extract():
     test_et = et.ExtractTable(good_inf1)
     gdf1 = gpd.read_file(good_inf1)
+    gdf1 = gdf1.rename(columns={'field_1' : 'Unnamed: 0'})
+        # Note: gpd has inconsistent naming compared with pd
 
     extract = test_et.extract()
     assert type(extract) == gpd.GeoDataFrame
@@ -351,6 +352,27 @@ def test_extract_to_file():
 
     del_outs()
 
+def test_value_dtype_preservation():
+    # To test, uncomment following and insert large non-geo tabular data
+    # medsl_p18 = 'tests/inputs/precinct_2018/precinct_2018.csv'
+
+    # pd_df = pd.read_csv(medsl_p18, encoding='ISO-8859-1')
+    # et_df = pd.DataFrame(et.read_file(medsl_p18).extract())
+
+    # assert all(list(map(
+    #                 lambda x, y : x == y and \
+    #                               pd_df[x].dtype == et_df[y].dtype,
+    #                 pd_df.columns, et_df.columns)))
+    
+    gpd_gdf1 = gpd.read_file(good_inf1).rename(
+                        columns={'field_1':'Unnamed: 0'})
+    et_gdf1 = et.read_file(good_inf1).extract()
+
+    assert all(list(map(
+                    lambda x, y : x == y and \
+                                  gpd_gdf1[x].dtype == et_gdf1[y].dtype,
+                    gpd_gdf1.columns, et_gdf1.columns)))
+
 
 # To test, remove "no" prefix from function name and insert path to large file
 def notest_large(): 
@@ -358,5 +380,4 @@ def notest_large():
     test_et = et.ExtractTable(large_file, 'tests/dumps/large.zip', 
                               column='NAME10')
     test_et.extract_to_file()
-
 

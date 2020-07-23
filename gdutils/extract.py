@@ -203,8 +203,6 @@ class ExtractTable:
     # Public Instance Methods                   |
     #===========================================+
 
-    # TODO: fix - does not preserve datatypes in extracted gdf
-    # i.e. converts all values to strings -- verify bug
     def extract(self) -> gpd.GeoDataFrame:
         """
         Returns a GeoPandas GeoDataFrame containing extracted subtable.
@@ -525,7 +523,7 @@ class ExtractTable:
 
 
     def __read_inferred(self, filename: str, ext: str) -> pd.DataFrame:
-        if ext == '.csv': # TODO: check if csv values are all strings?
+        if ext == '.csv':
             try:
                 return pd.read_csv(filename) 
             except:
