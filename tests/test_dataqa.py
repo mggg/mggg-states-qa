@@ -28,22 +28,37 @@ medsl_gdf = et.read_file(medsl_file).extract()
 
 gh_user = 'octocate'
 gh_acct_type = 'users'
-gh_repos = ['linguist.git', # Note: this list is subject to change
-            'octocat.github.io.git', 
-            'git-consortium.git', 
-            'hello-worId.git', 
-            'test-repo1.git', 
-            'boysenberry-repo-1.git', 
-            'Hello-World.git', 
-            'Spoon-Knife.git']
+gh_repos = [ # Note: this list is subject to change
+    'linguist.git', 
+    'octocat.github.io.git', 
+    'git-consortium.git', 
+    'hello-worId.git', 
+    'test-repo1.git', 
+    'boysenberry-repo-1.git', 
+    'Hello-World.git', 
+    'Spoon-Knife.git']
 
 gitignores = [ # Note: also subject to change
-    'tests/dumps/linguist.git/.gitignore', 
-    'tests/dumps/linguist.git/vendor/grammars/Sublime-Inform/.gitignore']
+    './.gitignore', 
+    './.pytest_cache/.gitignore', 
+    './tests/dumps/linguist.git/.gitignore', 
+    './tests/dumps/linguist.git/vendor/grammars/Sublime-Inform/.gitignore']
 
-htmls = ['./tests/dumps/linguist.git/samples/HTML/pages.html', 
-         './tests/dumps/octocat.github.io.git/index.html', 
-         './tests/dumps/Spoon-Knife.git/index.html']
+htmls = [ # Note: same here
+    './tests/dumps/linguist.git/samples/HTML/pages.html', 
+    './tests/dumps/octocat.github.io.git/index.html', 
+    './tests/dumps/Spoon-Knife.git/index.html']
+
+descriptions = [ # Note: ditto
+    './tests/dumps/linguist.git/.git/description', 
+    './tests/dumps/octocat.github.io.git/.git/description', 
+    './tests/dumps/git-consortium.git/.git/description', 
+    './tests/dumps/hello-worId.git/.git/description', 
+    './tests/dumps/test-repo1.git/.git/description', 
+    './tests/dumps/boysenberry-repo-1.git/.git/description', 
+    './tests/dumps/Hello-World.git/.git/description', 
+    './tests/dumps/Spoon-Knife.git/.git/description', 
+    './.git/description']
 
 
 #########################################
@@ -69,14 +84,29 @@ def test_clone_repos():
 
 
 def test_list_files_of_type():
-    files = dq.list_files_of_type('.gitignore', os.path.join('tests', 'dumps'))
-    assert files == gitignores
+    with pytest.raises(Exception):
+        dq.list_files_of_type(1)
+
+    files = dq.list_files_of_type('description')
+    assert files == descriptions
 
     files = dq.list_files_of_type('.q;weoifh0[238ubfasdf')
     assert files == []
 
-    files = dq.list_files_of_type(['.gitignore', '.html'])
-    assert files.sort() == (gitignores + htmls).sort()
+    files = dq.list_files_of_type(['description', '.html'])
+    assert files.sort() == (descriptions + htmls).sort()
+
+    files = dq.list_files_of_type('description', 
+                                  os.path.join('tests', 'dumps'))
+    descriptions.remove('./.git/description')
+    descrs = [d.lstrip('./') for d in descriptions]
+    assert files == descrs
+
+    files = dq.list_files_of_type('.gitignore', exclude_hidden = True)
+    assert files == []
+
+    files = dq.list_files_of_type('.gitignore', exclude_hidden = False)
+    assert files == gitignores
 
 
 def test_remove_repos():
@@ -88,6 +118,4 @@ def test_remove_repos():
     assert not any(list(map(lambda x, y: x == y, dirs[1], gh_repos)))
 
     dq.remove_repos(os.path.join('tests', 'dumps')) # should not raise anything
-
-
 

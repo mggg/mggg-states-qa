@@ -74,7 +74,7 @@ def clone_repos(account: str,
     Raises
     ------
     ValueError
-        Raised if provided an account type other than 'user' or 'orgs'.
+        Raised if provided an account type other than 'users' or 'orgs'.
 
     Examples
     --------
@@ -148,7 +148,7 @@ def list_files_of_type(filetype: Union[str, List[str]],
         Path to directory from which file listing begins. Defaults to
         current working directory if not specified.
     exclude_hidden: bool, option, default = True
-        If false, function includes hidden directories in the search.
+        If false, function includes hidden files in the search.
     
     Returns
     -------
@@ -188,7 +188,8 @@ def list_files_of_type(filetype: Union[str, List[str]],
 
     all_files = []
     for path, _, files in os.walk(root_path):
-        [all_files.append(os.path.join(path, file)) for file in files]
+        [all_files.append(os.path.join(path, file)) for file in files
+                if not (exclude_hidden and file[0] == '.')]
     
     return [file for file in all_files 
                  if any([file.endswith(ftype) for ftype in filetype])]
@@ -349,7 +350,14 @@ def __get_clone_cmds(account: str,
 
     raw_response = requests.get(gh_api_url)
     response = json.loads(raw_response.text)
-    cmds = [['git', 'clone', repo['clone_url']] for repo in response]
+
+    try:
+        cmds = [['git', 'clone', repo['clone_url']] for repo in response]
+    except Exception as e:
+        try:
+            raise RuntimeError(response['message'])
+        except:
+             raise RuntimeError(e)
 
     if dirpath is not None:
         [cmd.append(os.path.join(dirpath, cmd[2].split('/')[-1])) 
