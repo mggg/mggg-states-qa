@@ -129,7 +129,7 @@ def remove_repos(dirpath: Union[str, pathlib.Path]) \
         raise RuntimeError("Unable to remove repo. {}".format(e)) 
 
 
-def list_files_of_type(filetype: str, 
+def list_files_of_type(filetype: Union[str, List[str]], 
                        dirpath: Optional[Union[str, pathlib.Path]] = '.',
                        exclude_hidden: Optional[bool] = True) \
         -> List[str]:
@@ -141,8 +141,9 @@ def list_files_of_type(filetype: str,
 
     Parameters
     ----------
-    filetype: str
-        File extension of files to list (e.g. '.zip').
+    filetype: str | List[str]
+        File extension of files to list (e.g. '.zip'). Can be a list of 
+        extensions (e.g. ['.zip', '.shp', '.csv]).
     dirpath: str | pathlib.Path, optional, default = '.'.
         Path to directory from which file listing begins. Defaults to
         current working directory if not specified.
@@ -173,14 +174,24 @@ def list_files_of_type(filetype: str,
     >>> print(list_of_csvs)
     ['./csv1.csv', './.hidden-dir/csv_hidden.csv']
 
+    >>> list_of_mix = dataqa.list_files_of_type(['.shp', '.zip'])
+    >>> print(list_of_mix)
+    ['./shapefiles/shape1/shape1.shp', './shapefiles/shape2/shape2.shp',
+     './zipfile1.zip', './zipfile2.zip', './shapefiles/shape1.zip', 
+     './shapefiles/shape2.zip']
+
     """
     root_path = __get_validated_path(dirpath)
+
+    if isinstance(filetype, str):
+        filetype = [filetype]
 
     all_files = []
     for path, _, files in os.walk(root_path):
         [all_files.append(os.path.join(path, file)) for file in files]
     
-    return [file for file in all_files if file.endswith(filetype)]
+    return [file for file in all_files 
+                 if any([file.endswith(ftype) for ftype in filetype])]
 
 
 def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
