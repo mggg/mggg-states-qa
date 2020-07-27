@@ -208,13 +208,13 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
 
         {category1 : [{key1 : value1}, {key2 : value2}]
          category2 : [{key3 : value3},]}
-    
 
     ::
+
         {category1 : [[key1, key2, key3]]}
     
-    
     ::
+
         {category1 : [[key1]],
          category2 : [[key2], {key3: value3}]}
 
