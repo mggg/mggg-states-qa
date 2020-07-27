@@ -27,7 +27,7 @@ medsl_file = 'tests/inputs/medsl18_ct_clean.csv'
 mggg_gdf = et.read_file(mggg_file).extract()
 medsl_gdf = et.read_file(medsl_file).extract()
 
-standards_path = '../scripts/naming_convention.json'
+standards_path = 'scripts/naming_convention.json'
 
 gh_user = 'octocate'
 gh_acct_type = 'users'
@@ -112,7 +112,58 @@ def test_list_files_of_type():
     assert files == gitignores
 
 
+def test_get_keys_by_category(): # test passing list of categories, try numbers
+    with open(standards_path) as json_file:
+        standards_raw = json.load(json_file)
+
+    with pytest.raises(Exception):
+        dne = dq.get_keys_by_category(standards_raw, '-1293urnpef13qewf')
+    
+    with pytest.raises(Exception):
+        numbered = dq.get_keys_by_category(
+        {1 : {9: 'asdf'}, 2 : {8: 'fdsa'}}, 1)
+    
+    with pytest.raises(Exception):
+        xs = dq.get_keys_by_category(
+            {'foo' : [1, 2, {'fdaa : asdf'}]}, 'foo')
+
+    numbered = dq.get_keys_by_category(
+        {1 : [{9: 'asdf'}], 2 : [{8: 'fdsa'}]}, 1)
+    assert numbered == [9]
+
+    parties = dq.get_keys_by_category(standards_raw, 'parties')
+    assert parties == ['D', 'R', 'L', 'G', 'I', 'U']
+
+    xs = dq.get_keys_by_category(
+        {'[1, 2, 3]': ['asdf', 'fdaa'],
+         '[4, 5, 6]': [{'fdas': 'fdsa'}, {'hjkl' : 'hjkl'}],
+         'foo': [{'bar': 'bar'}]}, '[1, 2, 3]')
+    assert xs == ['a', 's', 'd', 'f', 'f', 'd', 'a', 'a']
+
+    xs = dq.get_keys_by_category(
+        {'[1, 2, 3]': ['asdf', 'fdaa'],
+         '[4, 5, 6]': [{'fdas': 'fdsa'}, {'hjkl' : 'hjkl'}],
+         'foo': [{'bar': 'bar'}]}, '[4, 5, 6]')
+    assert xs == ['fdas', 'hjkl']
+
+    xs = dq.get_keys_by_category(
+        {'[1, 2, 3]': [[1, 2, 3], {'fdaa' : 'asdf'}],
+         '[4, 5, 6]': [{'fdas': 'fdsa'}, {'hjkl' : 'hjkl'}],
+         'foo': [{'bar': 'bar'}]}, '[1, 2, 3]')
+    assert xs == [1, 2, 3, 'fdaa']
+    
+    xs = dq.get_keys_by_category(
+        {'category1' : [['key1']],
+         'category2' : [['key2'], {'key3': 'value3'}]}, 
+         ['category1', 'category2'])
+    assert xs == ['key1', 'key2', 'key3']
+
+
 def test_compare_column_names():
+    pass
+
+
+def test_sum_column_values():
     pass
 
 
@@ -135,13 +186,11 @@ def get_standards():
     with open(standards_path) as json_file:
         standards_raw = json.load(json_file)
     
-    geographies = dq.get_keys_by_category(standards_raw, 'geographies')
     offices = dq.get_keys_by_category(standards_raw, 'offices')
     parties = dq.get_keys_by_category(standards_raw, 'parties')
-    demographics = dq.get_keys_by_category(standards_raw, 'demographics')
-    districts = dq.get_keys_by_category(standards_raw, 'districts')
     counts = dq.get_keys_by_category(standards_raw, 'counts')
-    other = dq.get_keys_by_category(standards_raw, 'other')
+    others = dq.get_keys_by_category(standards_raw, 
+                ['geographies', 'demographics', 'districts', 'other'])
 
     elections = [office + format(year, '02') + party 
                     for office in offices
@@ -153,6 +202,4 @@ def get_standards():
                     for count in counts 
                     for year in range(0, 20)]
 
-    return geographies + elections + demographics + districts + \
-           counts + other
-
+    return elections + counts + others

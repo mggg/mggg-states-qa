@@ -42,7 +42,8 @@ import subprocess
 import sys
 import urllib.parse
 
-from typing import Any, Dict, List, NoReturn, Optional, Set, Tuple, Union
+from typing import (Any, Dict, Hashable, Iterable, List, 
+                    NoReturn, Optional, Set, Tuple, Union)
 
 
 #########################################
@@ -195,8 +196,9 @@ def list_files_of_type(filetype: Union[str, List[str]],
                  if any([file.endswith(ftype) for ftype in filetype])]
 
 
-def get_keys_by_category(dictionary: Dict[Any, Any], category: Any) \
-        -> List[Any]:
+def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]], 
+                         category: Union[Hashable, List[Hashable]]) \
+        -> List[Hashable]:
     """
     Given a dictionary with categories, returns a list of keys in the
     given category.
@@ -206,17 +208,24 @@ def get_keys_by_category(dictionary: Dict[Any, Any], category: Any) \
 
         {category1 : [{key1 : value1}, {key2 : value2}]
          category2 : [{key3 : value3},]}
+    
+    ::
+        {category1 : [[key1, key2, key3]]}
+    
+    ::
+        {category1 : [[key1]],
+         category2 : [[key2], {key3: value3}]}
 
     Parameters
     ----------
-    dictionary : Dict[Any, Any]
+    dictionary : Dict[Hashable, List[Iterable]]
         Dictionary containing categories in which keys are stored.
-    category : Any
+    category : Hashable | List[Hashable]
         Category containing keys-value pairs.
     
     Returns
     -------
-    List[Any]
+    List[Hashable]
         List of keys of every key-value pair in the given category of the
         given dictionary.
     
@@ -228,9 +237,24 @@ def get_keys_by_category(dictionary: Dict[Any, Any], category: Any) \
     >>> print(keys)
     ['key2', 'key3']
 
+    >>> sample_dict =  {'category1' : [['key1']],
+                        'category2' : [['key2'], {'key3': 'value3'}]}
+    >>> keys = dataqa.get_keys_by_category(sample_dict, 'category2')
+    >>> print(keys)
+    ['key2', 'key3']
+
+    >>> keys = dataqa.get_keys_by_category(sample_dict, 
+                                           ['category1', 'category2'])
+    >>> print(keys)
+    ['key1', 'key2', 'key3']
+
     """
     flatten = lambda xs : [x for sublist in xs for x in sublist]
-    return flatten([list(x) for x in dictionary[category]])
+    try:
+        return flatten([list(key) for key in dictionary[category]])
+    except: # category is a list
+        return flatten([list(key) for item in category 
+                                  for key in dictionary[item]])
 
 
 def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
