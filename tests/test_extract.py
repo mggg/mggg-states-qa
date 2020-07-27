@@ -35,6 +35,8 @@ bad_inf = "this is a bad infile path"
 bad_val = "this is a bad value"
 bad_col = "this is a bad column"
 
+zip_inf = "tests/inputs/CT_precincts.zip"
+
 def del_outfile(outfile):
     if os.path.exists(outfile):
         try:
@@ -141,6 +143,23 @@ def test_infile():
         test_et.infile = good_inf2
     
     extract = test_et.extract()
+
+    with pytest.raises(Exception):
+        test_et.infile = zip_inf
+    
+    test_et2 = et.ExtractTable()
+    test_et2.infile = zip_inf
+
+    with pytest.raises(Exception):
+        test_et.value = good_val1a
+    with pytest.raises(Exception):
+        test_et.column = bad_col
+    with pytest.raises(Exception):
+        test_et.infile = bad_inf
+    with pytest.raises(Exception):
+        test_et.infile = good_inf2
+    
+    extract = test_et2.extract()
 
 
 def test_column():
