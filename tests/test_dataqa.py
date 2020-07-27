@@ -216,7 +216,7 @@ def test_compare_column_names():
             et.read_file(os.path.join('tests', 'dumps', 
                                       'AK-shapefiles.git',
                                       'AK_precincts.zip')).extract(), 
-                        standards)
+                         standards)
     print(ak_discrepancies)
     assert ak_matches == {'USH14R', 'SEN16D', 'USH18D', '2MOREVAP', 'TOTPOP', 
                           'USH18R', 'SEN16L', 'GOV18R', 'GOV18D', 'USH16D', 
@@ -230,7 +230,36 @@ def test_compare_column_names():
 
 
 def test_sum_column_values():
-    pass
+    ak_gdf = et.read_file(os.path.join('tests', 'dumps', 'AK-shapefiles.git',
+                                       'AK_precincts.zip')).extract()
+    with pytest.raises(Exception):
+        totals = dq.sum_column_values(pd.DataFrame(), ['asdf'])
+    with pytest.raises(Exception):
+        totals = dq.sum_column_values(ak_gdf, ['geometry'])
+    with pytest.raises(Exception):
+        totals = dq.sum_column_values(ak_gdf, 'geometry')
+
+    cols = ['COL1', 'COL3']
+    df = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                      columns=['COL1', 'COL2', 'COL3'])
+    totals = dq.sum_column_values(df, cols)
+    assert totals == [('COL1', 5), ('COL3', 9)]
+
+    totals = dq.sum_column_values(ak_gdf, ['USH14R'])
+    assert totals == [('USH14R', 102464)]
+
+    totals = dq.sum_column_values(ak_gdf, ['PRES16D', 'PRES16G', 'PRES16L'])
+    assert totals == [('PRES16D', 69097), ('PRES16G', 3782), 
+                      ('PRES16L', 12004)]
+
+    medsl_df = pd.read_csv(os.path.join('tests', 'inputs', 
+                                        'medsl18_ct_clean.csv'),
+                                        encoding='ISO-8859-1')
+    totals = dq.sum_column_values(medsl_df, ['Treasurer independent'])
+    assert totals == [('Treasurer independent', 21149.54761904762)]
+
+    totals = dq.sum_column_values(medsl_df, [])
+    assert totals == []
 
 
 def test_remove_repos():

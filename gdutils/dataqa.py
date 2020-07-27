@@ -353,7 +353,7 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     return totals
 
 
-def compare_columns():
+def compare_column_values():
     pass # TODO
 
 
