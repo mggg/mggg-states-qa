@@ -28,6 +28,7 @@ tests/inputs/precinct_2018
 **/dumps/
 !tests/dumps/
 tests/nhgis0004_shapefile_tl2010_060_block_2010*
+scripts/**/*.git
 
 # Docs
 docs/**/gdutils/
