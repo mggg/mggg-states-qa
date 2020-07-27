@@ -107,14 +107,14 @@ class ExtractTable:
         Parameters
         ----------
         infile : str | gpd.GeoDataFrame | pd.DataFrame 
-                     | None, optional, default = None
+                     | None, optional, default = ``None``
             Name/path of input file of tabular data to read or geopandas
             GeoDataFrame or pandas DataFrame.
-        outfile : str | None, optional, default = None
+        outfile : str | None, optional, default = ``None``
             Name/path of output file for writing.
         column : str | None, optional, default = None
             Label of column to use as index for extracted table
-        value : str | List[str] | None, optional, default = None
+        value : str | List[str] | None, optional, default = ``None``
             Value(s) of specified column in rows to extract.
         
         Returns
@@ -262,9 +262,9 @@ class ExtractTable:
 
         Parameters
         ----------
-        outfile: str | None, optional, default = None
+        outfile: str | None, optional, default = ``None``
             Name of file to write extracted data.
-        driver: str | None, optional, default = None
+        driver: str | None, optional, default = ``None``
             Name of Fiona supported OGR drivers to use for file writing.
         
         Raises
@@ -381,10 +381,10 @@ class ExtractTable:
 
         Parameters
         ----------
-        column : str | NoneType, optional, default = None
+        column : str | NoneType, optional, default = ``None``
             Name of the column whose values are to be listed. If None,
             lists the values of the initialized column.
-        unique : bool, optional, default = False
+        unique : bool, optional, default = ``False``
             If True, function lists only unique values.
 
         Returns
@@ -700,9 +700,9 @@ def read_file(filename: str,
     ----------
     filename : str
         Name/path of input file of tabular data to read.
-    column : str | None, optional, default = None
+    column : str | None, optional, default = ``None``
         Label of column to use as index for extracted table.
-    value : str | List[str] | None, optional, default = None
+    value : str | List[str] | None, optional, default = ``None``
         Value(s) of specified column in rows to extract.
 
     Returns

@@ -69,7 +69,7 @@ def clone_repos(account: str,
         Github account whose public repos are to be cloned.
     account_type: str
         Type of github account whose public repos are to be cloned.
-        Valid options: 'users', 'orgs'.
+        Valid options: ``'users'``, ``'orgs'``.
     outpath: str | pathlib.Path, optional
         Path to which repos are to be cloned. If not specified, clones
         repos into current working directory.
@@ -77,7 +77,8 @@ def clone_repos(account: str,
     Raises
     ------
     ValueError
-        Raised if provided an account type other than 'users' or 'orgs'.
+        Raised if provided an account type other than ``'users'`` or 
+        ``'orgs'``.
 
     Examples
     --------
@@ -145,12 +146,12 @@ def list_files_of_type(filetype: Union[str, List[str]],
     Parameters
     ----------
     filetype: str | List[str]
-        File extension of files to list (e.g. '.zip'). Can be a list of 
-        extensions (e.g. ['.zip', '.shp', '.csv]).
-    dirpath: str | pathlib.Path, optional, default = '.'.
+        File extension of files to list (e.g. ``'.zip'``). Can be a list of
+        extensions (e.g. ``['.zip', '.shp', '.csv']``).
+    dirpath: str | pathlib.Path, optional, default = ``'.'``.
         Path to directory from which file listing begins. Defaults to
         current working directory if not specified.
-    exclude_hidden: bool, option, default = True
+    exclude_hidden: bool, option, default = ``True``
         If false, function includes hidden files in the search.
     
     Returns
@@ -205,7 +206,7 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
     Given a dictionary with categories, returns a list of keys in the
     given category.
 
-    Accepted forms of dictionary input:
+    Examples of accepted forms of dictionary input:
     ::
 
         {category1 : [{key1 : value1}, {key2 : value2}]
@@ -363,7 +364,7 @@ def compare_column_values(
         column1: Union[str, List[str]], 
         column2: Union[str, List[str]],
         row1: Optional[Union[Hashable, List[Hashable]]] = None,
-        row2: Optional[Union[Hashable, List[Hashable]]] = None): \
+        row2: Optional[Union[Hashable, List[Hashable]]] = None) \
         -> Dict[str, List[Tuple[Hashable, Any]]]:
     """
     Given two tables and their corresponding columns and rows to compare,
@@ -380,9 +381,9 @@ def compare_column_values(
         TODO
     column2: str | List[str]
         TODO
-    row1: Hashable | List[Hashable], optional, default = None
+    row1: Hashable | List[Hashable], optional, default = ``None``
         TODO
-    row2: Hashable | List[Hashable], optional, default = None
+    row2: Hashable | List[Hashable], optional, default = ``None``
         TODO
 
     Returns
@@ -391,10 +392,8 @@ def compare_column_values(
         A dictionary with string keys corresponding to names of compared
         columns and with List values of tuples corresponding to names of 
         compared rows and absolute differences of their values. E.g.
-        ::
-
-            {'col1-col2': [('val1-val1', 2), ('val2-val2', 0)],
-             'colA-colB': [('valA1-valB1', 5)]}
+        ``{'col1-col2': [('val1-val1', 2), ('val2-val2', 0)],
+           'colA-colB': [('valA1-valB1', 5)]}``
 
     Raises
     ------
