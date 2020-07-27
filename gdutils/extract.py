@@ -4,14 +4,15 @@ gdutils.extract
 
 Provides
     - A class ``ExtractTable`` (pronounced "extractable") for extracting 
-      subtables from given tabular data. Can manage filetypes .csv, .xlsx, 
-      .geojson, .shp, etc.
+      subtables from given tabular data. Can manage filetypes ``.csv``, 
+      ``.xlsx``, ``.geojson``, ``.shp``, etc.
 
-    - A commandline script that can be used to
+    - A command-line script that can be used to
 
-        1. convert input filetype to output filetype (ex. .shp -> .csv);
+        1. convert input filetype to output filetype (ex. ``.shp`` -> 
+           ``.csv``);
         2. output tabular data reindexed with a specified column label; or
-        3. output subtables from input tabular data
+        3. output subtables from input tabular data.
 
 Metadata
 --------
@@ -25,6 +26,7 @@ Metadata
 
                 - ``geopandas``
                 - ``numpy``
+                - ``pandas``
 
 Documentation
 -------------
@@ -106,7 +108,7 @@ class ExtractTable:
 
         Parameters
         ----------
-        infile : str | gpd.GeoDataFrame | pd.DataFrame 
+        infile : str | gpd.GeoDataFrame | pd.DataFrame \
                      | None, optional, default = ``None``
             Name/path of input file of tabular data to read or geopandas
             GeoDataFrame or pandas DataFrame.

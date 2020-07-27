@@ -32,40 +32,6 @@ medsl_df = pd.read_csv(os.path.join('tests', 'inputs', 'medsl18_ct_clean.csv'),
 
 standards_path = 'scripts/naming_convention.json'
 
-gh_user = 'octocate'
-gh_acct_type = 'users'
-gh_repos = [ # Note: this list is subject to change
-    'linguist.git', 
-    'octocat.github.io.git', 
-    'git-consortium.git', 
-    'hello-worId.git', 
-    'test-repo1.git', 
-    'boysenberry-repo-1.git', 
-    'Hello-World.git', 
-    'Spoon-Knife.git']
-
-gitignores = [ # Note: also subject to change
-    './.gitignore', 
-    './.pytest_cache/.gitignore', 
-    './tests/dumps/linguist.git/.gitignore', 
-    './tests/dumps/linguist.git/vendor/grammars/Sublime-Inform/.gitignore']
-
-htmls = [ # Note: same here
-    './tests/dumps/linguist.git/samples/HTML/pages.html', 
-    './tests/dumps/octocat.github.io.git/index.html', 
-    './tests/dumps/Spoon-Knife.git/index.html']
-
-descriptions = [ # Note: ditto
-    './tests/dumps/linguist.git/.git/description', 
-    './tests/dumps/octocat.github.io.git/.git/description', 
-    './tests/dumps/git-consortium.git/.git/description', 
-    './tests/dumps/hello-worId.git/.git/description', 
-    './tests/dumps/test-repo1.git/.git/description', 
-    './tests/dumps/boysenberry-repo-1.git/.git/description', 
-    './tests/dumps/Hello-World.git/.git/description', 
-    './tests/dumps/Spoon-Knife.git/.git/description', 
-    './.git/description']
-
 
 
 #########################################
@@ -100,94 +66,6 @@ def get_standards():
 # Regression Tests                      #
 #########################################
 
-def test_clone_repos():
-    with pytest.raises(Exception):
-        dq.clone_repos()
-    with pytest.raises(Exception):
-        dq.clone_repos('octocat')
-    with pytest.raises(Exception):
-        dq.clone_repos('octocat', 'asdf')
-    with pytest.raises(Exception):
-        dq.clone_repos('octocat', 'orgs')
-    with pytest.raises(Exception): # randomly generated string for user
-        dq.clone_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY', 'users')
-
-    dq.clone_repos('octocat', 'users', 'tests/dumps')
-    
-    dirs = next(os.walk(os.path.join('tests', 'dumps')))
-    assert dirs[1] == gh_repos
-
-
-def test_list_files_of_type():
-    with pytest.raises(Exception):
-        dq.list_files_of_type(1)
-
-    files = dq.list_files_of_type('description')
-    assert files == descriptions
-
-    files = dq.list_files_of_type('.q;weoifh0[238ubfasdf')
-    assert files == []
-
-    files = dq.list_files_of_type(['description', '.html'])
-    assert files.sort() == (descriptions + htmls).sort()
-
-    files = dq.list_files_of_type('description', 
-                                  os.path.join('tests', 'dumps'))
-    descriptions.remove('./.git/description')
-    descrs = [d.lstrip('./') for d in descriptions]
-    assert files == descrs
-
-    files = dq.list_files_of_type('.gitignore', exclude_hidden = True)
-    assert files == []
-
-    files = dq.list_files_of_type('.gitignore', exclude_hidden = False)
-    assert files == gitignores
-
-
-def test_get_keys_by_category(): # test passing list of categories, try numbers
-    with open(standards_path) as json_file:
-        standards_raw = json.load(json_file)
-    with pytest.raises(Exception):
-        dne = dq.get_keys_by_category(standards_raw, '-1293urnpef13qewf')
-    with pytest.raises(Exception):
-        numbered = dq.get_keys_by_category(
-        {1 : {9: 'asdf'}, 2 : {8: 'fdsa'}}, 1)
-    with pytest.raises(Exception):
-        xs = dq.get_keys_by_category(
-            {'foo' : [1, 2, {'fdaa : asdf'}]}, 'foo')
-
-    numbered = dq.get_keys_by_category(
-        {1 : [{9: 'asdf'}], 2 : [{8: 'fdsa'}]}, 1)
-    assert numbered == [9]
-
-    parties = dq.get_keys_by_category(standards_raw, 'parties')
-    assert parties == ['D', 'R', 'L', 'G', 'I', 'U']
-
-    xs = dq.get_keys_by_category(
-        {'[1, 2, 3]': ['asdf', 'fdaa'],
-         '[4, 5, 6]': [{'fdas': 'fdsa'}, {'hjkl' : 'hjkl'}],
-         'foo': [{'bar': 'bar'}]}, '[1, 2, 3]')
-    assert xs == ['a', 's', 'd', 'f', 'f', 'd', 'a', 'a']
-
-    xs = dq.get_keys_by_category(
-        {'[1, 2, 3]': ['asdf', 'fdaa'],
-         '[4, 5, 6]': [{'fdas': 'fdsa'}, {'hjkl' : 'hjkl'}],
-         'foo': [{'bar': 'bar'}]}, '[4, 5, 6]')
-    assert xs == ['fdas', 'hjkl']
-
-    xs = dq.get_keys_by_category(
-        {'[1, 2, 3]': [[1, 2, 3], {'fdaa' : 'asdf'}],
-         '[4, 5, 6]': [{'fdas': 'fdsa'}, {'hjkl' : 'hjkl'}],
-         'foo': [{'bar': 'bar'}]}, '[1, 2, 3]')
-    assert xs == [1, 2, 3, 'fdaa']
-    
-    xs = dq.get_keys_by_category(
-        {'category1' : [['key1']],
-         'category2' : [['key2'], {'key3': 'value3'}]}, 
-         ['category1', 'category2'])
-    assert xs == ['key1', 'key2', 'key3']
-
-
 def test_compare_column_names():
     with pytest.raises(Exception):
         _, _ = dq.compare_column_names('asdf', ['asdf'])
@@ -213,13 +91,10 @@ def test_compare_column_names():
                     'tests/dumps/AK-shapefiles.git'])
 
     standards = get_standards()
-    (ak_matches, ak_discrepancies) = \
-        dq.compare_column_names(
-            et.read_file(os.path.join('tests', 'dumps', 
-                                      'AK-shapefiles.git',
+    (ak_matches, ak_discrepancies) = dq.compare_column_names(
+            et.read_file(os.path.join('tests', 'dumps', 'AK-shapefiles.git',
                                       'AK_precincts.zip')).extract(), 
                          standards)
-    print(ak_discrepancies)
     assert ak_matches == {'USH14R', 'SEN16D', 'USH18D', '2MOREVAP', 'TOTPOP', 
                           'USH18R', 'SEN16L', 'GOV18R', 'GOV18D', 'USH16D', 
                           'PRES16L', 'PRES16G', 'SEN16R', 'BVAP', 'USH14D', 
@@ -227,8 +102,8 @@ def test_compare_column_names():
                           'USH16L', 'OTHERVAP', 'PRES16R', 'AMINVAP', 'VAP', 
                           'NHPIVAP', 'USH16R', 'HDIST', 'WVAP', 'USH14L'}
     assert ak_discrepancies == {'NAME', 'DISTRICT', 'ID', 'BLACK', '2MORE', 
-                             'OTHER', 'WHITE', 'NHPI', 'PRES16C', 'AREA', 
-                             'POPULATION', 'ASIAN', 'AMIN'}
+                                'OTHER', 'WHITE', 'NHPI', 'PRES16C', 'AREA', 
+                                'POPULATION', 'ASIAN', 'AMIN'}
 
 
 def test_sum_column_values():
@@ -261,7 +136,7 @@ def test_sum_column_values():
     assert totals == []
 
 
-def test_compare_column_values():
+def notest_compare_column_values(): # remove 'no' prefix once ready to test
     df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
                        columns=['COL1', 'COL2', 'COL3'])
     df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
@@ -322,17 +197,10 @@ def test_compare_column_values():
     assert diff == abs(ct_et.extract()['AG18D'] - 361.0)
 
 
-def test_compare_column_sum():
+def notest_compare_column_sum(): # remove 'no' prefix when ready to test
     pass # TODO
 
 
-def test_remove_repos():
-    with pytest.raises(Exception):
-        dq.remove_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY')
-
-    dq.remove_repos(os.path.join('tests', 'dumps'))
-    dirs = next(os.walk(os.path.join('tests', 'dumps')))
-    assert not any(list(map(lambda x, y: x == y, dirs[1], gh_repos)))
-
-    dq.remove_repos(os.path.join('tests', 'dumps')) # should not raise anything
+def test_remove_repos(): # for cleaning up test files
+    dq.remove_repos(os.path.join('tests', 'dumps')) 
 

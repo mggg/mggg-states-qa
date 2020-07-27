@@ -1,0 +1,20 @@
+gdutils.datamine
+================
+
+Module Functions
+----------------
+datamine.clone_repos
+~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: gdutils.datamine.clone_repos
+
+datamine.remove_repos
+~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: gdutils.datamine.remove_repos
+
+datamine.list_files_of_type
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: gdutils.datamine.list_files_of_type
+
+datamine.get_keys_by_category
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: gdutils.datamine.get_keys_by_category

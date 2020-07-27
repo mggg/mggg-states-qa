@@ -11,7 +11,8 @@ Documentation: ``gdutils``
    :caption: Modules
    :maxdepth: 3
    :hidden:
-   
+
+   src/modules/datamine 
    src/modules/dataqa
    src/modules/extract
 
@@ -34,9 +35,11 @@ A collection of geodata utility tools.
 
 **Available modules:**
 
+- ``gdutils.datamine``: a ``python`` module for mining and listing data sources.
 - ``gdutils.dataqa``: a ``python`` module for analyzing and comparing data for QA purposes.
-- ``gdutils.extract``: combined script and ``python`` module for extracting tabular data for data science (data wrangling) purposes. A user-friendly, lite wrapper of ``geopandas``.
+- ``gdutils.extract``: a script and ``python`` module for extracting tabular data for data science (data wrangling) purposes. A user-friendly, lite wrapper of ``geopandas``.
 
+.. automodule:: gdutils.datamine
 .. automodule:: gdutils.dataqa
 .. automodule:: gdutils.extract
 
