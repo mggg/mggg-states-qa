@@ -237,19 +237,19 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
     Examples
     --------
     >>> sample_dict = {'category1' : [{'key1': 1}],
-                       'category2' : [{'key2' : 2}, {'key3' : 3}]}
+    >>>                'category2' : [{'key2' : 2}, {'key3' : 3}]}
     >>> keys = dataqa.get_keys_by_category(sample_dict, 'category2')
     >>> print(keys)
     ['key2', 'key3']
 
     >>> sample_dict =  {'category1' : [['key1']],
-                        'category2' : [['key2'], {'key3': 'value3'}]}
+    >>>                 'category2' : [['key2'], {'key3': 'value3'}]}
     >>> keys = dataqa.get_keys_by_category(sample_dict, 'category2')
     >>> print(keys)
     ['key2', 'key3']
 
     >>> keys = dataqa.get_keys_by_category(sample_dict, 
-                                           ['category1', 'category2'])
+    >>>                                    ['category1', 'category2'])
     >>> print(keys)
     ['key1', 'key2', 'key3']
 
@@ -293,7 +293,7 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     --------
     >>> standards = ['COL1', 'COL2', 'COL3']
     >>> df = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
-                          columns=['COL1', 'col2', 'COL3'])
+    >>>                   columns=['COL1', 'col2', 'COL3'])
     >>> print(df)
        COL1  col2  COL3
     0     1     2     3
@@ -341,7 +341,7 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     --------
     >>> cols = ['COL1', 'COL3']
     >>> df = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
-                          columns=['COL1', 'COL2', 'COL3'])
+    >>>                   columns=['COL1', 'COL2', 'COL3'])
     >>> print(df)
        COL1  COL2  COL3
     0     1     2     3
@@ -416,9 +416,9 @@ def compare_column_values(
     Examples
     --------
     >>> df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
-                           columns=['COL1', 'COL2', 'COL3'])
+    >>>                    columns=['COL1', 'COL2', 'COL3'])
     >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
-                           columns=['col2', 'col1'])
+    >>>                    columns=['col2', 'col1'])
     >>> results = dataqa.compare_column_values(df1, df2, 'COL3', 'col2')
     >>> print(results)
     {'COL1-col2' : [('0-0', 1), ('1-1', 5)]}
@@ -443,7 +443,7 @@ def compare_column_values(
     ('0-1', 1)
 
     >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 
-                                               [0, 1], [1, 0])
+    >>>                                        [0, 1], [1, 0])
     >>> print(results['COL1-col1])
     [('0-1', 1), ('1-0', 1)]
 
