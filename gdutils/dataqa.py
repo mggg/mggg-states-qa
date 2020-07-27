@@ -317,15 +317,20 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     Parameters
     ----------
     table : pd.DataFrame, gpd.GeoDataFrame
-        Tabular data containing columns whose values are to be summed
+        Tabular data containing columns whose values are to be summed.
     columns: List[str] | Set[str]
-        A list/set of column names whose values are to be summed
+        A list/set of column names whose values are to be summed.
     
     Returns
     -------
     List[Tuple[str, int]]
         A list of key-value pairs of column names associated with the sum
-        of their values. E.g. [('column 1', 100), ('column 2', 53)]
+        of their values. E.g. [('column 1', 100), ('column 2', 53)].
+    
+    Raises
+    ------
+    KeyError
+        Raised if given column name does not exist in table.
     
     Examples
     --------
