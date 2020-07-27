@@ -17,6 +17,7 @@ Metadata
 
                 - ``geopandas``
                 - ``numpy``
+                - ``gdutils.extract``
 
 Documentation
 -------------
@@ -42,6 +43,7 @@ import subprocess
 import sys
 import urllib.parse
 
+import gdutils.extract as et
 from typing import (Any, Dict, Hashable, Iterable, List, 
                     NoReturn, Optional, Set, Tuple, Union)
 
@@ -327,7 +329,7 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     -------
     List[Tuple[str, int]]
         A list of key-value pairs of column names associated with the sum
-        of their values. E.g. [('column 1', 100), ('column 2', 53)].
+        of their values. E.g. ``[('column 1', 100), ('column 2', 53)]``.
     
     Raises
     ------
@@ -355,7 +357,58 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     return totals
 
 
-def compare_column_values():
+def compare_column_values(
+        table1: Union[pd.DataFrame, gpd.GeoDataFrame],
+        table2: Union[pd.DataFrame, gpd.GeoDataFrame],
+        column1: Union[str, List[str]], 
+        column2: Union[str, List[str]],
+        row1: Optional[Union[Hashable, List[Hashable]]] = None,
+        row2: Optional[Union[Hashable, List[Hashable]]] = None): \
+        -> Dict[str, List[Tuple[Hashable, Any]]]:
+    """
+    Given two tables and their corresponding columns and rows to compare,
+    returns a dictionary containing the compared columns and a corresponding 
+    list of tuples containing row names and absolute differences of values.
+
+    Parameters
+    ----------
+    table1: pd.DataFrame | gpd.GeoDataFrame
+        TODO
+    table2: pd.DataFrame | gpd.GeoDataFrame
+        TODO
+    column1: str | List[str]
+        TODO
+    column2: str | List[str]
+        TODO
+    row1: Hashable | List[Hashable], optional, default = None
+        TODO
+    row2: Hashable | List[Hashable], optional, default = None
+        TODO
+
+    Returns
+    -------
+    Dict[str, List[Tuple[Hashable, Any]]]
+        A dictionary with string keys corresponding to names of compared
+        columns and with List values of tuples corresponding to names of 
+        compared rows and absolute differences of their values. E.g.
+        ::
+
+            {'col1-col2': [('val1-val1', 2), ('val2-val2', 0)],
+             'colA-colB': [('valA1-valB1', 5)]}
+
+    Raises
+    ------
+    KeyError
+        Raised if unable to find column or row in tables.
+    TypeError
+        Raised if unable to calculate the absolute difference between
+        two values.
+    
+    Examples
+    --------
+    >>> TODO: Coming soon
+
+    """
     pass # TODO
 
 
