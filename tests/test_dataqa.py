@@ -3,6 +3,7 @@ import pandas as pd
 import geopandas as gpd
 import os
 import json
+import subprocess
 
 import pytest
 
@@ -64,6 +65,35 @@ descriptions = [ # Note: ditto
     './.git/description']
 
 
+
+#########################################
+# Helper Functions                      #
+#########################################
+
+def get_standards():
+    with open(standards_path) as json_file:
+        standards_raw = json.load(json_file)
+    
+    offices = dq.get_keys_by_category(standards_raw, 'offices')
+    parties = dq.get_keys_by_category(standards_raw, 'parties')
+    counts = dq.get_keys_by_category(standards_raw, 'counts')
+    others = dq.get_keys_by_category(standards_raw, 
+                ['geographies', 'demographics', 'districts', 'other'])
+
+    elections = [office + format(year, '02') + party 
+                    for office in offices
+                    for year in range(0, 21)
+                    for party in parties 
+                    if not (office == 'PRES' and year % 4 != 0)]
+
+    counts = [count + format(year, '02') 
+                    for count in counts 
+                    for year in range(0, 20)]
+
+    return elections + counts + others
+
+
+
 #########################################
 # Regression Tests                      #
 #########################################
@@ -115,14 +145,11 @@ def test_list_files_of_type():
 def test_get_keys_by_category(): # test passing list of categories, try numbers
     with open(standards_path) as json_file:
         standards_raw = json.load(json_file)
-
     with pytest.raises(Exception):
         dne = dq.get_keys_by_category(standards_raw, '-1293urnpef13qewf')
-    
     with pytest.raises(Exception):
         numbered = dq.get_keys_by_category(
         {1 : {9: 'asdf'}, 2 : {8: 'fdsa'}}, 1)
-    
     with pytest.raises(Exception):
         xs = dq.get_keys_by_category(
             {'foo' : [1, 2, {'fdaa : asdf'}]}, 'foo')
@@ -160,7 +187,46 @@ def test_get_keys_by_category(): # test passing list of categories, try numbers
 
 
 def test_compare_column_names():
-    pass
+    with pytest.raises(Exception):
+        _, _ = dq.compare_column_names('asdf', ['asdf'])
+
+    m, d = dq.compare_column_names(pd.DataFrame(), ['asdf'])
+    assert m == set()
+    assert d == set()
+
+    standards = ['COL1', 'COL2', 'COL3']
+    df = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                      columns=['COL1', 'col2', 'COL3'])
+    (matches, discrepancies) = dq.compare_column_names(df, standards)
+    assert matches == {'COL1', 'COL3'}
+    assert discrepancies == {'col2'}
+
+    standards = []
+    (matches, discrepancies) = dq.compare_column_names(df, standards)
+    assert matches == set()
+    assert discrepancies == {'COL1', 'COL3', 'col2'}
+
+    subprocess.run(['git', 'clone', 
+                    'https://github.com/mggg-states/AK-shapefiles.git',
+                    'tests/dumps/AK-shapefiles.git'])
+
+    standards = get_standards()
+    (ak_matches, ak_discrepancies) = \
+        dq.compare_column_names(
+            et.read_file(os.path.join('tests', 'dumps', 
+                                      'AK-shapefiles.git',
+                                      'AK_precincts.zip')).extract(), 
+                        standards)
+    print(ak_discrepancies)
+    assert ak_matches == {'USH14R', 'SEN16D', 'USH18D', '2MOREVAP', 'TOTPOP', 
+                          'USH18R', 'SEN16L', 'GOV18R', 'GOV18D', 'USH16D', 
+                          'PRES16L', 'PRES16G', 'SEN16R', 'BVAP', 'USH14D', 
+                          'PRES16D', 'GOV18L', 'ASIANVAP', 'geometry', 
+                          'USH16L', 'OTHERVAP', 'PRES16R', 'AMINVAP', 'VAP', 
+                          'NHPIVAP', 'USH16R', 'HDIST', 'WVAP', 'USH14L'}
+    assert ak_discrepancies == {'NAME', 'DISTRICT', 'ID', 'BLACK', '2MORE', 
+                             'OTHER', 'WHITE', 'NHPI', 'PRES16C', 'AREA', 
+                             'POPULATION', 'ASIAN', 'AMIN'}
 
 
 def test_sum_column_values():
@@ -177,29 +243,3 @@ def test_remove_repos():
 
     dq.remove_repos(os.path.join('tests', 'dumps')) # should not raise anything
 
-
-#########################################
-# Helper Functions                      #
-#########################################
-
-def get_standards():
-    with open(standards_path) as json_file:
-        standards_raw = json.load(json_file)
-    
-    offices = dq.get_keys_by_category(standards_raw, 'offices')
-    parties = dq.get_keys_by_category(standards_raw, 'parties')
-    counts = dq.get_keys_by_category(standards_raw, 'counts')
-    others = dq.get_keys_by_category(standards_raw, 
-                ['geographies', 'demographics', 'districts', 'other'])
-
-    elections = [office + format(year, '02') + party 
-                    for office in offices
-                    for year in range(0, 21)
-                    for party in parties 
-                    if not (office == 'PRES' and year % 4 != 0)]
-
-    counts = [count + format(year, '02') 
-                    for count in counts 
-                    for year in range(0, 20)]
-
-    return elections + counts + others
