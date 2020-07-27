@@ -27,6 +27,8 @@ medsl_file = 'tests/inputs/medsl18_ct_clean.csv'
 
 mggg_gdf = et.read_file(mggg_file).extract()
 medsl_gdf = et.read_file(medsl_file).extract()
+medsl_df = pd.read_csv(os.path.join('tests', 'inputs', 'medsl18_ct_clean.csv'),
+                                    encoding='ISO-8859-1')
 
 standards_path = 'scripts/naming_convention.json'
 
@@ -252,14 +254,72 @@ def test_sum_column_values():
     assert totals == [('PRES16D', 69097), ('PRES16G', 3782), 
                       ('PRES16L', 12004)]
 
-    medsl_df = pd.read_csv(os.path.join('tests', 'inputs', 
-                                        'medsl18_ct_clean.csv'),
-                                        encoding='ISO-8859-1')
     totals = dq.sum_column_values(medsl_df, ['Treasurer independent'])
     assert totals == [('Treasurer independent', 21149.54761904762)]
 
     totals = dq.sum_column_values(medsl_df, [])
     assert totals == []
+
+
+def test_compare_column_values():
+    df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                       columns=['COL1', 'COL2', 'COL3'])
+    df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
+                       columns=['col2', 'col1'])
+    df3 = pd.DataFrame(data=[['asdf', 'fdsa'], ['foo', 'bar']],
+                       columns=['c1', 'c2'])
+    
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(pd.DataFrame(), pd.DataFrame(),
+                                           'asdf', 'asdf')
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(pd.DataFrame(), df1, 'asdf', 'asdf')
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, 'col2', 'COL1')
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, df1.columns, df2.columns)
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, ['COL1', 'COL2'], 
+                                           ['col1', 'col2'], 1, 'adsf')
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, 'COL1', 'col1', 1, -1)
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df3, 'COL1', 'c1')
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, 'COL1', 'col2', [0, 1], 1)
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, 'COL1', 'col2', [0, 1], 
+                                           [0, 5])
+    
+    results = dq.compare_column_values(df1, df2, 'COL1', 'col1')
+    assert results == {'COL1-col1' : [('0-0', 0), ('1-1', 0)]}
+
+    results = dq.compare_column_values(df1, df2, 'COL3', 'col2')
+    assert results == {'COL1-col2' : [('0-0', 1), ('1-1', 5)]}
+
+    results = dq.compare_column_values(df1, df2, ['COL1', 'COL2'], 
+                                       ['col1', 'col2'])
+    assert results == {'COL1-col1' : [('0-0', 0), ('1-1', 0)],
+                       'COL2-col2' : [('0-0', 0), ('1-1', 0)]}
+
+    results = dq.compare_column_values(df1, df2, 'COL1', 'col1', 0, 1)
+    assert results == {'COL1-col1': [('0-1', 1)]}
+
+    results = dq.compare_column_values(df1, df2, 'COL1', 'col1', [0, 1],
+                                       [1, 0])
+    assert results == {'COL1-col1': [('0-1', 1), ('1-0', 1)]}
+
+    results = dq.compare_column_values(df1, df1, 'COL1', 'COL2', 0, 0)
+    assert results == {'COL1-COL2': [('0-0', 1)]}
+
+    results = dq.compare_column_values(mggg_gdf, medsl_df, 'AG18D', 
+                                       'Attorney General democrat', 
+                                       'Plainfield - DISTRICT 1-1-1a Town Hall',
+                                       '1a Town Hall')
+    (_, diff) = results['AG18D-Attorney General democrat'][0]
+    ct_et = et.ExtractTable(mggg_gdf, column='PRECINCT', 
+                            value='Plainfield - DISTRICT 1-1-1a Town Hall')
+    assert diff == abs(ct_et.extract()['AG18D'] - 361.0)
 
 
 def test_remove_repos():

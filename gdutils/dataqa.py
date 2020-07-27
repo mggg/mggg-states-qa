@@ -105,8 +105,8 @@ def remove_repos(dirpath: Union[str, pathlib.Path]) \
     Given a name/path of a directory, recursively removes all git repositories
     starting from the given directory. This action cannot be undone.
 
-    Warning: this function will remove the given directory if the given directory 
-    itself is a git repo.
+    *Warning:* this function will remove the given directory if the given 
+    directory itself is a git repo.
 
     Parameters
     ----------
@@ -371,20 +371,26 @@ def compare_column_values(
     returns a dictionary containing the compared columns and a corresponding 
     list of tuples containing row names and absolute differences of values.
 
+    *Note:* The comparison is a one-to-one and onto function. I.e. If lists
+    are passed into ``column`` and ``row`` parameters, each element in one
+    list must correspond to another element in the other list.
+
     Parameters
     ----------
     table1: pd.DataFrame | gpd.GeoDataFrame
-        TODO
+        Tabular data containing column values to compare.
     table2: pd.DataFrame | gpd.GeoDataFrame
-        TODO
+        Tabular data containing column values to compare.
     column1: str | List[str]
-        TODO
+        Column(s) in table1 to compare/
     column2: str | List[str]
-        TODO
+        Column(s) in table2 to compare.
     row1: Hashable | List[Hashable], optional, default = ``None``
-        TODO
+        Row(s) in table1 to compare. If ``None``, function compares
+        all rows.
     row2: Hashable | List[Hashable], optional, default = ``None``
-        TODO
+        Row(s) in table2 to compare. If ``None``, function compares
+        all rows.
 
     Returns
     -------
@@ -402,6 +408,8 @@ def compare_column_values(
     TypeError
         Raised if unable to calculate the absolute difference between
         two values.
+    RuntimeError
+        Raised if given lists cannot be compared.
     
     Examples
     --------
