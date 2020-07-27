@@ -295,7 +295,7 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     1     4     5     6
     >>> (matches, discrepancies) = dataqa.compare_column_names(df, standards)
     >>> print(matches)
-    {'COL1', 'COL2'}
+    {'COL1', 'COL3'}
     >>> print(discrepancies)
     {'col2'}
 
