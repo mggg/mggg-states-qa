@@ -322,6 +322,10 @@ def test_compare_column_values():
     assert diff == abs(ct_et.extract()['AG18D'] - 361.0)
 
 
+def test_compare_column_sum():
+    pass # TODO
+
+
 def test_remove_repos():
     with pytest.raises(Exception):
         dq.remove_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY')

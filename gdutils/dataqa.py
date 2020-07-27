@@ -348,7 +348,7 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     1     4     5     6
     >>> totals = dataqa.sum_column_values(df, cols)
     >>> for column, sum in totals:
-            print("{}: {}".format(column, sum))
+    >>>     print("{}: {}".format(column, sum))
     COL1: 5
     COL3: 9 
 
@@ -398,8 +398,10 @@ def compare_column_values(
         A dictionary with string keys corresponding to names of compared
         columns and with List values of tuples corresponding to names of 
         compared rows and absolute differences of their values. E.g.
-        ``{'col1-col2': [('val1-val1', 2), ('val2-val2', 0)],
-           'colA-colB': [('valA1-valB1', 5)]}``
+        ::
+        
+            {'col1-col2': [('val1-val1', 2), ('val2-val2', 0)],
+             'colA-colB': [('valA1-valB1', 5)]}
 
     Raises
     ------
@@ -413,13 +415,47 @@ def compare_column_values(
     
     Examples
     --------
-    >>> TODO: Coming soon
+    >>> df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                           columns=['COL1', 'COL2', 'COL3'])
+    >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
+                           columns=['col2', 'col1'])
+    >>> results = dataqa.compare_column_values(df1, df2, 'COL3', 'col2')
+    >>> print(results)
+    {'COL1-col2' : [('0-0', 1), ('1-1', 5)]}
+
+    >>> results = dataqa.compare_column_values(df1, df2, ['COL1', 'COL2'], 
+                                               ['col1', 'col2'])
+    >>> print(results['COL2-col2'][0])
+    ('0-0', 0)
+    >>> for column in results:
+    >>>     print('{} ----'.format(column))
+    >>>     for row, difference in column:
+    >>>         print('{} : {}'.format(row, difference))
+    COL1-col1 ----
+    0-0 : 0
+    1-1 : 0
+    COL2-col2 ----
+    0-0 : 0
+    1-1 : 0
+
+    >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 0, 1)
+    >>> print(results['COL1-col1'][0])
+    ('0-1', 1)
+
+    >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 
+                                               [0, 1], [1, 0])
+    >>> print(results['COL1-col1])
+    [('0-1', 1), ('1-0', 1)]
 
     """
     pass # TODO
 
 
 def compare_column_sums():
+    """
+    Coming soon...
+
+    """
     pass # TODO
 
 
