@@ -44,7 +44,7 @@ descriptions = [ # Note: ditto
     './tests/dumps/test-repo1.git/.git/description', 
     './tests/dumps/boysenberry-repo-1.git/.git/description', 
     './tests/dumps/Hello-World.git/.git/description', 
-    './tests/dumps/Spoon-Knife.git/.git/description', 
+    './tests/dumps/Spoon-Knife.git/.git/description',
     './.git/description']
 
 
