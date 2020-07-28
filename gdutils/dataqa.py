@@ -213,22 +213,22 @@ def compare_column_values(
     ...                    columns=['col2', 'col1'])
     >>> results = dataqa.compare_column_values(df1, df2, 'COL3', 'col2')
     >>> print(results)
-    {'COL1-col2' : [('0-0', 1), ('1-1', 5)]}
+    {'COL3-col2': [('0-0', 1), ('1-1', 5)]}
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1', 'COL2'], 
     ...                                        ['col1', 'col2'])
     >>> print(results['COL2-col2'][0])
-    ('0-0', 0)
+    ('0-0', 2)
     >>> for column in results:
     ...     print('{} ----'.format(column))
-    ...     for row, difference in column:
+    ...     for row, difference in results[column]:
     ...         print('{} : {}'.format(row, difference))
-    COL1-col1 ----
-    0-0 : 0
-    1-1 : 0
-    COL2-col2 ----
-    0-0 : 0
-    1-1 : 0
+    COL1-col1 ---
+    0-0 4
+    1-1 2
+    COL2-col2 ---
+    0-0 2
+    1-1 4
 
     >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 0, 1)
     >>> print(results['COL1-col1'][0])
@@ -236,7 +236,7 @@ def compare_column_values(
 
     >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 
     ...                                        [0, 1], [1, 0])
-    >>> print(results['COL1-col1])
+    >>> print(results['COL1-col1'])
     [('0-1', 1), ('1-0', 1)]
 
     """
