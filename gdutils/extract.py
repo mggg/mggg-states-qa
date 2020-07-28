@@ -225,25 +225,25 @@ class ExtractTable:
         >>> et = extract.read_file('input.csv')
         >>> df1 = et.extract()
         >>> print(df1.head())
-        field_1 col1 col2 geometry
-        0    asdf    a    b     None
-        1    fdsa    c    d     None
-        2    lkjh    c    3     None
+        Unnamed: 0 col1 col2 geometry
+        0     asdf    a    b     None
+        1     fdsa    c    d     None
+        2     lkjh    c    3     None
 
         >>> et.column = 'col1'
         >>> print(et.extract().head())
-            field_1 col2 geometry
+             Unnamed: 0 col2 geometry
         col1                      
-        a       asdf    b     None
-        c       fdsa    d     None
-        c       lkjh    3     None
+        a          asdf    b     None
+        c          fdsa    d     None
+        c          lkjh    3     None
 
         >>> et.value = 'c'
         >>> print(et.extract().head())
-            field_1 col2 geometry
+             Unnamed: 0 col2 geometry
         col1                      
-        c       fdsa    d     None
-        c       lkjh    3     None
+        c          fdsa    d     None
+        c          lkjh    3     None
 
         """
         if self.__table is None:
@@ -282,10 +282,10 @@ class ExtractTable:
         --------
         >>> et1 = extract.read_file('input.csv', 'col2', ['b', 'd'])
         >>> et1.extract_to_file()
-             field_1 col1
+             Unnamed: 0 col1
         col2                      
-        b       asdf    a
-        d       fdsa    c
+        b          asdf    a
+        d          fdsa    c
 
         >>> et1.outfile = 'output.xlsx'
         >>> et1.extract_to_file()
@@ -356,7 +356,7 @@ class ExtractTable:
         --------
         >>> et = extract.read_file('input.csv)
         >>> print(et.list_columns())
-        ['field_1' 'col1' 'col2']
+        ['Unnamed: 0' 'col1' 'col2']
 
         """
         if self.__table is None:

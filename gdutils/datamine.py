@@ -38,6 +38,7 @@ import urllib.parse
 from typing import Dict, Hashable, Iterable, List, NoReturn, Optional, Union
 
 
+
 #########################################
 #                                       #
 #       Function Definitions            #
@@ -171,7 +172,7 @@ def list_files_of_type(filetype: Union[str, List[str]],
     ['./shapefiles/shape1/shape1.shp', './shapefiles/shape2/shape2.shp']
 
     >>> list_of_csvs = datamine.list_files_of_type('.csv', 
-    >>>                                            exclude_hidden = False)
+    ...                                            exclude_hidden = False)
     >>> print(list_of_csvs)
     ['./csv1.csv', './.hidden-dir/csv_hidden.csv']
 
@@ -234,19 +235,19 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
     Examples
     --------
     >>> sample_dict = {'category1' : [{'key1': 1}],
-    >>>                'category2' : [{'key2' : 2}, {'key3' : 3}]}
+    ...                'category2' : [{'key2' : 2}, {'key3' : 3}]}
     >>> keys = datamine.get_keys_by_category(sample_dict, 'category2')
     >>> print(keys)
     ['key2', 'key3']
 
     >>> sample_dict =  {'category1' : [['key1']],
-    >>>                 'category2' : [['key2'], {'key3': 'value3'}]}
+    ...                 'category2' : [['key2'], {'key3': 'value3'}]}
     >>> keys = datamine.get_keys_by_category(sample_dict, 'category2')
     >>> print(keys)
     ['key2', 'key3']
 
     >>> keys = datamine.get_keys_by_category(sample_dict, 
-    >>>                                      ['category1', 'category2'])
+    ...                                      ['category1', 'category2'])
     >>> print(keys)
     ['key1', 'key2', 'key3']
 
