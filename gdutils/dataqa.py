@@ -240,7 +240,47 @@ def compare_column_values(
     [('0-1', 1), ('1-0', 1)]
 
     """
-    pass # TODO
+    if not __can_compare(column1, column2):
+        raise ValueError(
+            'Cannot compare columns {} and {}.'.format(column1, column2))
+    
+    if row1 is None and row2 is None:
+        return compare_column_values(table1, table2, column1, column2, 
+                                     table1.index.tolist(), 
+                                     table2.index.tolist())
+    elif (row1 is not None and row2 is not None and 
+         not __can_compare(row1, row2)):
+        raise ValueError('Cannot compare rows {} and {}.'.format(row1, row2))
+
+    if isinstance(column1, Hashable) and isinstance(row1, Hashable):
+        return {'{}-{}'.format(column1, column2): 
+                [('{}-{}'.format(row1, row2), 
+                 abs(table1.at[row1, column1] - table2.at[row2, column2]))]}
+
+    elif isinstance(column1, Hashable) and not isinstance(row1, Hashable):
+        return {'{}-{}'.format(column1, column2): 
+                [('{}-{}'.format(row1[i], row2[i]), 
+                 abs(table1.at[row1[i], column1] - 
+                     table2.at[row2[i], column2]))
+                 for i in range(len(row1))]}
+
+    elif not isinstance(column1, Hashable) and isinstance(row1, Hashable):
+        return {'{}-{}'.format(column1[i], column2[i]): 
+                [('{}-{}'.format(row1, row2), 
+                 abs(table1.at[row1, column1[i]] - 
+                     table2.at[row2, column2[i]]))]
+                 for i in range(len(column1))}
+
+    else:
+        results = {}
+        for i in range(0, len(column1)):
+            diff = [('{}-{}'.format(row1[j], row2[j]), 
+                    abs(table1.at[row1[j], column1[i]] -
+                        table2.at[row2[j], column2[i]]))
+                    for j in range(len(row1))]
+            results['{}-{}'.format(column1[i], column2[i])] = diff
+        
+        return results
 
 
 def compare_column_sums():
@@ -258,4 +298,17 @@ def compare_column_sums():
 #                                       #
 #########################################
 
-        
+def __can_compare(item1: Union[Hashable, List[Hashable]], 
+                  item2: Union[Hashable, List[Hashable]]) -> bool:
+    """
+    Returns True is items are both lists of equal length or are both
+    Hashable
+
+    """
+    return ((item1 is not None and item2 is not None and
+             isinstance(item1, type(item2))) 
+            and
+            (isinstance(item1, Hashable) or
+             (not isinstance(item1, Hashable) and len(item1) > 0 and 
+              len(item1) == len(item2))))
+

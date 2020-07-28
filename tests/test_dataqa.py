@@ -7,8 +7,10 @@ import subprocess
 
 import pytest
 
+import gdutils.datamine as dm
 import gdutils.extract as et
 import gdutils.dataqa as dq
+
 
 
 #########################################
@@ -42,10 +44,10 @@ def get_standards():
     with open(standards_path) as json_file:
         standards_raw = json.load(json_file)
     
-    offices = dq.get_keys_by_category(standards_raw, 'offices')
-    parties = dq.get_keys_by_category(standards_raw, 'parties')
-    counts = dq.get_keys_by_category(standards_raw, 'counts')
-    others = dq.get_keys_by_category(standards_raw, 
+    offices = dm.get_keys_by_category(standards_raw, 'offices')
+    parties = dm.get_keys_by_category(standards_raw, 'parties')
+    counts = dm.get_keys_by_category(standards_raw, 'counts')
+    others = dm.get_keys_by_category(standards_raw, 
                 ['geographies', 'demographics', 'districts', 'other'])
 
     elections = [office + format(year, '02') + party 
@@ -136,14 +138,14 @@ def test_sum_column_values():
     assert totals == []
 
 
-def notest_compare_column_values(): # remove 'no' prefix once ready to test
+def test_compare_column_values(): # remove 'no' prefix once ready to test
     df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
                        columns=['COL1', 'COL2', 'COL3'])
     df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
                        columns=['col2', 'col1'])
     df3 = pd.DataFrame(data=[['asdf', 'fdsa'], ['foo', 'bar']],
                        columns=['c1', 'c2'])
-    
+
     with pytest.raises(Exception):
         results = dq.compare_column_values(pd.DataFrame(), pd.DataFrame(),
                                            'asdf', 'asdf')
@@ -167,15 +169,15 @@ def notest_compare_column_values(): # remove 'no' prefix once ready to test
                                            [0, 5])
     
     results = dq.compare_column_values(df1, df2, 'COL1', 'col1')
-    assert results == {'COL1-col1' : [('0-0', 0), ('1-1', 0)]}
+    assert results == {'COL1-col1' : [('0-0', 4), ('1-1', 2)]}
 
     results = dq.compare_column_values(df1, df2, 'COL3', 'col2')
-    assert results == {'COL1-col2' : [('0-0', 1), ('1-1', 5)]}
+    assert results == {'COL3-col2' : [('0-0', 1), ('1-1', 5)]}
 
     results = dq.compare_column_values(df1, df2, ['COL1', 'COL2'], 
                                        ['col1', 'col2'])
-    assert results == {'COL1-col1' : [('0-0', 0), ('1-1', 0)],
-                       'COL2-col2' : [('0-0', 0), ('1-1', 0)]}
+    assert results == {'COL1-col1' : [('0-0', 4), ('1-1', 2)],
+                       'COL2-col2' : [('0-0', 2), ('1-1', 4)]}
 
     results = dq.compare_column_values(df1, df2, 'COL1', 'col1', 0, 1)
     assert results == {'COL1-col1': [('0-1', 1)]}
@@ -187,14 +189,19 @@ def notest_compare_column_values(): # remove 'no' prefix once ready to test
     results = dq.compare_column_values(df1, df1, 'COL1', 'COL2', 0, 0)
     assert results == {'COL1-COL2': [('0-0', 1)]}
 
-    results = dq.compare_column_values(mggg_gdf, medsl_df, 'AG18D', 
+    mggg_gdf1 = et.ExtractTable(mggg_gdf, column='PRECINCT').extract()
+    medsl_df1 = et.ExtractTable(medsl_df, column='precinct').extract()
+    results = dq.compare_column_values(mggg_gdf1, medsl_df1, 'AG18D', 
                                        'Attorney General democrat', 
                                        'Plainfield - DISTRICT 1-1-1a Town Hall',
                                        '1a Town Hall')
-    (_, diff) = results['AG18D-Attorney General democrat'][0]
-    ct_et = et.ExtractTable(mggg_gdf, column='PRECINCT', 
+    _, diff = results['AG18D-Attorney General democrat'][0]
+    ct_et = et.ExtractTable(mggg_gdf, column='PRECINCT',
                             value='Plainfield - DISTRICT 1-1-1a Town Hall')
-    assert diff == abs(ct_et.extract()['AG18D'] - 361.0)
+    medsl_et = et.ExtractTable(medsl_df, column='precinct', 
+                            value='1a Town Hall')
+    assert diff == abs(ct_et.extract()['AG18D'][0] - 
+                       medsl_et.extract()['Attorney General democrat'][0])
 
 
 def notest_compare_column_sum(): # remove 'no' prefix when ready to test
@@ -202,5 +209,5 @@ def notest_compare_column_sum(): # remove 'no' prefix when ready to test
 
 
 def test_remove_repos(): # for cleaning up test files
-    dq.remove_repos(os.path.join('tests', 'dumps')) 
+    dm.remove_repos(os.path.join('tests', 'dumps')) 
 
