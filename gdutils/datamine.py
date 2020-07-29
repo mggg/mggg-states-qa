@@ -52,19 +52,61 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
 
     Parameters
     ----------
-
+    account : str
+        Github account whose public repos are to be cloned.
+    account_type: str
+        Type of github account whose public repos are to be cloned.
+        Valid options: ``'users'``, ``'orgs'``.
 
     Returns
     -------
-
+    List[str]
+        A list of public Github repositories.
 
     Raises
     ------
+    ValueError
+        Raised if the given account_type is neither ``'users'`` nor ``'orgs'``.
+    RuntimeError
+        Raised if unable to query GitHub for repo information.
 
+    Examples
+    --------
+    >>> repos = datamine.list_gh_repos('octocat', 'users')
+    >>> for repo in repos:
+    ...     print(repo)
+    https://github.com/octocat/boysenberry-repo-1.git
+    https://github.com/octocat/git-consortium.git
+    https://github.com/octocat/hello-worId.git
+    https://github.com/octocat/Hello-World.git
+    https://github.com/octocat/linguist.git
+    https://github.com/octocat/octocat.github.io.git
+    https://github.com/octocat/Spoon-Knife.git
+    https://github.com/octocat/test-repo1.git
 
     """
-    pass
+    valid_acc_types = ['users', 'orgs']
+    gh_api = 'https://api.github.com'
+    gh_endpt = 'repos'
+
+    if account_type not in valid_acc_types:
+        raise ValueError(
+            "Invalid account type. Valid options: {}.".format(valid_acc_types))
     
+    gh_api_url = gh_api + '/' + account_type + '/' + account + '/' + gh_endpt
+
+    raw_response = requests.get(gh_api_url)
+    response = json.loads(raw_response.text)
+
+    try:
+        return [repo['clone_url'] for repo in response]
+    except Exception:
+        msg = "Unable to list repos for account {}.".format(account)
+        try:
+            raise RuntimeError(msg + response['message'])
+        except:
+             raise RuntimeError(msg + e)
+
 
 def clone_repos(account: str,
                 account_type: str,
@@ -109,11 +151,13 @@ def clone_repos(account: str,
     """
     try:
         if repo is None:
-            cmds = __get_clone_cmds(account, account_type, outpath)
+            queried_repos = list_gh_repos(account, account_type)
+            cmds = __generate_clone_cmds(queried_repos, outpath)
         elif isinstance(repo, str):
-            cmds = [].append(repo)
+            cmds = __generate_clone_cmds([repo], outpath)
         else:
-            cmds = 
+            cmds = __generate_clone_cmds(repo, outpath)
+
         responses = [lambda cmd : subprocess.run(cmd) for cmd in cmds]
 
         for res in responses:
@@ -301,20 +345,20 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
 #                                       #
 #########################################
 
-def __generate_clone_cmds(repos: Optional[Dict[str], List[str]] = None,
-                          dirpath: Optional[Union[str, pathlib.Path]] = None)
-        -> List[str]:
+def __generate_clone_cmds(
+        repos: Optional[Union[Dict[str, str], List[str]]] = None,
+        dirpath: Optional[Union[str, pathlib.Path]] = None) -> List[str]:
     """
     Given a list of repos, returns a list of subprocess-valid 
     git clone commands.
 
     """
-    try:
+    try: # if repos is a Dict - EAFP
         cmds = [['git', 'clone', repo['clone_url']] for repo in repos]
     except Exception:
         pass
 
-    try:
+    try: # if repos is a List - EAFP
         cmds = [['git', 'clone', repo] for repo in repos]
     except Exception as e:
         raise RuntimeError(
@@ -325,37 +369,6 @@ def __generate_clone_cmds(repos: Optional[Dict[str], List[str]] = None,
             for cmd in cmds]
 
     return cmds
-
-
-def __get_clone_cmds(account: str,
-                     account_type: str,
-                     dirpath: Optional[Union[str, pathlib.Path]] = None) \
-        -> List[str]:
-    """
-    Returns a list of subprocess-valid git clone commands for a list of 
-    repos pulled from GitHub.
-
-    """
-    valid_acc_types = ['users', 'orgs']
-    gh_api = 'https://api.github.com'
-    gh_endpt = 'repos'
-
-    if account_type not in valid_acc_types:
-        raise ValueError(
-            "Invalid account type. Valid options: {}.".format(valid_acc_types))
-    
-    gh_api_url = gh_api + '/' + account_type + '/' + account + '/' + gh_endpt
-
-    raw_response = requests.get(gh_api_url)
-    response = json.loads(raw_response.text)
-
-    try:
-        return __generate_clone_cmds(response, dirpath)
-    except Exception:
-        try:
-            raise RuntimeError(response['message'])
-        except:
-             raise RuntimeError(e)
     
 
 def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
