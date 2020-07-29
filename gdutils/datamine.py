@@ -108,10 +108,10 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
              raise RuntimeError(msg + e)
 
 
-def clone_repos(account: str,
-                account_type: str,
-                repo: Optional[Union[str, List[str]]] = None,  # TODO: add ability to clone specific repos?
-                outpath: Optional[Union[str, pathlib.Path]] = None) \
+def clone_gh_repos(account: str,
+                   account_type: str,
+                   repo: Optional[Union[str, List[str]]] = None,
+                   outpath: Optional[Union[str, pathlib.Path]] = None) \
         -> NoReturn:
     """
     Clones public GitHub repositories into the given directory. If
@@ -139,12 +139,18 @@ def clone_repos(account: str,
     --------
     >>> datamine.clone_repos('mggg-states', 'orgs')
 
-    >>> datamine.clone_repos('mggg-states', 'orgs', 'CT-shapefiles')
+    >>> datamine.clone_repos(
+    ...     'mggg-states', 'orgs', 
+    ...     'https://github.com/mggg-states/AZ-shapefiles.git')
 
-    >>> datamine.clone_repos('mggg-states', 'orgs', 
-                             ['CT-shapefiles', 'HI-shapefiles'])
+    >>> datamine.clone_repos(
+    ...     'mggg-states', 'orgs', 
+    ...     ['https://github.com/mggg-states/AZ-shapefiles.git',
+    ...      'https://github.com/mggg-states/HI-shapefiles.git'])
 
-    >>> datamine.clone_repos('mggg-states', 'orgs', 'HI-shapefiles', 'shps/')
+    >>> datamine.clone_repos(
+    ...     'mggg-states', 'orgs', 
+    ...     'https://github.com/mggg-states/HI-shapefiles.git', 'shps/')
 
     >>> datamine.clone_repos('octocat', 'users', outpath='cloned-repos/')
 
@@ -158,7 +164,7 @@ def clone_repos(account: str,
         else:
             cmds = __generate_clone_cmds(repo, outpath)
 
-        responses = [lambda cmd : subprocess.run(cmd) for cmd in cmds]
+        responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
 
         for res in responses:
             if res.returncode != 0:
@@ -232,6 +238,7 @@ def list_files_of_type(filetype: Union[str, List[str]],
     Returns
     -------
     List[str]
+        List of file paths of files containing the given extension.
 
     Raises
     ------

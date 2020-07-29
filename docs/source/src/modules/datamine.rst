@@ -3,9 +3,13 @@ gdutils.datamine
 
 Module Functions
 ----------------
-datamine.clone_repos
-~~~~~~~~~~~~~~~~~~~~
-.. autofunction:: gdutils.datamine.clone_repos
+datamine.list_gh_repos
+~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: gdutils.datamine.list_gh_repos
+
+datamine.clone_gh_repos
+~~~~~~~~~~~~~~~~~~~~~~~~
+.. autofunction:: gdutils.datamine.clone_gh_repos
 
 datamine.remove_repos
 ~~~~~~~~~~~~~~~~~~~~~

@@ -25,8 +25,7 @@ tests/inputs/*.zip
 tests/inputs/precinct_2018
 !tests/inputs/test.zip
 !tests/inputs/CT_precincts.zip
-**/dumps/
-!tests/dumps/
+**/dumps*/*
 tests/nhgis0004_shapefile_tl2010_060_block_2010*
 scripts/**/*.git
 

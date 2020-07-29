@@ -24,8 +24,17 @@ gh_repos = [ # Note: this list is subject to change
     'boysenberry-repo-1.git', 
     'Hello-World.git', 
     'Spoon-Knife.git']
+public_gh_repos = [ # Note: also subject to change
+    'https://github.com/octocat/boysenberry-repo-1.git', 
+    'https://github.com/octocat/git-consortium.git', 
+    'https://github.com/octocat/hello-worId.git', 
+    'https://github.com/octocat/Hello-World.git', 
+    'https://github.com/octocat/linguist.git', 
+    'https://github.com/octocat/octocat.github.io.git', 
+    'https://github.com/octocat/Spoon-Knife.git', 
+    'https://github.com/octocat/test-repo1.git']
 
-gitignores = [ # Note: also subject to change
+gitignores = [ # Note: same
     './.gitignore', 
     './.pytest_cache/.gitignore', 
     './tests/dumps/linguist.git/.gitignore', 
@@ -52,23 +61,49 @@ descriptions = [ # Note: ditto
 #########################################
 # Regression Tests                      #
 #########################################
-
-def test_clone_repos():
+def test_list_gh_repos():
     with pytest.raises(Exception):
-        dm.clone_repos()
+        dm.list_gh_repos()
     with pytest.raises(Exception):
-        dm.clone_repos('octocat')
+        dm.list_gh_repos('octocat')
     with pytest.raises(Exception):
-        dm.clone_repos('octocat', 'asdf')
-    with pytest.raises(Exception):
-        dm.clone_repos('octocat', 'orgs')
+        dm.list_gh_repos('octocat', 'asdf')
     with pytest.raises(Exception): # randomly generated string for user
-        dm.clone_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY', 'users')
-
-    dm.clone_repos('octocat', 'users', 'tests/dumps')
+        dm.list_gh_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY', 'users')
     
+    repos = dm.list_gh_repos('octocat', 'users')
+    assert repos == public_gh_repos
+
+
+def test_clone_gh_repos():
+    with pytest.raises(Exception):
+        dm.clone_gh_repos()
+    with pytest.raises(Exception):
+        dm.clone_gh_repos('octocat')
+    with pytest.raises(Exception):
+        dm.clone_gh_repos('octocat', 'asdf')
+    with pytest.raises(Exception):
+        dm.clone_gh_repos('octocat', 'orgs')
+    with pytest.raises(Exception): # randomly generated string for user
+        dm.clone_gh_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY', 'users')
+
+    dm.clone_gh_repos('octocat', 'users', outpath='tests/dumps')
     dirs = next(os.walk(os.path.join('tests', 'dumps')))
-    assert dirs[1] == gh_repos
+    assert set(dirs[1]) == set(gh_repos)
+
+    dm.clone_gh_repos('mggg-states', 'orgs', 
+                      'https://github.com/mggg-states/CT-shapefiles.git', 
+                      os.path.join('tests', 'dumps2'))
+    dirs = next(os.walk(os.path.join('tests', 'dumps2'))) 
+    assert set(dirs[1]) == {'CT-shapefiles.git'}
+
+    dm.clone_gh_repos('mggg-states', 'orgs', 
+                      ['https://github.com/mggg-states/AZ-shapefiles.git', 
+                       'https://github.com/mggg-states/HI-shapefiles.git'], 
+                      os.path.join('tests', 'dumps2'))
+    dirs = next(os.walk(os.path.join('tests', 'dumps2'))) 
+    assert set(dirs[1]) == {'CT-shapefiles.git', 'AZ-shapefiles.git', 
+                            'HI-shapefiles.git'}
 
 
 def test_list_files_of_type():
@@ -76,19 +111,24 @@ def test_list_files_of_type():
         dm.list_files_of_type(1)
 
     files = dm.list_files_of_type('description')
-    assert files == descriptions
+    ds = descriptions.copy()
+    ds.append('./tests/dumps2/AZ-shapefiles.git/.git/description')
+    ds.append('./tests/dumps2/CT-shapefiles.git/.git/description')
+    ds.append('./tests/dumps2/HI-shapefiles.git/.git/description')
+    assert set(files) == set(ds)
 
     files = dm.list_files_of_type('.q;weoifh0[238ubfasdf')
     assert files == []
 
-    files = dm.list_files_of_type(['description', '.html'])
+    files = dm.list_files_of_type(['description', '.html'],
+                                  os.path.join('tests', 'dumps'))
     assert files.sort() == (descriptions + htmls).sort()
 
     files = dm.list_files_of_type('description', 
                                   os.path.join('tests', 'dumps'))
     descriptions.remove('./.git/description')
     descrs = [d.lstrip('./') for d in descriptions]
-    assert files == descrs
+    assert set(files) == set(descrs)
 
     files = dm.list_files_of_type('.gitignore', exclude_hidden = True)
     assert files == []
@@ -147,7 +187,13 @@ def test_remove_repos():
 
     dm.remove_repos(os.path.join('tests', 'dumps'))
     dirs = next(os.walk(os.path.join('tests', 'dumps')))
-    assert not any(list(map(lambda x, y: x == y, dirs[1], gh_repos)))
+    assert not any(list(map(lambda x, y: x == y, set(dirs[1]), set(gh_repos))))
+
+    dm.remove_repos(os.path.join('tests', 'dumps2'))
+    dirs = next(os.walk(os.path.join('tests', 'dumps2')))
+    assert not any(list(map(lambda x, y: x == y, set(dirs[1]),
+                            {'CT-shapefiles.git', 'AZ-shapefiles.git', 
+                             'HI-shapefiles.git'})))
 
     dm.remove_repos(os.path.join('tests', 'dumps')) # should not raise anything
 
