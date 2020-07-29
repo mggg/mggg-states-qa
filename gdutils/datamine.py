@@ -45,8 +45,30 @@ from typing import Dict, Hashable, Iterable, List, NoReturn, Optional, Union
 #                                       #
 #########################################
 
+def list_gh_repos(account: str, account_type: str) -> List[str]:
+    """
+    Returns a list of public GitHub repositories associated with the given
+    account and account type.
+
+    Parameters
+    ----------
+
+
+    Returns
+    -------
+
+
+    Raises
+    ------
+
+
+    """
+    pass
+    
+
 def clone_repos(account: str,
-                account_type: str, # TODO: add ability to clone specific repos?
+                account_type: str,
+                repo: Optional[Union[str, List[str]]] = None,  # TODO: add ability to clone specific repos?
                 outpath: Optional[Union[str, pathlib.Path]] = None) \
         -> NoReturn:
     """
@@ -75,12 +97,24 @@ def clone_repos(account: str,
     --------
     >>> datamine.clone_repos('mggg-states', 'orgs')
 
-    >>> datamine.clone_repos('octocat', 'users', 'cloned-repos')
+    >>> datamine.clone_repos('mggg-states', 'orgs', 'CT-shapefiles')
+
+    >>> datamine.clone_repos('mggg-states', 'orgs', 
+                             ['CT-shapefiles', 'HI-shapefiles'])
+
+    >>> datamine.clone_repos('mggg-states', 'orgs', 'HI-shapefiles', 'shps/')
+
+    >>> datamine.clone_repos('octocat', 'users', outpath='cloned-repos/')
 
     """
     try:
-        cmds = __get_clone_cmds(account, account_type, outpath)
-        responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
+        if repo is None:
+            cmds = __get_clone_cmds(account, account_type, outpath)
+        elif isinstance(repo, str):
+            cmds = [].append(repo)
+        else:
+            cmds = 
+        responses = [lambda cmd : subprocess.run(cmd) for cmd in cmds]
 
         for res in responses:
             if res.returncode != 0:
@@ -267,12 +301,39 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
 #                                       #
 #########################################
 
+def __generate_clone_cmds(repos: Optional[Dict[str], List[str]] = None,
+                          dirpath: Optional[Union[str, pathlib.Path]] = None)
+        -> List[str]:
+    """
+    Given a list of repos, returns a list of subprocess-valid 
+    git clone commands.
+
+    """
+    try:
+        cmds = [['git', 'clone', repo['clone_url']] for repo in repos]
+    except Exception:
+        pass
+
+    try:
+        cmds = [['git', 'clone', repo] for repo in repos]
+    except Exception as e:
+        raise RuntimeError(
+            'Unable to generate clone commands. {}'.format(e))
+
+    if dirpath is not None:
+        [cmd.append(os.path.join(dirpath, cmd[2].split('/')[-1])) 
+            for cmd in cmds]
+
+    return cmds
+
+
 def __get_clone_cmds(account: str,
                      account_type: str,
                      dirpath: Optional[Union[str, pathlib.Path]] = None) \
         -> List[str]:
     """
-    Returns a list of subprocess-valid git clone commands.
+    Returns a list of subprocess-valid git clone commands for a list of 
+    repos pulled from GitHub.
 
     """
     valid_acc_types = ['users', 'orgs']
@@ -289,19 +350,13 @@ def __get_clone_cmds(account: str,
     response = json.loads(raw_response.text)
 
     try:
-        cmds = [['git', 'clone', repo['clone_url']] for repo in response]
-    except Exception as e:
+        return __generate_clone_cmds(response, dirpath)
+    except Exception:
         try:
             raise RuntimeError(response['message'])
         except:
              raise RuntimeError(e)
-
-    if dirpath is not None:
-        [cmd.append(os.path.join(dirpath, cmd[2].split('/')[-1])) 
-            for cmd in cmds]
     
-    return cmds
-
 
 def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
         -> List[str]:
