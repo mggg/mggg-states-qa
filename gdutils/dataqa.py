@@ -55,8 +55,8 @@ from typing import (Any, Dict, Hashable, Iterable, List,
 #########################################
 
 def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
-                         standards: Union[List[str], Set[str]]) \
-        -> Tuple[Set[str], Set[str]]:
+                         standards: Union[List[str], Set[str]]
+                         ) -> Tuple[Set[str], Set[str]]:
     """
     Given either a pandas DataFrame or a geopandas GeoDataFrame and a list
     of standardized column names, returns a tuple containing the intersection
@@ -103,8 +103,8 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
 
 
 def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
-                      columns: Union[List[str], Set[str]]) \
-        -> List[Tuple[str, int]]:
+                      columns: Union[List[str], Set[str]]
+                      ) -> List[Tuple[str, int]]:
     """
     Given a pandas DataFrame of a geopandas GeoDataFrame, and given a list of 
     column names, returns a list of tuples (key-value pairs) of column names 
@@ -156,8 +156,8 @@ def compare_column_values(
         column1: Union[str, List[str]], 
         column2: Union[str, List[str]],
         row1: Optional[Union[Hashable, List[Hashable]]] = None,
-        row2: Optional[Union[Hashable, List[Hashable]]] = None) \
-        -> Dict[str, List[Tuple[Hashable, Any]]]:
+        row2: Optional[Union[Hashable, List[Hashable]]] = None
+        ) -> Dict[str, List[Tuple[Hashable, Any]]]:
     """
     Given two tables and their corresponding columns and rows to compare,
     returns a dictionary containing the compared columns and a corresponding 
@@ -283,9 +283,14 @@ def compare_column_values(
         return results
 
 
-def compare_column_sums():
+def compare_column_sums(
+        table1: Union[pd.DataFrame, gpd.GeoDataFrame],
+        table2: Union[pd.DataFrame, gpd.GeoDataFrame],
+        column1: Optional[Union[str, List[str]]] = None,
+        column2: Optional[Union[str, List[str]]] = None
+        ) -> List[Tuple[str, Union[int, float]]]:
     """
-    Coming soon...
+    
 
     """
     pass # TODO

@@ -111,8 +111,8 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
 def clone_gh_repos(account: str,
                    account_type: str,
                    repo: Optional[Union[str, List[str]]] = None,
-                   outpath: Optional[Union[str, pathlib.Path]] = None) \
-        -> NoReturn:
+                   outpath: Optional[Union[str, pathlib.Path]] = None
+                   ) -> NoReturn:
     """
     Clones public GitHub repositories into the given directory. If
     directory path is not provided, clones repos into the current
@@ -174,8 +174,8 @@ def clone_gh_repos(account: str,
         raise RuntimeError("Unable to clone repos. {}".format(e))
 
 
-def remove_repos(dirpath: Union[str, pathlib.Path]) \
-        -> NoReturn:
+# TODO: consider adding ability to remove specific repos?
+def remove_repos(dirpath: Union[str, pathlib.Path]) -> NoReturn:
     """
     Given a name/path of a directory, recursively removes all git repositories
     starting from the given directory. This action cannot be undone.
@@ -216,8 +216,8 @@ def remove_repos(dirpath: Union[str, pathlib.Path]) \
 
 def list_files_of_type(filetype: Union[str, List[str]], 
                        dirpath: Optional[Union[str, pathlib.Path]] = '.',
-                       exclude_hidden: Optional[bool] = True) \
-        -> List[str]:
+                       exclude_hidden: Optional[bool] = True
+                       ) -> List[str]:
     """
     Given a file extension and an optional directory path, returns a list of
     file paths of files containing the extension. If the directory path is not
@@ -283,8 +283,8 @@ def list_files_of_type(filetype: Union[str, List[str]],
 
 
 def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]], 
-                         category: Union[Hashable, List[Hashable]]) \
-        -> List[Hashable]:
+                         category: Union[Hashable, List[Hashable]]
+                         ) -> List[Hashable]:
     """
     Given a dictionary with categories, returns a list of keys in the
     given category.
@@ -354,7 +354,8 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
 
 def __generate_clone_cmds(
         repos: Optional[Union[Dict[str, str], List[str]]] = None,
-        dirpath: Optional[Union[str, pathlib.Path]] = None) -> List[str]:
+        dirpath: Optional[Union[str, pathlib.Path]] = None
+        ) -> List[str]:
     """
     Given a list of repos, returns a list of subprocess-valid 
     git clone commands.
@@ -378,8 +379,8 @@ def __generate_clone_cmds(
     return cmds
     
 
-def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.') \
-        -> List[str]:
+def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.'
+                 ) -> List[str]:
     """
     Given a starting search directory, returns a list of paths to git repos
     on the local machine.

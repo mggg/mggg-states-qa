@@ -255,7 +255,8 @@ class ExtractTable:
             
 
     def extract_to_file(self, outfile: Optional[str] = None,
-                        driver: Optional[str] = None) -> NoReturn:
+                        driver: Optional[str] = None
+                        ) -> NoReturn:
         """
         Writes the tabular extracted data to a file. 
         
@@ -373,8 +374,8 @@ class ExtractTable:
 
     def list_values(self, 
                     column: Optional[str] = None,
-                    unique: Optional[bool] = False) -> \
-            Union[np.ndarray, gpd.array.GeometryArray]:
+                    unique: Optional[bool] = False
+                    ) -> Union[np.ndarray, gpd.array.GeometryArray]:
         """
         Returns a list of values in the initialized column (default).
         
@@ -541,10 +542,12 @@ class ExtractTable:
             raise FileNotFoundError('Cannot read {}'.format(filename))
 
 
-    def __extract_to_inferred_file(self, 
-                                   df: Union[gpd.GeoDataFrame, pd.DataFrame], 
-                                   filename: pathlib.Path, 
-                                   ext: str) -> NoReturn:
+    def __extract_to_inferred_file(
+            self, 
+            df: Union[gpd.GeoDataFrame, pd.DataFrame], 
+            filename: pathlib.Path, 
+            ext: str
+            ) -> NoReturn:
         has_index = self.column is not None
 
         if ext == '.csv':
