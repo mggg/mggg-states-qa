@@ -256,12 +256,15 @@ def compare_column_values(
 
     else:
         results = {}
-        for i in range(0, len(columns1)):
-            diff = [('{}-{}'.format(rows1[j], rows2[j]), 
-                    abs(table1.at[rows1[j], columns1[i]] -
-                        table2.at[rows2[j], columns2[i]]))
-                    for j in range(len(rows1))]
-            results['{}-{}'.format(columns1[i], columns2[i])] = diff
+        cs1 = list(columns1)
+        cs2 = list(columns2)
+        rs1 = list(rows1)
+        rs2 = list(rows2)
+        for i in range(0, len(cs1)):
+            diff = [('{}-{}'.format(rs1[j], rs2[j]), 
+                    abs(table1.at[rs1[j], cs1[i]] -
+                        table2.at[rs2[j], cs2[i]])) for j in range(len(rs1))]
+            results['{}-{}'.format(cs1[i], cs2[i])] = diff
         
         return results
 
@@ -330,13 +333,12 @@ def compare_column_sums(
     if not __can_compare(columns1, columns2):
         raise ValueError(
             'Cannot compare columns {} and {}.'.format(columns1, columns2))
-            
+
     sums1 = sum_column_values(table1, columns1)
     sums2 = sum_column_values(table2, columns2)
 
-    return list(map(lambda tup1, tup2:('{}-{}'.format(tup1[0], tup2[0]),
-                                       abs(tup1[1] - tup2[1])),
-                sums1, sums2))
+    return list(map(lambda tup1, tup2: ('{}-{}'.format(tup1[0], tup2[0]),
+                                        abs(tup1[1] - tup2[1])), sums1, sums2))
 
 
 #########################################
@@ -345,15 +347,14 @@ def compare_column_sums(
 #                                       #
 #########################################
 
-def __can_compare(item1: Union[Hashable, List[Hashable]], 
-                  item2: Union[Hashable, List[Hashable]]) -> bool:
+def __can_compare(xs: Union[Hashable, List[Hashable]], 
+                  ys: Union[Hashable, List[Hashable]]) -> bool:
     """
-    Returns True is items are both lists of equal length > 0.
+    Returns ``True`` is given are both lists of equal length > 0.
 
     """
-    return ((item1 is not None and item2 is not None and
-             isinstance(item1, type(item2))) 
-            and
-            (not isinstance(item1, Hashable) and len(item1) > 0 and 
-              len(item1) == len(item2)))
+    return (
+        (xs is not None and ys is not None and isinstance(xs, type(ys)))
+        and
+        (not isinstance(xs, Hashable) and len(xs) > 0 and len(xs) == len(ys)))
 
