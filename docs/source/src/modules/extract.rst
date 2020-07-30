@@ -8,8 +8,8 @@ extract.read_file
 .. autofunction:: gdutils.extract.read_file
 
 
-gdutils.extract.ExtractTable
-----------------------------
+Class: gdutils.extract.ExtractTable
+-----------------------------------
 .. autoclass:: gdutils.extract.ExtractTable
 
 
