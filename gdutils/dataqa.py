@@ -327,16 +327,16 @@ def compare_column_sums(
     COL3-col2 : 4
 
     """
-    if not __can_compare(column1, column2):
+    if not __can_compare(columns1, columns2):
         raise ValueError(
-            'Cannot compare columns {} and {}.'.format(column1, column2))
-    sums1 = sum_column_values(table1, column1)
-    sums2 = sum_column_values(table2, column2)
+            'Cannot compare columns {} and {}.'.format(columns1, columns2))
+            
+    sums1 = sum_column_values(table1, columns1)
+    sums2 = sum_column_values(table2, columns2)
 
-    return list(map(lambda col1, sum1, col2, sum2:
-                        ('{}-{}'.format(col1, col2), abs(sum1 - sum2)), 
-                    list(zip(sums1, sums2))))
-
+    return list(map(lambda tup1, tup2:('{}-{}'.format(tup1[0], tup2[0]),
+                                       abs(tup1[1] - tup2[1])),
+                sums1, sums2))
 
 
 #########################################
