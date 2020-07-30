@@ -347,10 +347,10 @@ def compare_column_sums(
 #                                       #
 #########################################
 
-def __can_compare(xs: Union[Hashable, List[Hashable]], 
-                  ys: Union[Hashable, List[Hashable]]) -> bool:
+def __can_compare(xs: Union[Set[Hashable], List[Hashable]], 
+                  ys: Union[Set[Hashable], List[Hashable]]) -> bool:
     """
-    Returns ``True`` is given are both lists of equal length > 0.
+    Returns ``True`` is given are both sets/lists of equal length > 0.
 
     """
     return (
