@@ -154,24 +154,30 @@ def test_compare_column_values(): # remove 'no' prefix once ready to test
     with pytest.raises(Exception):
         results = dq.compare_column_values(df1, df2, 'col2', 'COL1')
     with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, ['col2'], ['COL1'])
+    with pytest.raises(Exception):
+        results = dq.compare_column_values(df1, df2, 'COL1', 'col2')
+    with pytest.raises(Exception):
         results = dq.compare_column_values(df1, df2, df1.columns, df2.columns)
     with pytest.raises(Exception):
         results = dq.compare_column_values(df1, df2, ['COL1', 'COL2'], 
-                                           ['col1', 'col2'], 1, 'adsf')
+                                           ['col1', 'col2'], [1], ['adsf'])
     with pytest.raises(Exception):
-        results = dq.compare_column_values(df1, df2, 'COL1', 'col1', 1, -1)
+        results = dq.compare_column_values(df1, df2, ['COL1'], ['col1'], 
+                                           [1], [-1])
     with pytest.raises(Exception):
-        results = dq.compare_column_values(df1, df3, 'COL1', 'c1')
+        results = dq.compare_column_values(df1, df3, ['COL1'], ['c1'])
     with pytest.raises(Exception):
-        results = dq.compare_column_values(df1, df2, 'COL1', 'col2', [0, 1], 1)
+        results = dq.compare_column_values(df1, df2, ['COL1'], ['col2'], 
+                                           [0, 1], [1])
     with pytest.raises(Exception):
-        results = dq.compare_column_values(df1, df2, 'COL1', 'col2', [0, 1], 
-                                           [0, 5])
+        results = dq.compare_column_values(df1, df2, ['COL1'], ['col2'], 
+                                           [0, 1], [0, 5])
     
-    results = dq.compare_column_values(df1, df2, 'COL1', 'col1')
+    results = dq.compare_column_values(df1, df2, ['COL1'], ['col1'])
     assert results == {'COL1-col1' : [('0-0', 4), ('1-1', 2)]}
 
-    results = dq.compare_column_values(df1, df2, 'COL3', 'col2')
+    results = dq.compare_column_values(df1, df2, ['COL3'], ['col2'])
     assert results == {'COL3-col2' : [('0-0', 1), ('1-1', 5)]}
 
     results = dq.compare_column_values(df1, df2, ['COL1', 'COL2'], 
@@ -179,22 +185,23 @@ def test_compare_column_values(): # remove 'no' prefix once ready to test
     assert results == {'COL1-col1' : [('0-0', 4), ('1-1', 2)],
                        'COL2-col2' : [('0-0', 2), ('1-1', 4)]}
 
-    results = dq.compare_column_values(df1, df2, 'COL1', 'col1', 0, 1)
+    results = dq.compare_column_values(df1, df2, ['COL1'], ['col1'], [0], [1])
     assert results == {'COL1-col1': [('0-1', 1)]}
 
-    results = dq.compare_column_values(df1, df2, 'COL1', 'col1', [0, 1],
+    results = dq.compare_column_values(df1, df2, ['COL1'], ['col1'], [0, 1],
                                        [1, 0])
     assert results == {'COL1-col1': [('0-1', 1), ('1-0', 1)]}
 
-    results = dq.compare_column_values(df1, df1, 'COL1', 'COL2', 0, 0)
+    results = dq.compare_column_values(df1, df1, ['COL1'], ['COL2'], [0], [0])
     assert results == {'COL1-COL2': [('0-0', 1)]}
 
     mggg_gdf1 = et.ExtractTable(mggg_gdf, column='PRECINCT').extract()
     medsl_df1 = et.ExtractTable(medsl_df, column='precinct').extract()
-    results = dq.compare_column_values(mggg_gdf1, medsl_df1, 'AG18D', 
-                                       'Attorney General democrat', 
-                                       'Plainfield - DISTRICT 1-1-1a Town Hall',
-                                       '1a Town Hall')
+    results = dq.compare_column_values(
+                    mggg_gdf1, medsl_df1, ['AG18D'], 
+                    ['Attorney General democrat'], 
+                    ['Plainfield - DISTRICT 1-1-1a Town Hall'],
+                    ['1a Town Hall'])
     _, diff = results['AG18D-Attorney General democrat'][0]
     ct_et = et.ExtractTable(mggg_gdf, column='PRECINCT',
                             value='Plainfield - DISTRICT 1-1-1a Town Hall')
@@ -202,9 +209,9 @@ def test_compare_column_values(): # remove 'no' prefix once ready to test
                             value='1a Town Hall')
     assert diff == abs(ct_et.extract()['AG18D'][0] - 
                        medsl_et.extract()['Attorney General democrat'][0])
+                       
 
-
-def notest_compare_column_sum(): # remove 'no' prefix when ready to test
+def notest_compare_column_sums(): # remove 'no' prefix when ready to test
     df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
                        columns=['COL1', 'COL2', 'COL3'])
     df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
@@ -248,9 +255,9 @@ def notest_compare_column_sum(): # remove 'no' prefix when ready to test
     mggg_sums = dq.sum_columns_values(mggg_gdf1, mggg_cols)
     medsl_sums = dq.sum_column_values(medsl_df, medsl_cols)
 
-    to_comp = list(map(lambda (c1, s1), (c2, s2): 
-                            return ('{}-{}'.format(c1, c2), abs(s1 - s2)), 
-                        mggg_sums, medsl_sums))
+    to_comp = list(map(lambda c1, s1, c2, s2: 
+                            ('{}-{}'.format(c1, c2), abs(s1 - s2)), 
+                        list(zip(mggg_sums, medsl_sums))))
     assert set(results) == set(to_comp)
 
 
@@ -258,6 +265,7 @@ def notest_compare_column_sum(): # remove 'no' prefix when ready to test
     assert diff == abs(ct_et.extract()['AG18D'][0] - 
                        medsl_et.extract()['Attorney General democrat'][0])
 
+# notest_compare_column_sums()
 
 
 

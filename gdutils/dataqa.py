@@ -153,10 +153,10 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
 def compare_column_values(
         table1: Union[pd.DataFrame, gpd.GeoDataFrame],
         table2: Union[pd.DataFrame, gpd.GeoDataFrame],
-        column1: Union[str, List[str]], 
-        column2: Union[str, List[str]],
-        row1: Optional[Union[Hashable, List[Hashable]]] = None,
-        row2: Optional[Union[Hashable, List[Hashable]]] = None
+        columns1: Union[Set[str], List[str]], 
+        columns2: Union[Set[str], List[str]],
+        rows1: Optional[Union[Set[Hashable], List[Hashable]]] = None,
+        rows2: Optional[Union[Set[Hashable], List[Hashable]]] = None
         ) -> Dict[str, List[Tuple[Hashable, Any]]]:
     """
     Given two tables and their corresponding columns and rows to compare,
@@ -173,15 +173,15 @@ def compare_column_values(
         Tabular data containing column values to compare.
     table2: pd.DataFrame | gpd.GeoDataFrame
         Tabular data containing column values to compare.
-    column1: str | List[str]
-        Column(s) in table1 to compare.
-    column2: str | List[str]
-        Column(s) in table2 to compare.
-    row1: Hashable | List[Hashable], optional, default = ``None``
-        Row(s) in table1 to compare. AKA value(s) of table's index.
+    columns1: Set[str] | List[str]
+        Columns in table1 to compare.
+    columns2: Set[str] | List[str]
+        Columns in table2 to compare.
+    rows1: Set[Hashable] | List[Hashable], optional, default = ``None``
+        Rows in table1 to compare. AKA value(s) of table's index.
         If ``None``, function compares all rows.
-    row2: Hashable | List[Hashable], optional, default = ``None``
-        Row(s) in table2 to compare. AKA value(s) of table's index.
+    rows2: Set[Hashable] | List[Hashable], optional, default = ``None``
+        Rows in table2 to compare. AKA value(s) of table's index.
         If ``None``, function compares all rows.
 
     Returns
@@ -211,7 +211,7 @@ def compare_column_values(
     ...                    columns=['COL1', 'COL2', 'COL3'])
     >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
     ...                    columns=['col2', 'col1'])
-    >>> results = dataqa.compare_column_values(df1, df2, 'COL3', 'col2')
+    >>> results = dataqa.compare_column_values(df1, df2, ['COL3'], ['col2'])
     >>> print(results)
     {'COL3-col2': [('0-0', 1), ('1-1', 5)]}
 
@@ -230,55 +230,38 @@ def compare_column_values(
     0-0 2
     1-1 4
 
-    >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 0, 1)
+    >>> results = dataqa.compare_column_values(df1, df2, ['COL1'], 
+    ...                                        ['col1'], [0], [1])
     >>> print(results['COL1-col1'][0])
     ('0-1', 1)
 
-    >>> results = dataqa.compare_column_values(df1, df2, 'COL1', 'col1', 
+    >>> results = dataqa.compare_column_values(df1, df2, ['COL1'], ['col1'],
     ...                                        [0, 1], [1, 0])
     >>> print(results['COL1-col1'])
     [('0-1', 1), ('1-0', 1)]
 
     """
-    if not __can_compare(column1, column2):
+    if not __can_compare(columns1, columns2):
         raise ValueError(
-            'Cannot compare columns {} and {}.'.format(column1, column2))
+            'Cannot compare columns {} and {}.'.format(columns1, columns2))
     
-    if row1 is None and row2 is None:
-        return compare_column_values(table1, table2, column1, column2, 
+    if rows1 is None and rows2 is None:
+        return compare_column_values(table1, table2, columns1, columns2, 
                                      table1.index.tolist(), 
                                      table2.index.tolist())
-    elif (row1 is not None and row2 is not None and 
-         not __can_compare(row1, row2)):
-        raise ValueError('Cannot compare rows {} and {}.'.format(row1, row2))
 
-    if isinstance(column1, Hashable) and isinstance(row1, Hashable):
-        return {'{}-{}'.format(column1, column2): 
-                [('{}-{}'.format(row1, row2), 
-                 abs(table1.at[row1, column1] - table2.at[row2, column2]))]}
-
-    elif isinstance(column1, Hashable) and not isinstance(row1, Hashable):
-        return {'{}-{}'.format(column1, column2): 
-                [('{}-{}'.format(row1[i], row2[i]), 
-                 abs(table1.at[row1[i], column1] - 
-                     table2.at[row2[i], column2]))
-                 for i in range(len(row1))]}
-
-    elif not isinstance(column1, Hashable) and isinstance(row1, Hashable):
-        return {'{}-{}'.format(column1[i], column2[i]): 
-                [('{}-{}'.format(row1, row2), 
-                 abs(table1.at[row1, column1[i]] - 
-                     table2.at[row2, column2[i]]))]
-                 for i in range(len(column1))}
+    elif (rows1 is not None and rows2 is not None and 
+          not __can_compare(rows1, rows2)):
+        raise ValueError('Cannot compare rows {} and {}.'.format(rows1, rows2))
 
     else:
         results = {}
-        for i in range(0, len(column1)):
-            diff = [('{}-{}'.format(row1[j], row2[j]), 
-                    abs(table1.at[row1[j], column1[i]] -
-                        table2.at[row2[j], column2[i]]))
-                    for j in range(len(row1))]
-            results['{}-{}'.format(column1[i], column2[i])] = diff
+        for i in range(0, len(columns1)):
+            diff = [('{}-{}'.format(rows1[j], rows2[j]), 
+                    abs(table1.at[rows1[j], columns1[i]] -
+                        table2.at[rows2[j], columns2[i]]))
+                    for j in range(len(rows1))]
+            results['{}-{}'.format(columns1[i], columns2[i])] = diff
         
         return results
 
@@ -286,8 +269,8 @@ def compare_column_values(
 def compare_column_sums(
         table1: Union[pd.DataFrame, gpd.GeoDataFrame],
         table2: Union[pd.DataFrame, gpd.GeoDataFrame],
-        column1: Optional[Union[str, List[str]]],
-        column2: Optional[Union[str, List[str]]]
+        columns1: Optional[Union[Set[str], List[str]]],
+        columns2: Optional[Union[Set[str], List[str]]]
         ) -> List[Tuple[Hashable, Any]]:
     """
     Given two tables and two column names (or two lists of column names)
@@ -306,9 +289,9 @@ def compare_column_sums(
         Tabular data containing column values to compare.
     table2: pd.DataFrame | gpd.GeoDataFrame
         Tabular data containing column values to compare.
-    column1: str | List[str]
-        Column(s) in table1 to compare/
-    column2: str | List[str]
+    columns1: Set[str] | List[str]
+        Column(s) in table1 to compare.
+    columns2: Set[str] | List[str]
         Column(s) in table2 to compare.
 
     Returns
@@ -332,7 +315,7 @@ def compare_column_sums(
     ...                    columns=['COL1', 'COL2', 'COL3'])
     >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
     ...                    columns=['col2', 'col1'])
-    >>> diffs = dataqa.compare_column_sums(df1, df2, 'COL1', 'col1')
+    >>> diffs = dataqa.compare_column_sums(df1, df2, ['COL1'], ['col1'])
     >>> print(diffs)
     [('COL1-col1', 2)]
 
@@ -344,7 +327,15 @@ def compare_column_sums(
     COL3-col2 : 4
 
     """
-    pass # TODO
+    if not __can_compare(column1, column2):
+        raise ValueError(
+            'Cannot compare columns {} and {}.'.format(column1, column2))
+    sums1 = sum_column_values(table1, column1)
+    sums2 = sum_column_values(table2, column2)
+
+    return list(map(lambda col1, sum1, col2, sum2:
+                        ('{}-{}'.format(col1, col2), abs(sum1 - sum2)), 
+                    list(zip(sums1, sums2))))
 
 
 
@@ -357,14 +348,12 @@ def compare_column_sums(
 def __can_compare(item1: Union[Hashable, List[Hashable]], 
                   item2: Union[Hashable, List[Hashable]]) -> bool:
     """
-    Returns True is items are both lists of equal length or are both
-    Hashable
+    Returns True is items are both lists of equal length > 0.
 
     """
     return ((item1 is not None and item2 is not None and
              isinstance(item1, type(item2))) 
             and
-            (isinstance(item1, Hashable) or
-             (not isinstance(item1, Hashable) and len(item1) > 0 and 
-              len(item1) == len(item2))))
+            (not isinstance(item1, Hashable) and len(item1) > 0 and 
+              len(item1) == len(item2)))
 
