@@ -174,7 +174,7 @@ def compare_column_values(
     table2: pd.DataFrame | gpd.GeoDataFrame
         Tabular data containing column values to compare.
     column1: str | List[str]
-        Column(s) in table1 to compare/
+        Column(s) in table1 to compare.
     column2: str | List[str]
         Column(s) in table2 to compare.
     row1: Hashable | List[Hashable], optional, default = ``None``
@@ -286,11 +286,62 @@ def compare_column_values(
 def compare_column_sums(
         table1: Union[pd.DataFrame, gpd.GeoDataFrame],
         table2: Union[pd.DataFrame, gpd.GeoDataFrame],
-        column1: Optional[Union[str, List[str]]] = None,
-        column2: Optional[Union[str, List[str]]] = None
-        ) -> List[Tuple[str, Union[int, float]]]:
+        column1: Optional[Union[str, List[str]]],
+        column2: Optional[Union[str, List[str]]]
+        ) -> List[Tuple[Hashable, Any]]:
     """
-    
+    Given two tables and two column names (or two lists of column names)
+    corresponding to the tables, returns a list of tuples containing the
+    compared column names and the absolute difference between their 
+    corresponding values. It is an unchecked runtime error if a column
+    containing non-numerical values is passed into the function.
+
+    *Note:* The comparison is a one-to-one and onto function. I.e. If lists
+    are passed into ``column`` parameters, each element in one list must 
+    correspond to another element in the other list.
+
+    Parameters
+    ----------
+    table1: pd.DataFrame | gpd.GeoDataFrame
+        Tabular data containing column values to compare.
+    table2: pd.DataFrame | gpd.GeoDataFrame
+        Tabular data containing column values to compare.
+    column1: str | List[str]
+        Column(s) in table1 to compare/
+    column2: str | List[str]
+        Column(s) in table2 to compare.
+
+    Returns
+    -------
+    List[Tuple[Hashable, Any]]
+        A list containing tuples that contain a label describing the
+        compared columns' names and contain a the absolute difference
+        between the sum of the values of the given columns. E.g.
+        ``[('column1A-column2A', 4), ('column2A-columns2B', 53)]``.
+
+    Raises
+    ------
+    KeyError
+        Raised if a given column name does not exist in a given table.
+    RuntimeError
+        Raised if given columns cannot be compared.
+
+    Examples
+    --------
+    >>> df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+    ...                    columns=['COL1', 'COL2', 'COL3'])
+    >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
+    ...                    columns=['col2', 'col1'])
+    >>> diffs = dataqa.compare_column_sums(df1, df2, 'COL1', 'col1')
+    >>> print(diffs)
+    [('COL1-col1', 2)]
+
+    >>> diffs = dataqa.compare_column_sums(df1, df2, ['COL1', 'COL3'],
+    ...                                    ['col1', 'col2'])
+    >>> for column, difference in diffs:
+    ...     print('{} : {}'.format(column, difference))
+    COL1-col1 : 2
+    COL3-col2 : 4
 
     """
     pass # TODO
