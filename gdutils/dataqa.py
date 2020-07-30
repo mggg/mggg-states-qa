@@ -153,19 +153,18 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
 def compare_column_values(
         table1: Union[pd.DataFrame, gpd.GeoDataFrame],
         table2: Union[pd.DataFrame, gpd.GeoDataFrame],
-        columns1: Union[Set[str], List[str]], 
-        columns2: Union[Set[str], List[str]],
-        rows1: Optional[Union[Set[Hashable], List[Hashable]]] = None,
-        rows2: Optional[Union[Set[Hashable], List[Hashable]]] = None
+        columns1: List[str], 
+        columns2: List[str],
+        rows1: Optional[List[Hashable]] = None,
+        rows2: Optional[List[Hashable]] = None
         ) -> Dict[str, List[Tuple[Hashable, Any]]]:
     """
     Given two tables and their corresponding columns and rows to compare,
     returns a dictionary containing the compared columns and a corresponding 
     list of tuples containing row names and absolute differences of values.
 
-    *Note:* The comparison is a one-to-one and onto function. I.e. If lists
-    are passed into ``column`` and ``row`` parameters, each element in one
-    list must correspond to another element in the other list.
+    *Note:* The comparison is a one-to-one and onto function. I.e. Each element 
+    in one given list must correspond to another element in the other list.
 
     Parameters
     ----------
@@ -173,14 +172,14 @@ def compare_column_values(
         Tabular data containing column values to compare.
     table2: pd.DataFrame | gpd.GeoDataFrame
         Tabular data containing column values to compare.
-    columns1: Set[str] | List[str]
+    columns1: List[str]
         Columns in table1 to compare.
-    columns2: Set[str] | List[str]
+    columns2: List[str]
         Columns in table2 to compare.
-    rows1: Set[Hashable] | List[Hashable], optional, default = ``None``
+    rows1: List[Hashable], optional, default = ``None``
         Rows in table1 to compare. AKA value(s) of table's index.
         If ``None``, function compares all rows.
-    rows2: Set[Hashable] | List[Hashable], optional, default = ``None``
+    rows2: List[Hashable], optional, default = ``None``
         Rows in table2 to compare. AKA value(s) of table's index.
         If ``None``, function compares all rows.
 
@@ -256,15 +255,12 @@ def compare_column_values(
 
     else:
         results = {}
-        cs1 = list(columns1)
-        cs2 = list(columns2)
-        rs1 = list(rows1)
-        rs2 = list(rows2)
-        for i in range(0, len(cs1)):
-            diff = [('{}-{}'.format(rs1[j], rs2[j]), 
-                    abs(table1.at[rs1[j], cs1[i]] -
-                        table2.at[rs2[j], cs2[i]])) for j in range(len(rs1))]
-            results['{}-{}'.format(cs1[i], cs2[i])] = diff
+        for i in range(0, len(columns1)):
+            diff = [('{}-{}'.format(rows1[j], rows2[j]), 
+                    abs(table1.at[rows1[j], columns1[i]] -
+                        table2.at[rows2[j], columns2[i]])) 
+                    for j in range(len(rows1))]
+            results['{}-{}'.format(columns1[i], columns2[i])] = diff
         
         return results
 
@@ -272,19 +268,19 @@ def compare_column_values(
 def compare_column_sums(
         table1: Union[pd.DataFrame, gpd.GeoDataFrame],
         table2: Union[pd.DataFrame, gpd.GeoDataFrame],
-        columns1: Optional[Union[Set[str], List[str]]],
-        columns2: Optional[Union[Set[str], List[str]]]
+        columns1: List[str],
+        columns2: List[str]
         ) -> List[Tuple[Hashable, Any]]:
     """
-    Given two tables and two column names (or two lists of column names)
-    corresponding to the tables, returns a list of tuples containing the
-    compared column names and the absolute difference between their 
-    corresponding values. It is an unchecked runtime error if a column
-    containing non-numerical values is passed into the function.
+    Given two tables and two lists of column names corresponding to the tables,
+    returns a list of tuples containing the compared column names and the 
+    absolute difference between their corresponding values. It is an unchecked 
+    runtime error if a column containing non-numerical values is passed into the 
+    function.
 
-    *Note:* The comparison is a one-to-one and onto function. I.e. If lists
-    are passed into ``column`` parameters, each element in one list must 
-    correspond to another element in the other list.
+    *Note:* The comparison is a one-to-one and onto function. I.e. each element 
+    in one list of column names must correspond to another element in the other 
+    list.
 
     Parameters
     ----------
@@ -292,9 +288,9 @@ def compare_column_sums(
         Tabular data containing column values to compare.
     table2: pd.DataFrame | gpd.GeoDataFrame
         Tabular data containing column values to compare.
-    columns1: Set[str] | List[str]
+    columns1: List[str]
         Column(s) in table1 to compare.
-    columns2: Set[str] | List[str]
+    columns2: List[str]
         Column(s) in table2 to compare.
 
     Returns
@@ -303,7 +299,7 @@ def compare_column_sums(
         A list containing tuples that contain a label describing the
         compared columns' names and contain a the absolute difference
         between the sum of the values of the given columns. E.g.
-        ``[('column1A-column2A', 4), ('column2A-columns2B', 53)]``.
+        ``[('column1A-column1B', 4), ('column2A-columns2B', 53)]``.
 
     Raises
     ------
