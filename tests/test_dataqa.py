@@ -205,7 +205,60 @@ def test_compare_column_values(): # remove 'no' prefix once ready to test
 
 
 def notest_compare_column_sum(): # remove 'no' prefix when ready to test
-    pass # TODO
+    df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
+                       columns=['COL1', 'COL2', 'COL3'])
+    df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
+                       columns=['col2', 'col1'])
+    df3 = pd.DataFrame(data=[['asdf', 'fdsa'], ['foo', 'bar']],
+                       columns=['c1', 'c2'])
+
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(pd.DataFrame(), pd.DataFrame(),
+                                         'asdf', 'asdf')
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(pd.DataFrame(), df1, 'asdf', 'asdf')
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(df1, df2, 'col2', 'COL1')
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(df1, df2, df1.columns, df2.columns)
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(df1, df2, ['COL1', 'COL2'], 
+                                         ['col1', 'col3'])
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(df1, df2, 'COL1', ['col1'])
+    with pytest.raises(Exception):
+        results = dq.compare_column_sums(df1, df3, 'COL1', 'c1')
+    
+    results = dq.compare_column_sums(df1, df2, 'COL1', 'col1')
+    assert results == [('COL1-col1', 2)]
+
+    results = dq.compare_column_sums(df1, df2, ['COL1', 'COL3'],
+                                     ['col1', 'col2'])
+    assert results == [('COL1-col1', 2), ('COL3-col2', 4)]
+
+    mggg_gdf1 = et.ExtractTable(mggg_gdf, column='PRECINCT').extract()
+    medsl_df1 = et.ExtractTable(medsl_df, column='precinct').extract()
+    mggg_cols = ['AG18D', 'AG18R', 'COMP18D']
+    medsl_cols = ['Attorney General democrat',
+                  'Attorney General republican',
+                  'Comptroller democrat']
+    results = dq.compare_column_sums(mggg_gdf1, medsl_df1, 
+                                     mggg_cols, medsl_cols)
+
+    mggg_sums = dq.sum_columns_values(mggg_gdf1, mggg_cols)
+    medsl_sums = dq.sum_column_values(medsl_df, medsl_cols)
+
+    to_comp = list(map(lambda (c1, s1), (c2, s2): 
+                            return ('{}-{}'.format(c1, c2), abs(s1 - s2)), 
+                        mggg_sums, medsl_sums))
+    assert set(results) == set(to_comp)
+
+
+    mggg_sums = sum_column_values(mggg_gdf, [''])
+    assert diff == abs(ct_et.extract()['AG18D'][0] - 
+                       medsl_et.extract()['Attorney General democrat'][0])
+
+
 
 
 def test_remove_repos(): # for cleaning up test files
