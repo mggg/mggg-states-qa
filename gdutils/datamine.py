@@ -152,18 +152,12 @@ def clone_gh_repos(account: str,
     --------
     >>> datamine.clone_repos('mggg-states', 'orgs')
 
-    >>> datamine.clone_repos(
-    ...     'mggg-states', 'orgs', 
-    ...     ['https://github.com/mggg-states/AZ-shapefiles.git'])
+    >>> datamine.clone_repos('mggg-states', 'orgs', ['AZ-shapefiles'])
 
-    >>> datamine.clone_repos(
-    ...     'mggg-states', 'orgs', 
-    ...     ['https://github.com/mggg-states/AZ-shapefiles.git',
-    ...      'https://github.com/mggg-states/HI-shapefiles.git'])
+    >>> datamine.clone_repos('mggg-states', 'orgs', 
+    ...                     ['AZ-shapefiles', 'HI-shapefiles'])
 
-    >>> datamine.clone_repos(
-    ...     'mggg-states', 'orgs', 
-    ...     'https://github.com/mggg-states/HI-shapefiles.git', 'shps/')
+    >>> datamine.clone_repos('mggg-states', 'orgs', ['HI-shapefiles'], 'shps/')
 
     >>> datamine.clone_repos('octocat', 'users', outpath='cloned-repos/')
 
