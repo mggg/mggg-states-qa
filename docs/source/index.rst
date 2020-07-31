@@ -21,6 +21,8 @@ Documentation: ``gdutils``
    :maxdepth: 0
    :hidden:
 
+   src/examples/dm-examples.ipynb
+   src/examples/dq-examples.ipynb
    src/examples/et-examples.ipynb
 
 .. toctree::

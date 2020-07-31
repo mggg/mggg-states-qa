@@ -1,5 +1,7 @@
 gdutils.datamine
 ================
+``datamine`` is a module in package ``gdutils`` that provides functions for 
+finding, listing, and mining data.
 
 Module Functions
 ----------------

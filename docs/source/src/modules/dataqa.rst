@@ -1,5 +1,7 @@
 gdutils.dataqa
 ==============
+``dataqa`` is a module in package ``gdutils`` that provides functions used in
+data quality assurance.
 
 Module Functions
 ----------------

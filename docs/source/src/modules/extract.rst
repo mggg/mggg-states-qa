@@ -1,5 +1,8 @@
 gdutils.extract
 ===============
+``extract`` is a module in package ``gdutils`` that provides a class 
+``ExtractTable``. ``ExtractTable`` is used in converting and extracting
+tabular data.
 
 Module Functions
 ----------------
