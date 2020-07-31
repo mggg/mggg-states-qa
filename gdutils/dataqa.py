@@ -78,8 +78,7 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
         The first set in the tuple contains the intersection of column names
         between the table and the standards list. The second set in the tuple
         contains the column name in the difference between the table and the
-        standards list.
-
+        standards list. E.g. ``( {'match1', 'match2'}, {'diff1'} )``.
 
     Examples
     --------
@@ -91,6 +90,9 @@ def compare_column_names(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     0     1     2     3
     1     4     5     6
     >>> (matches, discrepancies) = dataqa.compare_column_names(df, standards)
+    # gets a tuple that splits DataFrame column names into two categories:
+    # 1. names in the 'standards' list (left)
+    # 2. names not in the 'standards' list (right)
     >>> print(matches)
     {'COL1', 'COL3'}
     >>> print(discrepancies)
@@ -106,10 +108,10 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
                       columns: Union[List[str], Set[str]]
                       ) -> List[Tuple[str, int]]:
     """
-    Given a pandas DataFrame of a geopandas GeoDataFrame, and given a list of 
-    column names, returns a list of tuples (key-value pairs) of column names 
-    and the sum of their values. It is an unchecked runtime error if a column
-    containing non-numerical values is passed into the function.
+    Given a pandas DataFrame or a geopandas GeoDataFrame, and given a list of 
+    column names, returns a list of tuples of column names and the sum of 
+    their values. It is an unchecked runtime error if a column containing 
+    non-numerical values is passed into the function.
 
     Parameters
     ----------
@@ -121,8 +123,8 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     Returns
     -------
     List[Tuple[str, int]]
-        A list of key-value pairs of column names associated with the sum
-        of their values. E.g. ``[('column 1', 100), ('column 2', 53)]``.
+        A list of tuples of column names associated with the sum of their 
+        values. E.g. ``[ ('column 1', 100), ('column 2', 53) ]``.
     
     Raises
     ------
@@ -139,6 +141,9 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     0     1     2     3
     1     4     5     6
     >>> totals = dataqa.sum_column_values(df, cols)
+    # gets a list of tuples containing two items:
+    # 1. column name (left)
+    # 2. sum of column's values (right)
     >>> for column, sum in totals:
     ...     print("{}: {}".format(column, sum))
     COL1: 5
@@ -208,14 +213,19 @@ def compare_column_values(
     --------
     >>> df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
     ...                    columns=['COL1', 'COL2', 'COL3'])
-    >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
-    ...                    columns=['col2', 'col1'])
+    >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]], columns=['col2', 'col1'])
     >>> results = dataqa.compare_column_values(df1, df2, ['COL3'], ['col2'])
+    # gets a dictionary (collection of key-value pairs), where
+    # key : name of first column and name of second column
+    # value: list of tuples with two values:
+    #       1. name of row in first table and name of row in second table
+    #       2. absolute difference values in the columns and rows
     >>> print(results)
     {'COL3-col2': [('0-0', 1), ('1-1', 5)]}
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1', 'COL2'], 
     ...                                        ['col1', 'col2'])
+    # compares columns 'COL1' with 'col1' and 'COL2' with 'col2'
     >>> print(results['COL2-col2'][0])
     ('0-0', 2)
     >>> for column in results:
@@ -231,11 +241,15 @@ def compare_column_values(
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1'], 
     ...                                        ['col1'], [0], [1])
+    # compares value of column 'COL1' row 0 in table1 with 
+    # value of column 'col1' row 1 in table2
     >>> print(results['COL1-col1'][0])
     ('0-1', 1)
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1'], ['col1'],
     ...                                        [0, 1], [1, 0])
+    # compares rows 0 and 1 (table1) with rows 1 and 0 (table2) in 
+    # respective columns 'COL1' and 'col1'
     >>> print(results['COL1-col1'])
     [('0-1', 1), ('1-0', 1)]
 
@@ -274,7 +288,7 @@ def compare_column_sums(
     """
     Given two tables and two lists of column names corresponding to the tables,
     returns a list of tuples containing the compared column names and the 
-    absolute difference between their corresponding values. It is an unchecked 
+    absolute difference between their corresponding sums. It is an unchecked 
     runtime error if a column containing non-numerical values is passed into the 
     function.
 
@@ -299,7 +313,7 @@ def compare_column_sums(
         A list containing tuples that contain a label describing the
         compared columns' names and contain a the absolute difference
         between the sum of the values of the given columns. E.g.
-        ``[('column1A-column1B', 4), ('column2A-columns2B', 53)]``.
+        ``[ ('column1A-column1B', 4), ('column2A-column2B', 53) ]``.
 
     Raises
     ------
@@ -315,11 +329,16 @@ def compare_column_sums(
     >>> df2 = pd.DataFrame(data=[[4, 5], [1, 2]],
     ...                    columns=['col2', 'col1'])
     >>> diffs = dataqa.compare_column_sums(df1, df2, ['COL1'], ['col1'])
+    # gets a list of tuples containing two values:
+    # 1. name of column in first table and name of column in second (left)
+    # 2. absolute difference between the sum of values of both columns (right)
     >>> print(diffs)
     [('COL1-col1', 2)]
 
     >>> diffs = dataqa.compare_column_sums(df1, df2, ['COL1', 'COL3'],
     ...                                    ['col1', 'col2'])
+    # compares column 'COL1' with column 'col1' and compares column
+    # 'COL3' with column 'col2'
     >>> for column, difference in diffs:
     ...     print('{} : {}'.format(column, difference))
     COL1-col1 : 2
