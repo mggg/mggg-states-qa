@@ -81,14 +81,14 @@ class ExtractTable:
     
     Attributes
     ----------
-    infile : Optional[str]
-        Name/path of input file of tabular data to read
-    outfile : Optional[pathlib.Path]
-        Path of output file for writing
-    column : Optional[str]
-        Label of column to use as index for extracted table
-    value : Optional[Union[str, List[str]]]
-        Value(s) of specified column in rows to extract
+    infile : str, optional, default = ``None``
+        Name/path of input file of tabular data to read.
+    outfile : pathlib.Path, optional, default = ``None``
+        Path of output file for writing.
+    column : str, optional, default = ``None``
+        Label of column to use as index for extracted table.
+    value : str | List[str], optional, default = ``None``
+        Value(s) of specified column in rows to extract.
     
     """
 
@@ -122,6 +122,7 @@ class ExtractTable:
         Returns
         -------
         extract.ExtractTable
+            An ExtractTable instance.
 
         See Also
         --------
@@ -175,18 +176,18 @@ class ExtractTable:
         ----------
         infile : str | gpd.GeoDataFrame | pd.DataFrame | None, optional
             Name/path of input file of tabular data to read or geopandas
-            GeoDataFrame or pandas DataFrame
+            GeoDataFrame or pandas DataFrame.
         outfile: str | None, optional
-            Name/path of output file for writing
+            Name/path of output file for writing.
         column: str | None, optional
-            Label of column to use as index for extracted table
+            Label of column to use as index for extracted table.
         value: str | List[str] | None, optional
-            Value(s) of specified column in rows to extract
+            Value(s) of specified column in rows to extract.
         
         Raises
         ------
         AttributeError
-            Raised if setter throws an error
+            Raised if setter throws an error.
 
         """
         try:
@@ -210,11 +211,12 @@ class ExtractTable:
         Returns
         -------
         gpd.GeoDataFrame
+            A geopandas GeoDataFrame of the extracted table.
 
         Raises
         ------
         RuntimeError
-            Raised if trying to extract from non-existent tabular data
+            Raised if trying to extract from non-existent tabular data.
         
         See Also
         --------
@@ -273,7 +275,7 @@ class ExtractTable:
         Raises
         ------
         RuntimeError
-            Raised if unable to extract to output file
+            Raised if unable to extract to output file.
 
         See Also
         --------
@@ -343,11 +345,12 @@ class ExtractTable:
         Returns
         -------
         np.ndarray
+            An array of column names in the initialized table.
 
         Raises
         ------
         RuntimeError
-            Raised if trying to list columns from non-existent tabular data
+            Raised if trying to list columns from non-existent tabular data.
         
         See Also
         --------
@@ -393,15 +396,18 @@ class ExtractTable:
         Returns
         -------
         np.ndarray | gpd.array.GeometryArray
+            An array of values in the given column of the initialized source 
+            table. If the column is the 'geometry' column of a geopandas 
+            GeoDataFrame, the return value is a GeometryArray.
 
         Raises
         ------
         RuntimeError
-            Raised if trying to list values from non-existent tabular data
+            Raised if trying to list values from non-existent tabular data.
         KeyError
-            Raised if column does not exist in tabular data
+            Raised if column does not exist in tabular data.
         RuntimeError
-            Raised if trying to list values from non-existent column
+            Raised if trying to list values from non-existent column.
         
         See Also
         --------
