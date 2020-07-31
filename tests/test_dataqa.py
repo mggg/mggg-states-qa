@@ -109,8 +109,9 @@ def test_compare_column_names():
 
 
 def test_sum_column_values():
-    ak_gdf = et.read_file(os.path.join('tests', 'dumps', 'AK-shapefiles.git',
-                                       'AK_precincts.zip')).extract()
+    path_to_ak_shp = os.path.join('tests', 'dumps', 'AK-shapefiles.git')
+    ak_gdf = et.read_file(os.path.join(
+                    path_to_ak_shp, 'AK_precincts.zip')).extract()
     with pytest.raises(Exception):
         totals = dq.sum_column_values(pd.DataFrame(), ['asdf'])
     with pytest.raises(Exception):
@@ -136,6 +137,12 @@ def test_sum_column_values():
 
     totals = dq.sum_column_values(medsl_df, [])
     assert totals == []
+
+    assert 'AK-shapefiles.git/README.md' in \
+            dm.list_files_of_type('.md', path_to_ak_shp)
+    dm.remove_repos(path_to_ak_shp)
+    with pytest.raises(FileNotFoundError):
+        xs = dm.list_files_of_type('.md', path_to_ak_shp)
 
 
 def test_compare_column_values(): # remove 'no' prefix once ready to test
@@ -264,5 +271,6 @@ def notest_compare_column_sums(): # remove 'no' prefix when ready to test
 
 
 def test_remove_repos(): # for cleaning up test files
+
     dm.remove_repos(os.path.join('tests', 'dumps')) 
 

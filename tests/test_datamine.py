@@ -195,5 +195,15 @@ def test_remove_repos():
                             {'CT-shapefiles.git', 'AZ-shapefiles.git', 
                              'HI-shapefiles.git'})))
 
+    path_to_ak_shp = os.path.join('tests', 'dumps', 'AK-shapefiles.git')
+    dm.clone_gh_repos('mggg-states', 'orgs', 
+        )
+    assert 'AK-shapefiles.git/README.md' in \
+            dm.list_files_of_type('.md', path_to_ak_shp)
+    dm.remove_repos(path_to_ak_shp)
+    with pytest.raises(FileNotFoundError):
+        xs = dm.list_files_of_type('.md', path_to_ak_shp)
+
+
     dm.remove_repos(os.path.join('tests', 'dumps')) # should not raise anything
 
