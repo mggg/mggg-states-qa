@@ -213,7 +213,7 @@ def remove_repos(dirpath: Union[str, pathlib.Path]) -> NoReturn:
     # removes all repos in directory 'repos_to_remove/'
 
     >>> datamine.remove_repos('repos_to_remove/repo1')
-    # removes 'repo1' repo in directory 'repos_to_remove/'
+    # removes repo 'repo1' in directory 'repos_to_remove/'
 
     """
     try:
@@ -431,8 +431,8 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.'
     for path, dirs, _ in os.walk(root_path):
         [subdirs.append(os.path.join(path, directory)) for directory in dirs]
 
-    return [os.path.join(dirpath, pathlib.Path(subdir).parent.name)
-                for subdir in subdirs if pathlib.Path(subdir).name == '.git']
+    return [str(pathlib.Path(subdir).parent) for subdir in subdirs 
+            if pathlib.Path(subdir).name == '.git']
 
 
 def __get_validated_path(dirpath: Union[str, pathlib.Path]) -> pathlib.Path:
