@@ -131,20 +131,32 @@ class ExtractTable:
         Examples
         --------
         >>> et1 = extract.ExtractTable()
+        # creates an empty ExtractTable instance
 
         >>> et2 = extract.ExtractTable('example/input.shp')
+        # initializes the input tabular data
 
         >>> et3 = extract.ExtractTable('example/file.csv', column='ID')
+        # initializes the input tabular data and sets the column to use 
+        # as the index
 
         >>> et4 = extract.ExtractTable('input.xlsx', 'output.md')
+        # initializes the input tabular data and specifies the output
+        # file
 
         >>> et5 = extract.ExtractTable('in.csv', 'out.tex', 'ID', '01')
+        # initializes input tabular data source, output file, column to
+        # use as index, and value that isolates subtable to extract
 
         >>> et6 = extract.ExtractTable('in.shp', column='ID', value=['1', '3'])
+        # initializes input data source, column, and a list of values that
+        # isolate the subtable to extract
 
         >>> et7 = extract.ExtractTable(gpd.GeoDataFrame())
+        # initializes the input data source as a geopandas GeoDataFrame
 
         >>> et8 = extract.ExtractTable(pd.DataFrame())
+        # initializes the input data source as a pandas DataFrame
 
         """
         # Encapsulated attributes
@@ -226,6 +238,7 @@ class ExtractTable:
         --------
         >>> et = extract.read_file('input.csv')
         >>> df1 = et.extract()
+        # extracts a GeoDataFrame from a '.csv' file
         >>> print(df1.head())
         Unnamed: 0 col1 col2 geometry
         0     asdf    a    b     None
@@ -233,6 +246,7 @@ class ExtractTable:
         2     lkjh    c    3     None
 
         >>> et.column = 'col1'
+        # sets index from column 'col1'
         >>> print(et.extract().head())
              Unnamed: 0 col2 geometry
         col1                      
@@ -241,6 +255,7 @@ class ExtractTable:
         c          lkjh    3     None
 
         >>> et.value = 'c'
+        # sets the isolating value to 'c'
         >>> print(et.extract().head())
              Unnamed: 0 col2 geometry
         col1                      
@@ -285,16 +300,21 @@ class ExtractTable:
         --------
         >>> et1 = extract.read_file('input.csv', 'col2', ['b', 'd'])
         >>> et1.extract_to_file()
+        # outputs the extracted table to standard output
              Unnamed: 0 col1
         col2                      
         b          asdf    a
         d          fdsa    c
 
         >>> et1.outfile = 'output.xlsx'
+        # sets the output file to 'output.xlsx'
         >>> et1.extract_to_file()
+        # outputs the extracted Excel table to `output.xlsx'
 
         >>> et2 = extract.ExtractTable('input.shp', 'output', 'col1', 'square')
+        # sets the output file to 'output'
         >>> et2.extract_to_file('ESRI Shapefile')
+        # extracts table to 'output' in specified format of 'ESRI Shapefile'
 
         """
         gdf = self.extract()
@@ -359,7 +379,9 @@ class ExtractTable:
         Examples
         --------
         >>> et = extract.read_file('input.csv)
-        >>> print(et.list_columns())
+        >>> cols = et.list_columns())
+        # gets a list of columns from 'input.csv'
+        >>> print(cols)
         ['Unnamed: 0' 'col1' 'col2']
 
         """
@@ -416,13 +438,19 @@ class ExtractTable:
         Examples
         --------
         >>> et = extract.read_file('input.csv', 'col2')
-        >>> print(et.list_values)
+        >>> vals = et.list_values
+        # gets a list of values in 'col2' from 'input.csv'
+        >>> print(vals)
         ['b' 'd' '3' '5' '10']
 
-        >>> print(et.list_values('col1'))
+        >>> vals = et.list_values('col1')
+        # gets a list of values in 'col1' from 'input.csv'
+        >>> print(vals)
         ['a' 'c' 'c' 'c' 'b']
         
-        >>> print(et.list_values('col1', unique=True))
+        >>> vals = et.list_values('col1', unique=True)
+        # gets a list of unique values in 'col1' from 'input.csv'
+        >>> print(vals)
         ['a' 'c' 'b']
 
         """
