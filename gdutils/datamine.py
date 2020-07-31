@@ -83,6 +83,7 @@ def list_gh_repos(account: str, account_type: str) -> List[Tuple[str, str]]:
     Examples
     --------
     >>> repos = datamine.list_gh_repos('octocat', 'users')
+    # gets a list of all repos and their GitHub URLs for account 'octocat'
     >>> for repo, url in repos:
     ...     print('{} : {}'.format(repo, url))
     boysenberry-repo-1 : https://github.com/octocat/boysenberry-repo-1.git
@@ -132,13 +133,13 @@ def clone_gh_repos(account: str,
     Parameters
     ----------
     account : str
-        Github account whose public repos are to be cloned.
+        GitHub account whose public repos are to be cloned.
     account_type : str
-        Type of github account whose public repos are to be cloned.
+        Type of GitHub account whose public repos are to be cloned.
         Valid options: ``'users'``, ``'orgs'``.
-    repos : List[str], optional, default = ``None``.
-        List of specific URLs of repositories to clone.
-    outpath : str | pathlib.Path, optional, default = ``None``.
+    repos : List[str], optional, default = ``None``
+        List of specific repositories to clone.
+    outpath : str | pathlib.Path, optional, default = ``None``
         Path to which repos are to be cloned. If not specified, clones
         repos into current working directory.
     
@@ -151,26 +152,31 @@ def clone_gh_repos(account: str,
     Examples
     --------
     >>> datamine.clone_repos('mggg-states', 'orgs')
+    # clones all repositories of 'mggg-states' into the current directory
 
     >>> datamine.clone_repos('mggg-states', 'orgs', ['AZ-shapefiles'])
+    # clones repo 'AZ-shapefiles' from 'mggg-states' into current directory
 
     >>> datamine.clone_repos('mggg-states', 'orgs', 
     ...                     ['AZ-shapefiles', 'HI-shapefiles'])
+    # clones repos 'AZ-shapefiles' & 'HI-shapefiles' into current directory
 
     >>> datamine.clone_repos('mggg-states', 'orgs', ['HI-shapefiles'], 'shps/')
+    # clones repo 'HI-shapefiles' into directory 'shps/'
 
     >>> datamine.clone_repos('octocat', 'users', outpath='cloned-repos/')
+    # clones all repos of 'octocat' into directory 'cloned-repos/'
 
     """
     try:
         if repos is None:
-            queried_repos = [repo for _, repo in 
-                             list_gh_repos(account, account_type)]
+            queried_repos = [repo for _, repo 
+                                  in list_gh_repos(account, account_type)]
             cmds = __generate_clone_cmds(queried_repos, outpath)
 
         else:
             repo_urls = [__create_gh_repo_url(account, rname) 
-                         for rname in repos]
+                            for rname in repos]
             cmds = __generate_clone_cmds(repo_urls, outpath)
 
         responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
@@ -258,20 +264,24 @@ def list_files_of_type(filetype: Union[str, List[str]],
     Examples
     --------
     >>> list_of_zips = datamine.list_files_of_type('.zip')
+    # recursively gets a list of '.zip' files from the current directory
     >>> print(list_of_zips)
     ['./zipfile1.zip', './zipfile2.zip', './shapefiles/shape1.zip', 
     './shapefiles/shape2.zip']
 
     >>> list_of_shps = datamine.list_files_of_type('.shp', 'shapefiles/')
+    # recursively gets a list of '.shp' files from the 'shapefiles/' directory
     >>> print(list_of_shps)
     ['./shapefiles/shape1/shape1.shp', './shapefiles/shape2/shape2.shp']
 
     >>> list_of_csvs = datamine.list_files_of_type('.csv', 
     ...                                            exclude_hidden = False)
+    # recursively gets a list of '.csv' files, including hidden files
     >>> print(list_of_csvs)
     ['./csv1.csv', './.hidden-dir/csv_hidden.csv']
 
     >>> list_of_mix = datamine.list_files_of_type(['.shp', '.zip'])
+    # recursively gets a list of '.shp' and '.zip' files
     >>> print(list_of_mix)
     ['./shapefiles/shape1/shape1.shp', './shapefiles/shape2/shape2.shp',
      './zipfile1.zip', './zipfile2.zip', './shapefiles/shape1.zip', 
@@ -285,8 +295,8 @@ def list_files_of_type(filetype: Union[str, List[str]],
 
     all_files = []
     for path, _, files in os.walk(root_path):
-        [all_files.append(os.path.join(path, file)) for file in files
-                if not (exclude_hidden and file[0] == '.')]
+        [all_files.append(os.path.join(path, file)) 
+                for file in files if not (exclude_hidden and file[0] == '.')]
     
     return [file for file in all_files 
                  if any([file.endswith(ftype) for ftype in filetype])]
@@ -319,7 +329,7 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
     dictionary : Dict[Hashable, List[Iterable]]
         Dictionary containing categories in which keys are stored.
     category : Hashable | List[Hashable]
-        Category containing keys-value pairs.
+        Category containing keys.
     
     Returns
     -------
@@ -332,17 +342,20 @@ def get_keys_by_category(dictionary: Dict[Hashable, List[Iterable]],
     >>> sample_dict = {'category1' : [{'key1': 1}],
     ...                'category2' : [{'key2' : 2}, {'key3' : 3}]}
     >>> keys = datamine.get_keys_by_category(sample_dict, 'category2')
+    # gets a list of keys under 'category2' from the dictionary 'sample_dict'
     >>> print(keys)
     ['key2', 'key3']
 
-    >>> sample_dict =  {'category1' : [['key1']],
+    >>> sample_dict =  {'category1' : [['key1', 'key4']],
     ...                 'category2' : [['key2'], {'key3': 'value3'}]}
     >>> keys = datamine.get_keys_by_category(sample_dict, 'category2')
+    # note: keys can be stored in both list and dictionary form
     >>> print(keys)
     ['key2', 'key3']
 
     >>> keys = datamine.get_keys_by_category(sample_dict, 
     ...                                      ['category1', 'category2'])
+    # gets a list of keys under categories 'category1' and 'category2'
     >>> print(keys)
     ['key1', 'key2', 'key3']
 
