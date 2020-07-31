@@ -209,6 +209,10 @@ def compare_column_values(
     RuntimeError
         Raised if given lists cannot be compared.
     
+    See Also
+    --------
+    dataqa.compare_column_sums
+    
     Examples
     --------
     >>> df1 = pd.DataFrame(data=[[1, 2, 3], [4, 5, 6]],
@@ -321,6 +325,10 @@ def compare_column_sums(
         Raised if a given column name does not exist in a given table.
     RuntimeError
         Raised if given columns cannot be compared.
+    
+    See Also
+    --------
+    dataqa.compare_column_values
 
     Examples
     --------
