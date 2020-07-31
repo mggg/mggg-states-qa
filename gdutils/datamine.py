@@ -121,7 +121,7 @@ def list_gh_repos(account: str, account_type: str) -> List[Tuple[str, str]]:
 
 def clone_gh_repos(account: str,
                    account_type: str,
-                   repos: Optional[Union[str, List[str]]] = None,
+                   repos: Optional[List[str]] = None,
                    outpath: Optional[Union[str, pathlib.Path]] = None
                    ) -> NoReturn:
     """
@@ -169,11 +169,14 @@ def clone_gh_repos(account: str,
 
     """
     try:
-        if repo is None:
-            _, queried_repos = list_gh_repos(account, account_type)
+        if repos is None:
+            queried_repos = [repo for _, repo in 
+                             list_gh_repos(account, account_type)]
             cmds = __generate_clone_cmds(queried_repos, outpath)
+
         else:
-            repo_urls = [__create_gh_repo_url(rname) for rname in repos]
+            repo_urls = [__create_gh_repo_url(account, rname) 
+                         for rname in repos]
             cmds = __generate_clone_cmds(repo_urls, outpath)
 
         responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
@@ -206,12 +209,16 @@ def remove_repos(dirpath: Union[str, pathlib.Path]) -> NoReturn:
     
     Examples
     --------
-    >>> datamine.remove_repos('repos_to_remove/')
+    >>> datamine.remove_repos('repos_to_remove/') 
+    # removes all repos in directory 'repos_to_remove/'
+
+    >>> datamine.remove_repos('repos_to_remove/repo1')
+    # removes 'repo1' repo in directory 'repos_to_remove/'
 
     """
     try:
         repos = __list_repos(dirpath)
-        cmds = [['rm', '-r', repo] for repo in repos]
+        cmds = [['rm', '-rf', repo] for repo in repos]
         
         responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
 
@@ -382,7 +389,7 @@ def __generate_clone_cmds(
             'Unable to generate clone commands. {}'.format(e))
 
     if dirpath is not None:
-        [cmd.append(os.path.join(dirpath, cmd[2].split('/')[-1])) 
+        [cmd.append(os.path.join(dirpath, __get_repo_name(cmd[2]))) 
             for cmd in cmds]
 
     return cmds
@@ -424,7 +431,7 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.'
     for path, dirs, _ in os.walk(root_path):
         [subdirs.append(os.path.join(path, directory)) for directory in dirs]
 
-    return [subdir[:-len(os.path.basename(subdir))] 
+    return [os.path.join(dirpath, pathlib.Path(subdir).parent.name)
                 for subdir in subdirs if pathlib.Path(subdir).name == '.git']
 
 
@@ -432,10 +439,10 @@ def __get_validated_path(dirpath: Union[str, pathlib.Path]) -> pathlib.Path:
     try:
         root_path = pathlib.Path(dirpath)
         if not os.path.isdir(root_path):
-            raise FileNotFoundError(
-                    "Unable to find directory '{}'.".format(dirpath))
+            raise FileNotFoundError("'{}.'".format(dirpath))
         return root_path
-
+    except FileNotFoundError as e:
+        raise FileNotFoundError("Unable to find directory", e)
     except Exception as e:
         raise Exception("Failed to traverse path.".format(e))
-        
+

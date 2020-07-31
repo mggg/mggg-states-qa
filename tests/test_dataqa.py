@@ -90,11 +90,11 @@ def test_compare_column_names():
 
     subprocess.run(['git', 'clone', 
                     'https://github.com/mggg-states/AK-shapefiles.git',
-                    'tests/dumps/AK-shapefiles.git'])
+                    'tests/dumps/AK-shapefiles'])
 
     standards = get_standards()
     (ak_matches, ak_discrepancies) = dq.compare_column_names(
-            et.read_file(os.path.join('tests', 'dumps', 'AK-shapefiles.git',
+            et.read_file(os.path.join('tests', 'dumps', 'AK-shapefiles',
                                       'AK_precincts.zip')).extract(), 
                          standards)
     assert ak_matches == {'USH14R', 'SEN16D', 'USH18D', '2MOREVAP', 'TOTPOP', 
@@ -109,7 +109,7 @@ def test_compare_column_names():
 
 
 def test_sum_column_values():
-    path_to_ak_shp = os.path.join('tests', 'dumps', 'AK-shapefiles.git')
+    path_to_ak_shp = os.path.join('tests', 'dumps', 'AK-shapefiles')
     ak_gdf = et.read_file(os.path.join(
                     path_to_ak_shp, 'AK_precincts.zip')).extract()
     with pytest.raises(Exception):
@@ -138,11 +138,7 @@ def test_sum_column_values():
     totals = dq.sum_column_values(medsl_df, [])
     assert totals == []
 
-    assert 'AK-shapefiles.git/README.md' in \
-            dm.list_files_of_type('.md', path_to_ak_shp)
     dm.remove_repos(path_to_ak_shp)
-    with pytest.raises(FileNotFoundError):
-        xs = dm.list_files_of_type('.md', path_to_ak_shp)
 
 
 def test_compare_column_values(): # remove 'no' prefix once ready to test
@@ -268,9 +264,4 @@ def notest_compare_column_sums(): # remove 'no' prefix when ready to test
                                            abs(tup1[1] - tup2[1])),
                         mggg_sums, medsl_sums))
     assert set(results) == set(to_comp)
-
-
-def test_remove_repos(): # for cleaning up test files
-
-    dm.remove_repos(os.path.join('tests', 'dumps')) 
 

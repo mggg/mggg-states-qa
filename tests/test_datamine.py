@@ -37,23 +37,23 @@ public_gh_repos = [ # Note: also subject to change
 gitignores = [ # Note: same
     './.gitignore', 
     './.pytest_cache/.gitignore', 
-    './tests/dumps/linguist.git/.gitignore', 
-    './tests/dumps/linguist.git/vendor/grammars/Sublime-Inform/.gitignore']
+    './tests/dumps/linguist/.gitignore', 
+    './tests/dumps/linguist/vendor/grammars/Sublime-Inform/.gitignore']
 
 htmls = [ # Note: same here
-    './tests/dumps/linguist.git/samples/HTML/pages.html', 
-    './tests/dumps/octocat.github.io.git/index.html', 
-    './tests/dumps/Spoon-Knife.git/index.html']
+    './tests/dumps/linguist/samples/HTML/pages.html', 
+    './tests/dumps/octocat.github.io/index.html', 
+    './tests/dumps/Spoon-Knife/index.html']
 
 descriptions = [ # Note: ditto
-    './tests/dumps/linguist.git/.git/description', 
-    './tests/dumps/octocat.github.io.git/.git/description', 
-    './tests/dumps/git-consortium.git/.git/description', 
-    './tests/dumps/hello-worId.git/.git/description', 
-    './tests/dumps/test-repo1.git/.git/description', 
-    './tests/dumps/boysenberry-repo-1.git/.git/description', 
-    './tests/dumps/Hello-World.git/.git/description', 
-    './tests/dumps/Spoon-Knife.git/.git/description',
+    './tests/dumps/linguist/.git/description', 
+    './tests/dumps/octocat.github.io/.git/description', 
+    './tests/dumps/git-consortium/.git/description', 
+    './tests/dumps/hello-worId/.git/description', 
+    './tests/dumps/test-repo1/.git/description', 
+    './tests/dumps/boysenberry-repo-1/.git/description', 
+    './tests/dumps/Hello-World/.git/description', 
+    './tests/dumps/Spoon-Knife/.git/description',
     './.git/description']
 
 
@@ -91,19 +91,17 @@ def test_clone_gh_repos():
     dirs = next(os.walk(os.path.join('tests', 'dumps')))
     assert set(dirs[1]) == set(gh_repos)
 
-    dm.clone_gh_repos('mggg-states', 'orgs', 
-                      'https://github.com/mggg-states/CT-shapefiles.git', 
+    dm.clone_gh_repos('mggg-states', 'orgs', ['CT-shapefiles'], 
                       os.path.join('tests', 'dumps2'))
     dirs = next(os.walk(os.path.join('tests', 'dumps2'))) 
-    assert set(dirs[1]) == {'CT-shapefiles.git'}
+    assert set(dirs[1]) == {'CT-shapefiles'}
 
     dm.clone_gh_repos('mggg-states', 'orgs', 
-                      ['https://github.com/mggg-states/AZ-shapefiles.git', 
-                       'https://github.com/mggg-states/HI-shapefiles.git'], 
+                      ['AZ-shapefiles', 'HI-shapefiles'], 
                       os.path.join('tests', 'dumps2'))
     dirs = next(os.walk(os.path.join('tests', 'dumps2'))) 
-    assert set(dirs[1]) == {'CT-shapefiles.git', 'AZ-shapefiles.git', 
-                            'HI-shapefiles.git'}
+    assert set(dirs[1]) == {'CT-shapefiles', 'AZ-shapefiles', 
+                            'HI-shapefiles'}
 
 
 def test_list_files_of_type():
@@ -112,9 +110,9 @@ def test_list_files_of_type():
 
     files = dm.list_files_of_type('description')
     ds = descriptions.copy()
-    ds.append('./tests/dumps2/AZ-shapefiles.git/.git/description')
-    ds.append('./tests/dumps2/CT-shapefiles.git/.git/description')
-    ds.append('./tests/dumps2/HI-shapefiles.git/.git/description')
+    ds.append('./tests/dumps2/AZ-shapefiles/.git/description')
+    ds.append('./tests/dumps2/CT-shapefiles/.git/description')
+    ds.append('./tests/dumps2/HI-shapefiles/.git/description')
     assert set(files) == set(ds)
 
     files = dm.list_files_of_type('.q;weoifh0[238ubfasdf')
@@ -192,16 +190,16 @@ def test_remove_repos():
     dm.remove_repos(os.path.join('tests', 'dumps2'))
     dirs = next(os.walk(os.path.join('tests', 'dumps2')))
     assert not any(list(map(lambda x, y: x == y, set(dirs[1]),
-                            {'CT-shapefiles.git', 'AZ-shapefiles.git', 
-                             'HI-shapefiles.git'})))
+                            {'CT-shapefiles', 'AZ-shapefiles', 
+                             'HI-shapefiles'})))
 
-    path_to_ak_shp = os.path.join('tests', 'dumps', 'AK-shapefiles.git')
-    dm.clone_gh_repos('mggg-states', 'orgs', 
-        )
-    assert 'AK-shapefiles.git/README.md' in \
+    path_to_ak_shp = os.path.join('tests', 'dumps', 'AK-shapefiles')
+    dm.clone_gh_repos('mggg-states', 'orgs', ['AK-shapefiles'], 
+                       os.path.join('tests', 'dumps'))
+    assert os.path.join(path_to_ak_shp, 'README.md') in \
             dm.list_files_of_type('.md', path_to_ak_shp)
     dm.remove_repos(path_to_ak_shp)
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(Exception):
         xs = dm.list_files_of_type('.md', path_to_ak_shp)
 
 
