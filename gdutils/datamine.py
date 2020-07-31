@@ -35,7 +35,8 @@ import subprocess
 import sys
 import urllib.parse
 
-from typing import Dict, Hashable, Iterable, List, NoReturn, Optional, Union
+from typing import (Dict, Hashable, Iterable, List, NoReturn, 
+                    Optional, Tuple, Union)
 
 
 
@@ -45,10 +46,10 @@ from typing import Dict, Hashable, Iterable, List, NoReturn, Optional, Union
 #                                       #
 #########################################
 
-def list_gh_repos(account: str, account_type: str) -> List[str]:
+def list_gh_repos(account: str, account_type: str) -> List[Tuple[str, str]]:
     """
-    Returns a list of public GitHub repositories associated with the given
-    account and account type.
+    Returns a list of tuples of public GitHub repositories and their URLs
+    associated with the given account and account type.
 
     Parameters
     ----------
@@ -60,8 +61,17 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
 
     Returns
     -------
-    List[str]
-        A list of public Github repositories.
+    List[Tuple[str, str]]
+        A list of tuples of public Github repositories and their URLs.
+        E.g.
+        ::
+        
+            [('boysenberry-repo-1', 
+              'https://github.com/octocat/boysenberry-repo-1.git'),
+             ('git-consortium',
+              'https://github.com/octocat/git-consortium.git'),
+             ...
+             ('test-repo1', https://github.com/octocat/test-repo1.git)]
 
     Raises
     ------
@@ -73,16 +83,16 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
     Examples
     --------
     >>> repos = datamine.list_gh_repos('octocat', 'users')
-    >>> for repo in repos:
-    ...     print(repo)
-    https://github.com/octocat/boysenberry-repo-1.git
-    https://github.com/octocat/git-consortium.git
-    https://github.com/octocat/hello-worId.git
-    https://github.com/octocat/Hello-World.git
-    https://github.com/octocat/linguist.git
-    https://github.com/octocat/octocat.github.io.git
-    https://github.com/octocat/Spoon-Knife.git
-    https://github.com/octocat/test-repo1.git
+    >>> for repo, url in repos:
+    ...     print('{} : {}'.format(repo, url))
+    boysenberry-repo-1 : https://github.com/octocat/boysenberry-repo-1.git
+    git-consortium : https://github.com/octocat/git-consortium.git
+    hello-worId : https://github.com/octocat/hello-worId.git
+    Hello-World : https://github.com/octocat/Hello-World.git
+    linguist : https://github.com/octocat/linguist.git
+    octocat.github.io : https://github.com/octocat/octocat.github.io.git
+    Spoon-Knife : https://github.com/octocat/Spoon-Knife.git
+    test-repo1 : https://github.com/octocat/test-repo1.git
 
     """
     valid_acc_types = ['users', 'orgs']
@@ -99,7 +109,8 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
     response = json.loads(raw_response.text)
 
     try:
-        return [repo['clone_url'] for repo in response]
+        return [(__get_repo_name(repo['clone_url']), repo['clone_url'])
+                for repo in response]
     except Exception:
         msg = "Unable to list repos for account {}.".format(account)
         try:
@@ -110,7 +121,7 @@ def list_gh_repos(account: str, account_type: str) -> List[str]:
 
 def clone_gh_repos(account: str,
                    account_type: str,
-                   repo: Optional[Union[str, List[str]]] = None,
+                   repos: Optional[Union[str, List[str]]] = None,
                    outpath: Optional[Union[str, pathlib.Path]] = None
                    ) -> NoReturn:
     """
@@ -122,10 +133,12 @@ def clone_gh_repos(account: str,
     ----------
     account : str
         Github account whose public repos are to be cloned.
-    account_type: str
+    account_type : str
         Type of github account whose public repos are to be cloned.
         Valid options: ``'users'``, ``'orgs'``.
-    outpath: str | pathlib.Path, optional
+    repos : List[str], optional, default = ``None``.
+        List of specific URLs of repositories to clone.
+    outpath : str | pathlib.Path, optional, default = ``None``.
         Path to which repos are to be cloned. If not specified, clones
         repos into current working directory.
     
@@ -141,7 +154,7 @@ def clone_gh_repos(account: str,
 
     >>> datamine.clone_repos(
     ...     'mggg-states', 'orgs', 
-    ...     'https://github.com/mggg-states/AZ-shapefiles.git')
+    ...     ['https://github.com/mggg-states/AZ-shapefiles.git'])
 
     >>> datamine.clone_repos(
     ...     'mggg-states', 'orgs', 
@@ -157,12 +170,11 @@ def clone_gh_repos(account: str,
     """
     try:
         if repo is None:
-            queried_repos = list_gh_repos(account, account_type)
+            _, queried_repos = list_gh_repos(account, account_type)
             cmds = __generate_clone_cmds(queried_repos, outpath)
-        elif isinstance(repo, str):
-            cmds = __generate_clone_cmds([repo], outpath)
         else:
-            cmds = __generate_clone_cmds(repo, outpath)
+            repo_urls = [__create_gh_repo_url(rname) for rname in repos]
+            cmds = __generate_clone_cmds(repo_urls, outpath)
 
         responses = list(map(lambda cmd : subprocess.run(cmd), cmds))
 
@@ -174,7 +186,6 @@ def clone_gh_repos(account: str,
         raise RuntimeError("Unable to clone repos. {}".format(e))
 
 
-# TODO: consider adding ability to remove specific repos?
 def remove_repos(dirpath: Union[str, pathlib.Path]) -> NoReturn:
     """
     Given a name/path of a directory, recursively removes all git repositories
@@ -195,8 +206,6 @@ def remove_repos(dirpath: Union[str, pathlib.Path]) -> NoReturn:
     
     Examples
     --------
-    >>> datamine.remove_repos()
-
     >>> datamine.remove_repos('repos_to_remove/')
 
     """
@@ -379,6 +388,29 @@ def __generate_clone_cmds(
     return cmds
     
 
+def __get_repo_name(url: str) -> str:
+    """
+    Returns the name of the repository from its given URL.
+
+    """
+    parsed = urllib.parse.urlparse(url)
+    name = os.path.basename(parsed.path)
+
+    if name.endswith('.git'):
+        name = name[:-4]
+
+    return name
+
+
+def __create_gh_repo_url(account: str, repo: str) -> str:
+    """
+    Given an account name and a repo name, returns a cloneable
+    gh repo url.
+
+    """
+    return 'https://github.com/' + account + '/' + repo + '.git'
+
+
 def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.'
                  ) -> List[str]:
     """
@@ -392,7 +424,7 @@ def __list_repos(dirpath: Optional[Union[str, pathlib.Path]] = '.'
     for path, dirs, _ in os.walk(root_path):
         [subdirs.append(os.path.join(path, directory)) for directory in dirs]
 
-    return [subdir.rstrip(os.path.basename(subdir)) 
+    return [subdir[:-len(os.path.basename(subdir))] 
                 for subdir in subdirs if pathlib.Path(subdir).name == '.git']
 
 

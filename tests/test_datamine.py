@@ -16,14 +16,14 @@ standards_path = 'scripts/naming_convention.json'
 gh_user = 'octocat'
 gh_acct_type = 'users'
 gh_repos = [ # Note: this list is subject to change
-    'linguist.git', 
-    'octocat.github.io.git', 
-    'git-consortium.git', 
-    'hello-worId.git', 
-    'test-repo1.git', 
-    'boysenberry-repo-1.git', 
-    'Hello-World.git', 
-    'Spoon-Knife.git']
+    'boysenberry-repo-1', 
+    'git-consortium', 
+    'hello-worId', 
+    'Hello-World', 
+    'linguist', 
+    'octocat.github.io', 
+    'Spoon-Knife', 
+    'test-repo1']
 public_gh_repos = [ # Note: also subject to change
     'https://github.com/octocat/boysenberry-repo-1.git', 
     'https://github.com/octocat/git-consortium.git', 
@@ -72,7 +72,7 @@ def test_list_gh_repos():
         dm.list_gh_repos('XGx2ePfMTt3jbQEGWCzCHaRzWpC6Vz7qY48VY', 'users')
     
     repos = dm.list_gh_repos('octocat', 'users')
-    assert repos == public_gh_repos
+    assert set(repos) == set(zip(gh_repos, public_gh_repos))
 
 
 def test_clone_gh_repos():
