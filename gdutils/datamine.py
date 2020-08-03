@@ -278,7 +278,7 @@ def list_files_of_type(filetype: Union[str, List[str]],
     ...                                            exclude_hidden = False)
     # recursively gets a list of '.csv' files, including hidden files
     >>> print(list_of_csvs)
-    ['./csv1.csv', './.hidden-dir/csv_hidden.csv']
+    ['./csv1.csv', './.csv_hidden.csv']
 
     >>> list_of_mix = datamine.list_files_of_type(['.shp', '.zip'])
     # recursively gets a list of '.shp' and '.zip' files
