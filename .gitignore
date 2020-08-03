@@ -33,8 +33,12 @@ scripts/**/*.git
 docs/**/gdutils/
 docs/build/
 
+docs/source/src/examples/*
+!docs/source/src/examples/*.ipynb
+!docs/source/src/examples/*.json
+!docs/source/src/examples/.example-hidden*
 !docs/source/src/examples/example-inputs/example-shp/*
-docs/source/src/examples/example-inputs/example-shp/.DS_Store
+docs/**/.DS_Store
 
 # Python Library Components
 __pycache__
