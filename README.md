@@ -7,7 +7,7 @@ Available modules:
 
 - `gdutils.datamine`: a `python` module for mining and listing data sources.
 - `gdutils.dataqa`: a `python` module for comparing analyzing and comparing 
-   data for QA purposes. Status: In development.
+   data for QA purposes.
 - `gdutils.extract`: a script and `python` module for extracting tabular 
    data for data science (data wrangling) purposes. A user-friendly, lite 
    wrapper of `geopandas` with the power of `pandas`.
