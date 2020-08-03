@@ -144,7 +144,8 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     # gets a list of tuples containing two items:
     # 1. column name (left)
     # 2. sum of column's values (right)
-    >>> for column, sum in totals:
+    >>> for total in totals:
+    ...     (column, sum) = total
     ...     print("{}: {}".format(column, sum))
     COL1: 5
     COL3: 9 
