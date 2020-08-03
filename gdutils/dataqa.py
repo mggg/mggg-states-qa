@@ -197,8 +197,8 @@ def compare_column_values(
         compared rows and absolute differences of their values. E.g.
         ::
         
-            {'col1-col2': [('row1-row1', 2), ('row2-row2', 0)],
-             'colA-colB': [('rowA1-rowB1', 5)]}
+            {'c1 [vs] c2': [('row1 [vs] row1', 2), ('row2 [vs] row2', 0)],
+             'cA [vs] cB': [('rowA1 [vs] rowB1', 5)]}
 
     Raises
     ------
@@ -226,37 +226,37 @@ def compare_column_values(
     #       1. name of row in first table and name of row in second table
     #       2. absolute difference values in the columns and rows
     >>> print(results)
-    {'COL3-col2': [('0-0', 1), ('1-1', 5)]}
+    {'COL3 [vs] col2': [('0 [vs] 0', 1), ('1 [vs] 1', 5)]}
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1', 'COL2'], 
     ...                                        ['col1', 'col2'])
     # compares columns 'COL1' with 'col1' and 'COL2' with 'col2'
-    >>> print(results['COL2-col2'][0])
-    ('0-0', 2)
+    >>> print(results['COL2 [vs] col2'][0])
+    ('0 [vs] 0', 2)
     >>> for column in results:
     ...     print('{} ----'.format(column))
     ...     for row, difference in results[column]:
     ...         print('{} : {}'.format(row, difference))
-    COL1-col1 ---
-    0-0 4
-    1-1 2
+    COL1 [vs] col1 ---
+    0 [vs] 0 4
+    1 [vs] 1 2
     COL2-col2 ---
-    0-0 2
-    1-1 4
+    0 [vs] 0 2
+    1 [vs] 1 4
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1'], 
     ...                                        ['col1'], [0], [1])
     # compares value of column 'COL1' row 0 in table1 with 
     # value of column 'col1' row 1 in table2
-    >>> print(results['COL1-col1'][0])
-    ('0-1', 1)
+    >>> print(results['COL1 [vs] col1'][0])
+    ('0 [vs] 1', 1)
 
     >>> results = dataqa.compare_column_values(df1, df2, ['COL1'], ['col1'],
     ...                                        [0, 1], [1, 0])
     # compares rows 0 and 1 (table1) with rows 1 and 0 (table2) in 
     # respective columns 'COL1' and 'col1'
-    >>> print(results['COL1-col1'])
-    [('0-1', 1), ('1-0', 1)]
+    >>> print(results['COL1 [vs] col1'])
+    [('0 [vs] 1', 1), ('1 [vs] 0', 1)]
 
     """
     if not __can_compare(columns1, columns2):
@@ -275,11 +275,11 @@ def compare_column_values(
     else:
         results = {}
         for i in range(0, len(columns1)):
-            diff = [('{}-{}'.format(rows1[j], rows2[j]), 
+            diff = [('{} [vs] {}'.format(rows1[j], rows2[j]), 
                     abs(table1.at[rows1[j], columns1[i]] -
                         table2.at[rows2[j], columns2[i]])) 
                     for j in range(len(rows1))]
-            results['{}-{}'.format(columns1[i], columns2[i])] = diff
+            results['{} [vs] {}'.format(columns1[i], columns2[i])] = diff
         
         return results
 
@@ -342,7 +342,7 @@ def compare_column_sums(
     # 1. name of column in first table and name of column in second (left)
     # 2. absolute difference between the sum of values of both columns (right)
     >>> print(diffs)
-    [('COL1-col1', 2)]
+    [('COL1 [vs] col1', 2)]
 
     >>> diffs = dataqa.compare_column_sums(df1, df2, ['COL1', 'COL3'],
     ...                                    ['col1', 'col2'])
@@ -350,8 +350,8 @@ def compare_column_sums(
     # 'COL3' with column 'col2'
     >>> for column, difference in diffs:
     ...     print('{} : {}'.format(column, difference))
-    COL1-col1 : 2
-    COL3-col2 : 4
+    COL1 [vs] col1 : 2
+    COL3 [vs] col2 : 4
 
     """
     if not __can_compare(columns1, columns2):
@@ -361,7 +361,7 @@ def compare_column_sums(
     sums1 = sum_column_values(table1, columns1)
     sums2 = sum_column_values(table2, columns2)
 
-    return list(map(lambda tup1, tup2: ('{}-{}'.format(tup1[0], tup2[0]),
+    return list(map(lambda tup1, tup2: ('{} [vs] {}'.format(tup1[0], tup2[0]),
                                         abs(tup1[1] - tup2[1])), sums1, sums2))
 
 
