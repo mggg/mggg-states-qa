@@ -342,7 +342,7 @@ def compare_column_sums(
     # 1. name of column in first table and name of column in second (left)
     # 2. difference between the sum of values of both columns (right)
     >>> print(diffs)
-    [('COL1 [vs] col1', 2)]
+    [('COL1 [vs] col1', -2)]
 
     >>> diffs = dataqa.compare_column_sums(df1, df2, ['COL1', 'COL3'],
     ...                                    ['col1', 'col2'])
