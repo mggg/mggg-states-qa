@@ -560,9 +560,10 @@ class ExtractTable:
     def __read_inferred(self, filename: str, ext: str) -> pd.DataFrame:
         if ext == '.csv':
             try:
-                return pd.read_csv(filename) 
+                return pd.read_csv(filename, low_memory=False) 
             except:
-                return pd.read_csv(filename, encoding='ISO-8859-1')
+                return pd.read_csv(filename, encoding='ISO-8859-1', 
+                                   low_memory=False)
         elif ext == '.pkl' or ext == '.bz2' or ext == '.zip' or \
              ext == '.gzip' or ext == '.xz':
             return pd.read_pickle(filename)
