@@ -151,9 +151,7 @@ def sum_column_values(table: Union[pd.DataFrame, gpd.GeoDataFrame],
     COL3: 9 
 
     """
-    totals = [(col, table[col].sum()) for col in list(columns)]
-    totals.sort(key = lambda tuple : tuple[0])
-    return totals
+    return [(col, table[col].sum()) for col in list(columns)]
 
 
 def compare_column_values(
