@@ -24,6 +24,7 @@ Documentation: ``gdutils``
    src/examples/dm-examples.ipynb
    src/examples/dq-examples.ipynb
    src/examples/et-examples.ipynb
+   src/examples/qa-case-mggg-states.ipynb
 
 .. toctree::
    :caption: Scripts
