@@ -21,26 +21,9 @@
 **/__MACOSX
 
 # Large Files
-tests/inputs/*.zip
-tests/inputs/precinct_2018
-!tests/inputs/test.zip
-!tests/inputs/CT_precincts.zip
-**/dumps*/*
-tests/nhgis0004_shapefile_tl2010_060_block_2010*
-scripts/**/*.git
-**/qafiles/*
-!**/qafiles/wiki
-
-# Docs
-docs/**/gdutils/
-docs/build/
-
-docs/source/src/examples/*
-!docs/source/src/examples/*.ipynb
-!docs/source/src/examples/*.json
-!docs/source/src/examples/.example-hidden*
-!docs/source/src/examples/example-inputs/example-shp/*
-docs/**/.DS_Store
+src/
+!src/naming_convention.json
+!src/wiki/
 
 # Python Library Components
 __pycache__
