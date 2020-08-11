@@ -21,9 +21,10 @@
 **/__MACOSX
 
 # Large Files
-src/
+src/*
 !src/naming_convention.json
 !src/wiki/
+!src/*.ipynb
 
 # Python Library Components
 __pycache__
