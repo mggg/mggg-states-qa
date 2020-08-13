@@ -1,19 +1,8 @@
-Unnamed: 0_level_0,Hillary Rodham Clinton Democratic,Hillary Rodham Clinton Democratic,Donald John Trump Republican,Donald John Trump Republican,Various candidates Various parties,Various candidates Various parties,Unnamed: 7_level_0
-County,%,#,%,#,%,#,Total
-Carson City,38.42%,9610,52.47%,13125,9.12%,2281,25016
-Churchill,20.20%,2210,71.59%,7830,8.21%,898,10938
-Clark,52.43%,402227,41.72%,320057,5.85%,44872,767156
-Douglas,30.32%,8454,62.45%,17415,7.23%,2016,27885
-Elko,18.33%,3401,73.02%,13551,8.66%,1607,18559
-Esmeralda,15.37%,65,77.78%,329,6.86%,29,423
-Eureka,8.67%,74,84.66%,723,6.67%,57,854
-Humboldt,21.55%,1386,70.28%,4521,8.18%,526,6433
-Lander,16.70%,403,75.76%,1828,7.54%,182,2413
-Lincoln,13.37%,285,78.38%,1671,8.26%,176,2132
-Lyon,25.86%,6146,67.36%,16005,6.78%,1611,23762
-Mineral,31.90%,637,59.04%,1179,9.06%,181,1997
-Nye,26.00%,5094,68.00%,13324,6.01%,1177,19595
-Pershing,21.70%,430,70.79%,1403,7.52%,149,1982
-Storey,29.40%,752,63.17%,1616,7.43%,190,2558
-Washoe,46.39%,97379,45.14%,94758,8.47%,17772,209909
-White Pine,18.74%,707,72.17%,2723,9.09%,343,3773
+Party,Party.1,Candidate,Votes,%
+,Democratic,Hillary Clinton,539260,47.92%
+,Republican,Donald Trump,512058,45.5%
+,Libertarian,Gary Johnson,37384,3.29%
+,,None of these candidates,28863,2.54%
+,Constitution,Darrell Castle,5268,0.46%
+,Reform,Rocky de la Fuente,2552,0.23%
+Total votes,Total votes,Total votes,1125385,100.00%

@@ -1,56 +1,9 @@
-County,Clinton%,Clinton#,Trump%,Trump#,Others%,Others#,Total
-Barbour,20.19%,1222,74.78%,4527,5.04%,305,6054
-Berkeley,28.75%,12321,65.91%,28244,5.33%,2285,42850
-Boone,20.61%,1790,74.90%,6504,4.48%,389,8683
-Braxton,25.95%,1321,69.49%,3537,4.56%,232,5090
-Brooke,26.71%,2568,68.92%,6625,4.37%,420,9613
-Cabell,34.60%,11447,60.00%,19850,5.40%,1788,33085
-Calhoun,17.42%,456,77.76%,2035,4.81%,126,2617
-Clay,19.11%,568,77.39%,2300,3.50%,104,2972
-Doddridge,12.75%,362,83.03%,2358,4.23%,120,2840
-Fayette,27.97%,4290,67.53%,10357,4.50%,690,15337
-Gilmer,21.43%,545,74.56%,1896,4.01%,102,2543
-Grant,10.33%,512,87.69%,4346,1.98%,98,4956
-Greenbrier,26.77%,3765,67.94%,9556,5.30%,745,14066
-Hampshire,18.36%,1580,77.74%,6692,3.90%,336,8608
-Hancock,25.68%,3262,70.14%,8909,4.18%,531,12702
-Hardy,20.47%,1155,75.74%,4274,3.79%,214,5643
-Harrison,27.52%,7694,67.06%,18750,5.42%,1516,27960
-Jackson,21.85%,2663,74.01%,9020,4.14%,504,12187
-Jefferson,39.42%,9518,54.68%,13204,5.90%,1425,24147
-Kanawha,37.34%,28263,57.93%,43850,4.73%,3577,75690
-Lewis,19.44%,1347,76.13%,5274,4.43%,307,6928
-Lincoln,20.65%,1459,75.11%,5307,4.25%,300,7066
-Logan,16.93%,2092,80.08%,9897,2.99%,370,12359
-Marion,30.24%,6964,63.69%,14668,6.07%,1397,23029
-Marshall,22.08%,2918,73.14%,9666,4.78%,632,13216
-Mason,20.43%,2081,75.14%,7654,4.43%,451,10186
-McDowell,23.18%,1438,74.63%,4629,2.19%,136,6203
-Mercer,20.47%,4704,75.73%,17404,3.80%,874,22982
-Mineral,17.73%,2050,78.43%,9070,3.84%,444,11564
-Mingo,14.41%,1370,83.19%,7911,2.41%,229,9510
-Monongalia,40.78%,14699,51.13%,18432,8.09%,2917,36048
-Monroe,19.14%,1111,76.54%,4443,4.32%,251,5805
-Morgan,20.55%,1573,74.89%,5732,4.56%,349,7654
-Nicholas,19.39%,1840,76.40%,7251,4.21%,400,9491
-Ohio,30.62%,5493,62.10%,11139,7.28%,1306,17938
-Pendleton,22.60%,729,74.36%,2398,3.04%,98,3225
-Pleasants,19.71%,621,74.86%,2358,5.43%,171,3150
-Pocahontas,25.45%,928,68.46%,2496,6.09%,222,3646
-Preston,19.51%,2470,75.35%,9538,5.14%,651,12659
-Putnam,23.64%,5884,71.46%,17788,4.90%,1221,24893
-Raleigh,21.75%,6443,74.44%,22048,3.81%,1127,29618
-Randolph,25.15%,2735,70.15%,7629,4.71%,512,10876
-Ritchie,12.17%,496,83.56%,3405,4.27%,174,4075
-Roane,23.29%,1222,72.06%,3781,4.65%,244,5247
-Summers,24.48%,1190,71.06%,3455,4.46%,217,4862
-Taylor,22.81%,1491,72.39%,4733,4.80%,314,6538
-Tucker,21.61%,751,73.81%,2565,4.58%,159,3475
-Tyler,13.88%,507,81.99%,2996,4.13%,151,3654
-Upshur,19.16%,1766,75.99%,7005,4.85%,447,9218
-Wayne,22.11%,3357,73.46%,11152,4.43%,673,15182
-Webster,18.67%,556,77.30%,2302,4.03%,120,2978
-Wetzel,21.69%,1359,72.13%,4519,6.18%,387,6265
-Wirt,15.94%,386,78.90%,1911,5.16%,125,2422
-Wood,23.59%,8400,71.41%,25434,5.0%,1781,35615
-Wyoming,13.56%,1062,83.60%,6547,2.83%,222,7831
+2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9],2016 United States presidential election in West Virginia[9]
+Party,Party,Candidate,Running mate,Popular vote,Popular vote,Electoral vote,Electoral vote,Swing,Unnamed: 9_level_1
+Party,Party.1,Candidate,Running mate,Count,%,Count,%,Swing,Unnamed: 9_level_2
+,Republican,Donald Trump of New York,Mike Pence of Indiana,489371,68.50%,5,100.00%,6.30%,
+,Democratic,Hillary Clinton of New York,Tim Kaine of Virginia,188794,26.43%,0,0.00%,9.11%,
+,Libertarian,Gary Johnson of New Mexico,Bill Weld of Massachusetts,23004,3.22%,0,0.00%,2.28%,
+,Mountain,Jill Stein of Massachusetts,Ajamu Baraka of Illinois,8075,1.13%,0,0.00%,0.47%,
+,Constitution,Darrell Castle of Tennessee,Scott Bradley of Utah,3807,0.53%,0,0.00%,0.51%,
+Total,Total,Total,Total,714423,100.00%,5,100.00%,,

@@ -1,10 +1,9 @@
-Candidate,Clinton,Clinton,Trump,Trump,Johnson,Johnson,Stein,Stein,Write-in,Write-in,Total
-County,Votes,%,Votes,%,Votes,%,Votes,%,Votes,%,Total
-Tolland,38506,49.73%,34194,44.16%,3181,4.11%,1370,1.77%,173,0.23%,77424
-New Haven,205609,54.25%,159048,41.96%,9119,2.41%,4757,1.26%,473,0.13%,379006
-Fairfield,243852,57.89%,160077,38.00%,11691,2.78%,4866,1.16%,723,0.18%,421209
-Windham,21792,42.88%,25747,50.66%,2180,4.29%,1010,1.99%,94,0.18%,50823
-Hartford,240403,59.09%,148173,36.42%,11997,2.95%,5680,1.40%,611,0.15%,406864
-Litchfield,39775,40.82%,53051,54.44%,3004,3.08%,1441,1.48%,171,0.17%,97442
-New London,62278,50.42%,54058,43.76%,4744,3.84%,2220,1.80%,228,0.19%,123528
-Middlesex,45357,51.18%,38867,43.86%,2760,3.11%,1497,1.69%,143,0.16%,88624
+Party,Party.1,Candidate,Votes,%
+,Democratic,Hillary Clinton,897572,54.57%
+,Republican,Donald Trump,673215,40.93%
+,Libertarian,Gary Johnson,48676,2.96%
+,Green,Jill Stein,22841,1.39%
+,Independent,Evan McMullin (write-in),2108,0.13%
+,Independent,Write-ins,361,0.02%
+,Constitution,Darrell Castle (write-in),147,0.01%
+Total votes,Total votes,Total votes,1644920,100.00%

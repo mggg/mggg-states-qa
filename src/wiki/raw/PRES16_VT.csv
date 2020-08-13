@@ -1,15 +1,17 @@
-County,Clinton,Votes,Trump,Votes.1,Others,Votes.2,Total
-Addison,59.0%,11219,27.8%,5297,13.2%,2515,19031
-Bennington,54.9%,9539,34.1%,5925,11.0%,1917,17381
-Caledonia,45.8%,6445,39.3%,5534,14.9%,2095,14074
-Chittenden,65.7%,54814,22.3%,18601,12.0%,10001,83416
-Essex,34.8%,1019,51.5%,1506,13.7%,400,2925
-Franklin,43.7%,9351,40.9%,8752,15.5%,3308,21411
-Grand Isle,51.0%,2094,36.2%,1487,12.9%,528,4109
-Lamoille,56.7%,7241,28.0%,3570,15.3%,1951,12762
-Orange,51.5%,7541,34.2%,5007,14.3%,2101,14649
-Orleans,43.0%,5185,42.8%,5159,14.1%,1702,12046
-Rutland,46.0%,13635,42.1%,12479,11.8%,3501,29615
-Washington,59.8%,18594,25.7%,7993,14.5%,4499,31086
-Windham,63.4%,14340,24.1%,5454,12.6%,2840,22634
-Windsor,58.7%,17556,28.8%,6805,12.6%,3767,28128
+Party,Party.1,Candidate,Votes,%
+,Democratic,Hillary Clinton,178573,55.72%
+,Republican,Donald Trump,95369,29.76%
+,Independent,Bernie Sanders (write-in),18218,5.68%
+,Libertarian,Gary Johnson,10078,3.14%
+,Green,Jill Stein,6758,2.11%
+,Reform,Rocky De La Fuente,1063,0.33%
+,Republican,John Kasich (write-in),831,0.26%
+,Independent,Evan McMullin (write-in),641,0.20%
+,Liberty Union,Gloria La Riva,327,0.10%
+,Constitution,Darrell Castle (write-in),63,0.02%
+,Socialist,Mimi Soltysik (write-in),3,<0.01%
+,Write-in,Other Write-in,3143,1.00%
+,,No Name/None of the Above,257,0.09%
+,,Spoiled/blank,5400,1.69%
+Total votes,Total votes,Total votes,320467,100.00%
+,Democratic win,Democratic win,Democratic win,Democratic win

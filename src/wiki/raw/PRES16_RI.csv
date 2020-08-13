@@ -1,6 +1,11 @@
-County,Clinton%,Clinton#,Trump%,Trump#,Others%,Others#,Total
-Bristol,57.35%,14609,35.19%,8965,7.46%,1901,25475
-Kent,46.05%,37788,46.72%,38336,7.23%,5929,82053
-Newport,55.67%,22851,36.73%,15077,7.59%,3117,41045
-Providence,57.78%,143571,36.31%,90210,5.91%,14693,248474
-Washington,50.84%,33741,41.03%,27230,8.13%,5398,66369
+Party,Party.1,Candidate,Votes,%
+,Democratic,Hillary Clinton,252525,54.41%
+,Republican,Donald Trump,180543,38.90%
+,Libertarian,Gary Johnson,14746,3.18%
+,Green,Jill Stein,6220,1.34%
+,Write-in,Evan McMullin,759,0.16%
+,American Delta,Rocky De La Fuente,671,0.14%
+,Write-in,Mike Maturen,46,0.01%
+,Write-in,Darrell Castle,30,0.01%
+,Write-in,Other write-ins,8604,1.85%
+Total votes,Total votes,Total votes,464144,100.00%

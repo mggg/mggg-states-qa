@@ -1,22 +1,12 @@
-County,Clinton votes,Clinton %,Trump votes,Trump %,Other votes,Other %
-Atlantic,60924,51.0%,52690,44.1%,3677,3.13%
-Bergen,231211,54.2%,175529,41.1%,12556,2.99%
-Burlington,121725,54.2%,89272,39.7%,7946,3.63%
-Camden,146717,63.4%,72631,31.4%,7244,3.20%
-Cape May,18750,37.5%,28446,57.0%,1526,3.13%
-Cumberland,27771,50.4%,24453,44.4%,1780,3.30%
-Essex,240837,76.2%,63176,20.0%,6921,2.23%
-Gloucester,66870,46.9%,67544,47.4%,5128,3.67%
-Hudson,163917,73.2%,49043,21.9%,6415,2.92%
-Hunterdon,28898,39.7%,38712,53.2%,3226,4.55%
-Mercer,104775,65.6%,46193,28.9%,5561,3.55%
-Middlesex,193044,58.0%,122953,37.0%,10105,3.10%
-Monmouth,137181,42.3%,166723,51.5%,10473,3.33%
-Morris,115249,44.9%,126071,49.1%,9096,3.63%
-Ocean,87150,31.1%,179079,63.9%,8133,2.96%
-Passaic,116759,58.8%,72902,36.7%,5141,2.64%
-Salem,11904,39.6%,16381,54.4%,1209,4.10%
-Somerset,85689,53.4%,65505,40.8%,5898,3.75%
-Sussex,24212,32.0%,46658,61.8%,3256,4.39%
-Union,147414,66.4%,68114,30.7%,6447,2.90%
-Warren,17281,34.3%,29858,59.2%,2097,4.26%
+Party,Party.1,Candidate,Votes,%,±
+,Democratic,Hillary Clinton,2148278,55.45%,
+,Republican,Donald Trump,1601933,41.35%,
+,Libertarian,Gary Johnson,72477,1.87%,
+,Green,Jill Stein,37772,0.98%,
+,Constitution,Darrell Castle,6161,0.16%,
+,Socialist Workers,Alyson Kennedy,2156,0.06%,
+,American Delta Party,Rocky De La Fuente,1838,0.05%,
+,Workers World,Monica Moorehead,1749,0.05%,
+,Socialism and Liberation,Gloria La Riva,1682,0.04%,
+Majority,Majority,Majority,546345,14.10%,
+Turnout,Turnout,Turnout,3874046,,
