@@ -34,3 +34,9 @@ The data collection is timestamped at 10:00 AM ET, 14 Aug. 2020.
 
 The columns are named according to the MGGG naming convention, which could
 be found in `src/naming_convention.json`.
+
+Limitations:
+
+Write-in candidate votes are not counted towards to overall party vote count. In
+the cases where elections have competing candidates of the same party, only the
+winning candidate's vote is counted.
